@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"errors"
+	"github.com/cometbft/cometbft/crypto"
+	"github.com/cometbft/cometbft/libs/bytes"
 	"io"
 	"os"
 
@@ -146,6 +148,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	)
 
 	server.AddCommands(rootCmd, app.DefaultNodeHome, ac.newApp, ac.appExport, addModuleInitFlags)
+	server.AddTestnetCreatorCommand(rootCmd, app.DefaultNodeHome, newTestnetApp, addModuleInitFlags)
 	wasmcli.ExtendUnsafeResetAllCmd(rootCmd)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
@@ -289,4 +292,38 @@ func (ac appCreator) appExport(
 	}
 
 	return cyberApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
+}
+
+// newTestnetApp starts by running the normal newApp method. From there, the app interface returned is modified in order
+// for a testnet to be created from the provided app.
+func newTestnetApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
+	var emptyWasmOpts []wasm.Option
+	baseappOptions := server.DefaultBaseappOptions(appOpts)
+
+	bostromApp := app.NewApp(
+		logger, db, traceStore, true,
+		appOpts,
+		emptyWasmOpts,
+		baseappOptions...,
+	)
+
+	newValAddr, ok := appOpts.Get(server.KeyNewValAddr).(bytes.HexBytes)
+	if !ok {
+		panic("newValAddr is not of type bytes.HexBytes")
+	}
+	newValPubKey, ok := appOpts.Get(server.KeyUserPubKey).(crypto.PubKey)
+	if !ok {
+		panic("newValPubKey is not of type crypto.PubKey")
+	}
+	newOperatorAddress, ok := appOpts.Get(server.KeyNewOpAddr).(string)
+	if !ok {
+		panic("newOperatorAddress is not of type string")
+	}
+	upgradeToTrigger, ok := appOpts.Get(server.KeyTriggerTestnetUpgrade).(string)
+	if !ok {
+		panic("upgradeToTrigger is not of type string")
+	}
+
+	// Make modifications to the normal OsmosisApp required to run the network locally
+	return app.InitAppForTestnet(bostromApp, newValAddr, newValPubKey, newOperatorAddress, upgradeToTrigger)
 }

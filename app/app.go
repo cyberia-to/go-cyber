@@ -1,8 +1,18 @@
 package app
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
+	"github.com/cometbft/cometbft/crypto"
+	"github.com/cometbft/cometbft/libs/bytes"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/server"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	v5 "github.com/cybercongress/go-cyber/v6/app/upgrades/v5"
 	v6 "github.com/cybercongress/go-cyber/v6/app/upgrades/v6"
 	"github.com/cybercongress/go-cyber/v6/client/docs"
@@ -550,4 +560,143 @@ func (app *App) loadContexts(db dbm.DB, ctx sdk.Context) {
 		"Cyber Consensus Supercomputer is started!",
 		"duration", time.Since(start).String(),
 	)
+}
+
+// InitOsmosisAppForTestnet is broken down into two sections:
+// Required Changes: Changes that, if not made, will cause the testnet to halt or panic
+// Optional Changes: Changes to customize the testnet to one's liking (lower vote times, fund accounts, etc)
+func InitAppForTestnet(app *App, newValAddr bytes.HexBytes, newValPubKey crypto.PubKey, newOperatorAddress, upgradeToTrigger string) *App {
+	//
+	// Required Changes:
+	//
+
+	ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
+	pubkey := &ed25519.PubKey{Key: newValPubKey.Bytes()}
+	pubkeyAny, err := types.NewAnyWithValue(pubkey)
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+
+	// STAKING
+	//
+
+	// Create Validator struct for our new validator.
+	_, bz, err := bech32.DecodeAndConvert(newOperatorAddress)
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	bech32Addr, err := bech32.ConvertAndEncode("bostromvaloper", bz)
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	newVal := stakingtypes.Validator{
+		OperatorAddress: bech32Addr,
+		ConsensusPubkey: pubkeyAny,
+		Jailed:          false,
+		Status:          stakingtypes.Bonded,
+		Tokens:          math.NewInt(900000000000000),
+		DelegatorShares: sdk.MustNewDecFromStr("10000000"),
+		Description: stakingtypes.Description{
+			Moniker: "Testnet Validator",
+		},
+		Commission: stakingtypes.Commission{
+			CommissionRates: stakingtypes.CommissionRates{
+				Rate:          sdk.MustNewDecFromStr("0.05"),
+				MaxRate:       sdk.MustNewDecFromStr("0.1"),
+				MaxChangeRate: sdk.MustNewDecFromStr("0.05"),
+			},
+		},
+		MinSelfDelegation: math.OneInt(),
+	}
+
+	// Remove all validators from power store
+	stakingKey := app.GetKey(stakingtypes.ModuleName)
+	stakingStore := ctx.KVStore(stakingKey)
+	iterator := app.StakingKeeper.ValidatorsPowerStoreIterator(ctx)
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Remove all valdiators from last validators store
+	iterator = app.StakingKeeper.LastValidatorsIterator(ctx)
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Remove all validators from validators store
+	iterator = storetypes.KVStorePrefixIterator(stakingStore, stakingtypes.ValidatorsKey)
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Remove all validators from unbonding queue
+	iterator = storetypes.KVStorePrefixIterator(stakingStore, stakingtypes.ValidatorQueueKey)
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Add our validator to power and last validators store
+	app.StakingKeeper.SetValidator(ctx, newVal)
+	err = app.StakingKeeper.SetValidatorByConsAddr(ctx, newVal)
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	app.StakingKeeper.SetValidatorByPowerIndex(ctx, newVal)
+	valAddr, err := sdk.ValAddressFromBech32(newVal.GetOperator().String())
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	app.StakingKeeper.SetLastValidatorPower(ctx, valAddr, 0)
+	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(ctx, valAddr); err != nil {
+		panic(err)
+	}
+
+	// DISTRIBUTION
+	//
+
+	// Initialize records for this validator across all distribution stores
+	valAddr, err = sdk.ValAddressFromBech32(newVal.GetOperator().String())
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	app.DistrKeeper.SetValidatorHistoricalRewards(ctx, valAddr, 0, distrtypes.NewValidatorHistoricalRewards(sdk.DecCoins{}, 1))
+	app.DistrKeeper.SetValidatorCurrentRewards(ctx, valAddr, distrtypes.NewValidatorCurrentRewards(sdk.DecCoins{}, 1))
+	app.DistrKeeper.SetValidatorAccumulatedCommission(ctx, valAddr, distrtypes.InitialValidatorAccumulatedCommission())
+	app.DistrKeeper.SetValidatorOutstandingRewards(ctx, valAddr, distrtypes.ValidatorOutstandingRewards{Rewards: sdk.DecCoins{}})
+
+	// SLASHING
+	//
+
+	// Set validator signing info for our new validator.
+	newConsAddr := sdk.ConsAddress(newValAddr.Bytes())
+	newValidatorSigningInfo := slashingtypes.ValidatorSigningInfo{
+		Address:     newConsAddr.String(),
+		StartHeight: app.LastBlockHeight() - 1,
+		Tombstoned:  false,
+	}
+	app.SlashingKeeper.SetValidatorSigningInfo(ctx, newConsAddr, newValidatorSigningInfo)
+
+	//
+	// Optional Changes:
+	//
+
+	// UPGRADE
+	//
+
+	if upgradeToTrigger != "" {
+		upgradePlan := upgradetypes.Plan{
+			Name:   upgradeToTrigger,
+			Height: app.LastBlockHeight() + 10,
+		}
+		err = app.UpgradeKeeper.ScheduleUpgrade(ctx, upgradePlan)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return app
 }
