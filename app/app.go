@@ -689,8 +689,9 @@ func InitAppForTestnet(app *App, newValAddr bytes.HexBytes, newValPubKey crypto.
 
 	if upgradeToTrigger != "" {
 		upgradePlan := upgradetypes.Plan{
-			Name:   upgradeToTrigger,
-			Height: app.LastBlockHeight() + 10,
+			Name: upgradeToTrigger,
+			//Height: app.LastBlockHeight() + 10,
+			Height: app.LastBlockHeight(),
 		}
 		err = app.UpgradeKeeper.ScheduleUpgrade(ctx, upgradePlan)
 		if err != nil {
