@@ -150,7 +150,7 @@ func setup(t *testing.T, withGenesis bool, opts ...wasmkeeper.Option) (*App, Gen
 	appOptions := make(simtestutil.AppOptionsMap, 0)
 	appOptions[flags.FlagHome] = nodeHome // ensure unique folder
 
-	app := NewApp(
+	app := NewBostromApp(
 		log.NewNopLogger(),
 		db,
 		nil,

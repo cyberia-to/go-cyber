@@ -146,7 +146,7 @@ type App struct {
 }
 
 // New returns a reference to an initialized Cyber Consensus Computer.
-func NewApp(
+func NewBostromApp(
 	logger log.Logger,
 	db dbm.DB,
 	traceStore io.Writer,
