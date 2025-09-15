@@ -1,10 +1,11 @@
 package v6
 
 import (
-	sdkmath "cosmossdk.io/math"
 	"fmt"
-	liquiditytypes "github.com/cybercongress/go-cyber/v6/x/liquidity/types"
 	"time"
+
+	sdkmath "cosmossdk.io/math"
+	liquiditytypes "github.com/cybercongress/go-cyber/v6/x/liquidity/types"
 
 	bandwidthtypes "github.com/cybercongress/go-cyber/v6/x/bandwidth/types"
 
@@ -46,6 +47,14 @@ func CreateV6UpgradeHandler(
 		logger.Info(fmt.Sprintf("post migrate version map: %v", versionMap))
 		after := time.Now()
 		ctx.Logger().Info("upgrade time", "duration ms", after.Sub(before).Milliseconds())
+
+		voltSupply := keepers.BankKeeper.GetSupply(ctx, "millivolt")
+		ampereSupply := keepers.BankKeeper.GetSupply(ctx, "milliampere")
+		resourcesSupplyBefore := sdk.NewCoins(voltSupply, ampereSupply)
+
+		bootSupply := keepers.BankKeeper.GetSupply(ctx, "boot")
+		hydrogenSupply := keepers.BankKeeper.GetSupply(ctx, "hydrogen")
+		baseSupplyBefore := sdk.NewCoins(bootSupply, hydrogenSupply)
 
 		before = time.Now()
 		// -- burn unvested coins for accounts with periodic vesting accounts
@@ -109,20 +118,20 @@ func CreateV6UpgradeHandler(
 								logger.Error("failed to burn coins", "addr", addr.String(), "coins", coinsToBurn.String(), "err", err)
 							} else {
 								totalUnvestedBurned = totalUnvestedBurned.Add(coinsToBurn...)
+								//logger.Info("unvested and burned coins", "addr", addr.String(), "coins", coinsToBurn)
 							}
 						}
 					}
 				}
 			}
-			logger.Info("vesting cleanup completed", "accounts updated", updatedVestingAccounts, "total unvested burned", totalUnvestedBurned.String())
-
 		}
+		logger.Info("vesting cleanup completed", "accounts updated", updatedVestingAccounts, "total unvested burned", totalUnvestedBurned.String())
 
 		// manually burn minted coins for accounts which made investmints during HFR break
 
 		explosionBurned := sdk.NewCoins()
-		processedAccounts := 0
-		for _, e := range hfrEntries {
+		processedHFREntries := 0
+		for _, e := range hfrBurnEntries {
 			addr, err := sdk.AccAddressFromBech32(e.addr)
 			if err != nil {
 				logger.Error("invalid address", "addr", e.addr, "err", err)
@@ -135,6 +144,8 @@ func CreateV6UpgradeHandler(
 			balanceAmt := keepers.BankKeeper.GetBalance(ctx, addr, e.denom).Amount
 			toBurnAmt := sdk.MinInt(balanceAmt, amt)
 			if !toBurnAmt.IsPositive() {
+				processedHFREntries++
+				logger.Info("nothing to burn", "addr", addr.String(), "denom", e.denom, "amount", e.amount, "balance", balanceAmt.String())
 				continue
 			}
 			coin := sdk.NewCoin(e.denom, toBurnAmt)
@@ -148,23 +159,66 @@ func CreateV6UpgradeHandler(
 			}
 
 			explosionBurned = explosionBurned.Add(coin)
-			processedAccounts++
+			processedHFREntries++
 		}
 
-		logger.Info("burn completed", "accounts processed", processedAccounts, "total explosion burned", explosionBurned.String())
+		logger.Info("exploded HFR recovery completed", "entries processed", processedHFREntries, "total explosion burned", explosionBurned.String())
+
+		// manually burn coins from dex pool accounts during HFR break
+
+		dexBurned := sdk.NewCoins()
+		processedDEXEntries := 0
+		for _, e := range dexBurnEntries {
+			addr, err := sdk.AccAddressFromBech32(e.addr)
+			if err != nil {
+				logger.Error("invalid address", "addr", e.addr, "err", err)
+				continue
+			}
+
+			toBurnAmt, ok := sdk.NewIntFromString(e.amount)
+			if !ok || !toBurnAmt.IsPositive() {
+				continue
+			}
+
+			coin := sdk.NewCoin(e.denom, toBurnAmt)
+			if err := keepers.BankKeeper.SendCoinsFromAccountToModule(ctx, addr, resourcestypes.ResourcesName, sdk.NewCoins(coin)); err != nil {
+				logger.Error("failed to move coins for burning", "addr", addr.String(), "coin", coin.String(), "err", err)
+				continue
+			}
+			if err := keepers.BankKeeper.BurnCoins(ctx, resourcestypes.ResourcesName, sdk.NewCoins(coin)); err != nil {
+				logger.Error("failed to burn coins", "addr", addr.String(), "coin", coin.String(), "err", err)
+				continue
+			}
+
+			dexBurned = dexBurned.Add(coin)
+			processedDEXEntries++
+		}
+
+		logger.Info("exploited DEX recovery completed", "entries processed", processedDEXEntries, "total dex burned", dexBurned.String())
+
 		after = time.Now()
-		ctx.Logger().Info("balances fixed", "duration ms", after.Sub(before).Milliseconds())
+		logger.Info("balances fixed", "duration ms", after.Sub(before).Milliseconds())
+
+		totalBurned := totalUnvestedBurned.Add(explosionBurned...).Add(dexBurned...)
+
+		voltSupply = keepers.BankKeeper.GetSupply(ctx, "millivolt")
+		ampereSupply = keepers.BankKeeper.GetSupply(ctx, "milliampere")
+		resourcesSupplyAfter := sdk.NewCoins(voltSupply, ampereSupply)
+
+		logger.Info("resources supply", "before", resourcesSupplyBefore.String(), "after", resourcesSupplyAfter.String(), "total burned", totalBurned.String())
 
 		before = time.Now()
 		for _, acc := range keepers.AccountKeeper.GetAllAccounts(ctx) {
 			keepers.BandwidthMeter.SetZeroAccountBandwidth(ctx, acc.GetAddress())
 		}
+		logger.Info("set zero bandwidth for all accounts", "duration ms", after.Sub(before).Milliseconds())
+
 		params := keepers.BandwidthMeter.GetParams(ctx)
 		err = keepers.BandwidthMeter.SetParams(ctx, bandwidthtypes.Params{
 			BasePrice:         sdk.OneDec(),
 			RecoveryPeriod:    params.RecoveryPeriod,
 			AdjustPricePeriod: params.AdjustPricePeriod,
-			BaseLoad:          sdk.NewDecWithPrec(2, 2),
+			BaseLoad:          params.BaseLoad,
 			MaxBlockBandwidth: params.MaxBlockBandwidth,
 		})
 		if err != nil {
@@ -175,17 +229,30 @@ func CreateV6UpgradeHandler(
 		millivoltSupply := keepers.BankKeeper.GetSupply(ctx, "millivolt")
 		keepers.BandwidthMeter.SetDesirableBandwidth(ctx, millivoltSupply.Amount.Uint64())
 
-		ctx.Logger().Info("set zero bandwidth for all accounts", "duration ms", after.Sub(before).Milliseconds())
-
-		giftCoins := sdk.NewCoin("boot", sdkmath.NewInt(600000000000000))
-		giftAddress, _ := sdk.AccAddressFromBech32("bostrom1qs9w7ry45axfxjgxa4jmuhjthzfvj78sxh5p6e")
-		if err := keepers.BankKeeper.SendCoinsFromAccountToModule(ctx, giftAddress, liquiditytypes.ModuleName, sdk.NewCoins(giftCoins)); err != nil {
-			logger.Error("failed to move gift coins for burning", "addr", giftAddress.String(), "coin", giftCoins.String(), "err", err)
+		giftCoins := sdk.NewCoin("boot", sdkmath.NewInt(603000000000000))
+		giftMSAddress, _ := sdk.AccAddressFromBech32("bostrom1qs9w7ry45axfxjgxa4jmuhjthzfvj78sxh5p6e")
+		if err := keepers.BankKeeper.SendCoinsFromAccountToModule(ctx, giftMSAddress, liquiditytypes.ModuleName, sdk.NewCoins(giftCoins)); err != nil {
+			logger.Error("failed to move gift coins for burning", "addr", giftMSAddress.String(), "coin", giftCoins.String(), "err", err)
 		}
 		if err := keepers.BankKeeper.BurnCoins(ctx, liquiditytypes.ModuleName, sdk.NewCoins(giftCoins)); err != nil {
-			logger.Error("failed to burn gift coins", "addr", giftAddress.String(), "coin", giftCoins.String(), "err", err)
+			logger.Error("failed to burn gift coins", "addr", giftMSAddress.String(), "coin", giftCoins.String(), "err", err)
 		}
-		ctx.Logger().Info("burned gift's tokens", "amount", giftCoins.String())
+		ctx.Logger().Info("burned gift tokens from multisig", "amount", giftCoins.String())
+
+		giftTreasuryCoins := sdk.NewCoin("boot", sdkmath.NewInt(58648526573806))
+		giftTreasuryAddress, _ := sdk.AccAddressFromBech32("bostrom182jzjwdyl5fw43yujnlljddgtrkr04dpd30ywp2yn724u7qhtaqstjzlcu")
+		if err := keepers.BankKeeper.SendCoinsFromAccountToModule(ctx, giftTreasuryAddress, liquiditytypes.ModuleName, sdk.NewCoins(giftTreasuryCoins)); err != nil {
+			logger.Error("failed to move gift coins for burning", "addr", giftTreasuryAddress.String(), "coin", giftCoins.String(), "err", err)
+		}
+		if err := keepers.BankKeeper.BurnCoins(ctx, liquiditytypes.ModuleName, sdk.NewCoins(giftTreasuryCoins)); err != nil {
+			logger.Error("failed to burn gift coins", "addr", giftTreasuryAddress.String(), "coin", giftTreasuryCoins.String(), "err", err)
+		}
+		ctx.Logger().Info("burned gift tokens from treasury", "amount", giftTreasuryCoins.String())
+
+		bootSupply = keepers.BankKeeper.GetSupply(ctx, "boot")
+		hydrogenSupply = keepers.BankKeeper.GetSupply(ctx, "hydrogen")
+		baseSupplyAfter := sdk.NewCoins(bootSupply, hydrogenSupply)
+		logger.Info("base supply", "before", baseSupplyBefore.String(), "after", baseSupplyAfter.String())
 
 		return versionMap, err
 	}
