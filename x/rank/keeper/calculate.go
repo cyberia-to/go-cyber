@@ -12,10 +12,15 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 )
 
-func CalculateRank(ctx *types.CalculationContext, unit types.ComputeUnit, logger log.Logger) (rank types.Rank) {
-	start := time.Now()
+func CalculateRank(ctx *types.CalculationContext, unit types.ComputeUnit, mock bool, logger log.Logger) (rank types.Rank) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), "rank_calculation")
 
+	if mock {
+		rank = types.NewRank(mockRank(ctx), logger, ctx.FullTree)
+		return
+	}
+
+	start := time.Now()
 	if unit == types.CPU {
 		// used only for development
 		rank = types.NewRank(calculateRankCPU(ctx), logger, ctx.FullTree)
@@ -34,7 +39,7 @@ func CalculateRank(ctx *types.CalculationContext, unit types.ComputeUnit, logger
 }
 
 func CalculateRankInParallel(
-	ctx *types.CalculationContext, rankChan chan types.Rank, err chan error, unit types.ComputeUnit, logger log.Logger,
+	ctx *types.CalculationContext, rankChan chan types.Rank, err chan error, unit types.ComputeUnit, mock bool, logger log.Logger,
 ) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -43,6 +48,6 @@ func CalculateRankInParallel(
 		}
 	}()
 
-	rank := CalculateRank(ctx, unit, logger)
+	rank := CalculateRank(ctx, unit, mock, logger)
 	rankChan <- rank
 }

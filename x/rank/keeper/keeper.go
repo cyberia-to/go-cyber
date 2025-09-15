@@ -40,6 +40,7 @@ type StateKeeper struct {
 	rankErrChan  chan error
 	allowSearch  bool
 	computeUnit  types.ComputeUnit
+	computeMock  bool // only for tests
 
 	stakeKeeper        types.StakeKeeper
 	graphKeeper        types.GraphKeeper
@@ -61,6 +62,7 @@ func NewKeeper(
 	graphKeeper types.GraphKeeper,
 	accountKeeper keeper.AccountKeeper,
 	unit types.ComputeUnit,
+	mock bool,
 	authority string,
 ) *StateKeeper {
 	return &StateKeeper{
@@ -75,6 +77,7 @@ func NewKeeper(
 		graphKeeper:             graphKeeper,
 		accountKeeper:           accountKeeper,
 		computeUnit:             unit,
+		computeMock:             mock,
 		hasNewLinksForPeriod:    true,
 		authority:               authority,
 	}
@@ -120,15 +123,6 @@ func (sk *StateKeeper) LoadState(ctx sdk.Context) {
 
 func (sk *StateKeeper) StartRankCalculation(ctx sdk.Context) {
 	params := sk.GetParams(ctx)
-
-	// TODO remove this after upgrade to v4 because on network upgrade block cannot access rank params
-	if params.CalculationPeriod == 0 {
-		params = types.Params{
-			CalculationPeriod: 5,
-			DampingFactor:     sdk.NewDecWithPrec(85, 2),
-			Tolerance:         sdk.NewDecWithPrec(1, 3),
-		}
-	}
 
 	dampingFactor, err := strconv.ParseFloat(params.DampingFactor.String(), 64)
 	if err != nil {
@@ -209,7 +203,7 @@ func (sk *StateKeeper) startRankCalculation(ctx sdk.Context, dampingFactor float
 		sk.GetAccountCount(ctx),
 	)
 
-	go CalculateRankInParallel(calcCtx, sk.rankCalcChan, sk.rankErrChan, sk.computeUnit, sk.Logger(ctx))
+	go CalculateRankInParallel(calcCtx, sk.rankCalcChan, sk.rankErrChan, sk.computeUnit, sk.computeMock, sk.Logger(ctx))
 }
 
 func (sk *StateKeeper) checkRankCalcFinished(ctx sdk.Context, block bool) {

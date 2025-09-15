@@ -380,6 +380,7 @@ func NewAppKeepers(
 	)
 
 	computeUnit := ranktypes.ComputeUnit(cast.ToInt(appOpts.Get(rank.FlagComputeGPU)))
+	computeMock := cast.ToBool(appOpts.Get(rank.FlagComputeMock))
 	searchAPI := cast.ToBool(appOpts.Get(rank.FlagSearchAPI))
 	appKeepers.RankKeeper = rankkeeper.NewKeeper(
 		appCodec,
@@ -390,6 +391,7 @@ func NewAppKeepers(
 		appKeepers.GraphKeeper,
 		appKeepers.AccountKeeper,
 		computeUnit,
+		computeMock,
 		govModAddress,
 	)
 
