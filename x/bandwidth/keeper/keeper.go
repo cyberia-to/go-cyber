@@ -205,6 +205,7 @@ func (bm *BandwidthMeter) GetCurrentCreditPrice() sdk.Dec {
 	return bm.currentCreditPrice
 }
 
+// Adjusting of bandwidth price is disabled after the upgrade to v6, set to base price and never changes
 func (bm *BandwidthMeter) AdjustPrice(ctx sdk.Context) {
 	params := bm.GetParams(ctx)
 
@@ -213,14 +214,10 @@ func (bm *BandwidthMeter) AdjustPrice(ctx sdk.Context) {
 	if baseBandwidth != 0 {
 		telemetry.SetGauge(float32(bm.totalSpentForSlidingWindow)/float32(baseBandwidth), types.ModuleName, "load")
 
-		newPrice := sdk.NewDec(int64(bm.totalSpentForSlidingWindow)).QuoInt64(baseBandwidth)
-		bm.Logger(ctx).Info("Load", "value", newPrice.String())
-		if newPrice.LT(params.BasePrice) {
-			newPrice = params.BasePrice
-		}
-		if newPrice.GT(sdk.OneDec()) {
-			newPrice = sdk.OneDec()
-		}
+		load := sdk.NewDec(int64(bm.totalSpentForSlidingWindow)).QuoInt64(baseBandwidth)
+		bm.Logger(ctx).Info("Load", "value", load.String())
+
+		newPrice := params.BasePrice
 		bm.Logger(ctx).Info("Price", "value", newPrice.String())
 		telemetry.SetGauge(float32(newPrice.MulInt64(1000).RoundInt64()), types.ModuleName, "price")
 
