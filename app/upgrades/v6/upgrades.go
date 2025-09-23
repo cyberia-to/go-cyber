@@ -242,27 +242,49 @@ func CreateV6UpgradeHandler(
 		}
 		ctx.Logger().Info("burned gift tokens from multisig", "amount", giftCoins.String())
 
-		congressBoots := sdk.NewCoin("boot", sdkmath.NewInt(136963281024834))
+		// Adjust congress boots burn amount to available balance (burn all existing if less than target)
+		congressBootsTarget := sdk.NewCoin("boot", sdkmath.NewInt(136963281024834))
 		congressTocybs := sdk.NewCoin("tocyb", sdkmath.NewInt(115594467532355))
-		congressCoins := sdk.NewCoins(congressBoots, congressTocybs)
 		congressMSAddress, _ := sdk.AccAddressFromBech32("bostrom1xszmhkfjs3s00z2nvtn7evqxw3dtus6yr8e4pw")
-		if err := keepers.BankKeeper.SendCoinsFromAccountToModule(ctx, congressMSAddress, liquiditytypes.ModuleName, congressCoins); err != nil {
-			logger.Error("failed to move congress coins for burning", "addr", congressMSAddress.String(), "coin", congressCoins.String(), "err", err)
+		congressBootBalance := keepers.BankKeeper.GetBalance(ctx, congressMSAddress, "boot").Amount
+		congressBootBurnAmt := sdk.MinInt(congressBootsTarget.Amount, congressBootBalance)
+		congressCoinsToBurn := sdk.NewCoins(congressTocybs)
+		if congressBootBurnAmt.IsPositive() {
+			congressCoinsToBurn = congressCoinsToBurn.Add(sdk.NewCoin("boot", congressBootBurnAmt))
 		}
-		if err := keepers.BankKeeper.BurnCoins(ctx, liquiditytypes.ModuleName, congressCoins); err != nil {
-			logger.Error("failed to burn congress coins", "addr", congressMSAddress.String(), "coin", congressCoins.String(), "err", err)
+		if congressCoinsToBurn.IsAllPositive() {
+			if err := keepers.BankKeeper.SendCoinsFromAccountToModule(ctx, congressMSAddress, liquiditytypes.ModuleName, congressCoinsToBurn); err != nil {
+				logger.Error("failed to move congress coins for burning", "addr", congressMSAddress.String(), "coin", congressCoinsToBurn.String(), "err", err)
+			} else {
+				if err := keepers.BankKeeper.BurnCoins(ctx, liquiditytypes.ModuleName, congressCoinsToBurn); err != nil {
+					logger.Error("failed to burn congress coins", "addr", congressMSAddress.String(), "coin", congressCoinsToBurn.String(), "err", err)
+				} else {
+					ctx.Logger().Info("burned congress tokens from multisig", "amount", congressCoinsToBurn.String())
+				}
+			}
+		} else {
+			logger.Info("nothing to burn for congress multisig", "addr", congressMSAddress.String())
 		}
-		ctx.Logger().Info("burned congress tokens from multisig", "amount", congressCoins.String())
 
-		giftTreasuryCoins := sdk.NewCoin("boot", sdkmath.NewInt(58648526573806))
+		// Adjust gift treasury boots burn amount to available balance (burn all existing if less than target)
+		giftTreasuryBootTarget := sdk.NewInt(58648526573806)
 		giftTreasuryAddress, _ := sdk.AccAddressFromBech32("bostrom182jzjwdyl5fw43yujnlljddgtrkr04dpd30ywp2yn724u7qhtaqstjzlcu")
-		if err := keepers.BankKeeper.SendCoinsFromAccountToModule(ctx, giftTreasuryAddress, liquiditytypes.ModuleName, sdk.NewCoins(giftTreasuryCoins)); err != nil {
-			logger.Error("failed to move gift treasury coins for burning", "addr", giftTreasuryAddress.String(), "coin", giftTreasuryCoins.String(), "err", err)
+		giftTreasuryBootBalance := keepers.BankKeeper.GetBalance(ctx, giftTreasuryAddress, "boot").Amount
+		giftTreasuryBootBurnAmt := sdk.MinInt(giftTreasuryBootTarget, giftTreasuryBootBalance)
+		if giftTreasuryBootBurnAmt.IsPositive() {
+			giftTreasuryBurnCoin := sdk.NewCoin("boot", giftTreasuryBootBurnAmt)
+			if err := keepers.BankKeeper.SendCoinsFromAccountToModule(ctx, giftTreasuryAddress, liquiditytypes.ModuleName, sdk.NewCoins(giftTreasuryBurnCoin)); err != nil {
+				logger.Error("failed to move gift treasury coins for burning", "addr", giftTreasuryAddress.String(), "coin", giftTreasuryBurnCoin.String(), "err", err)
+			} else {
+				if err := keepers.BankKeeper.BurnCoins(ctx, liquiditytypes.ModuleName, sdk.NewCoins(giftTreasuryBurnCoin)); err != nil {
+					logger.Error("failed to burn gift treasury coins", "addr", giftTreasuryAddress.String(), "coin", giftTreasuryBurnCoin.String(), "err", err)
+				} else {
+					ctx.Logger().Info("burned gift tokens from treasury", "amount", giftTreasuryBurnCoin.String())
+				}
+			}
+		} else {
+			logger.Info("nothing to burn for gift treasury", "addr", giftTreasuryAddress.String())
 		}
-		if err := keepers.BankKeeper.BurnCoins(ctx, liquiditytypes.ModuleName, sdk.NewCoins(giftTreasuryCoins)); err != nil {
-			logger.Error("failed to burn gift treasury coins", "addr", giftTreasuryAddress.String(), "coin", giftTreasuryCoins.String(), "err", err)
-		}
-		ctx.Logger().Info("burned gift tokens from treasury", "amount", giftTreasuryCoins.String())
 
 		bootSupply = keepers.BankKeeper.GetSupply(ctx, "boot")
 		hydrogenSupply = keepers.BankKeeper.GetSupply(ctx, "hydrogen")
