@@ -1,6 +1,7 @@
 package app
 
 import (
+	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	"cosmossdk.io/math"
 	"fmt"
 	"github.com/cometbft/cometbft/crypto"
@@ -9,6 +10,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
@@ -24,7 +28,6 @@ import (
 	"os"
 	"time"
 
-	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
 
 	"github.com/cosmos/cosmos-sdk/runtime"
@@ -233,17 +236,15 @@ func NewBostromApp(
 	// from sdk.bank/module.go: AppModule RegisterServices
 	// 	m := keeper.NewMigrator(am.keeper.(keeper.BaseKeeper))
 	// NOTE skip bank module from native services registration then initialize manually
-	//delete(app.ModuleManager.Modules, banktypes.ModuleName)
-	//app.ModuleManager.RegisterServices(cfg)
-	//app.ModuleManager.Modules[banktypes.ModuleName] = bank.NewAppModule(encodingConfig.Marshaler, app.CyberbankKeeper.Proxy, app.AccountKeeper)
-	//
-	//banktypes.RegisterMsgServer(cfg.MsgServer(), bankkeeper.NewMsgServerImpl(app.CyberbankKeeper.Proxy))
-	//banktypes.RegisterQueryServer(cfg.QueryServer(), app.CyberbankKeeper.Proxy)
-
 	app.configurator = module.NewConfigurator(appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
-	app.ModuleManager.RegisterServices(app.configurator)
 
+	delete(app.ModuleManager.Modules, banktypes.ModuleName)
+	app.ModuleManager.RegisterServices(app.configurator)
 	autocliv1.RegisterQueryServer(app.GRPCQueryRouter(), runtimeservices.NewAutoCLIQueryService(app.ModuleManager.Modules))
+	app.ModuleManager.Modules[banktypes.ModuleName] = bank.NewAppModule(appCodec, app.CyberbankKeeper.Proxy, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName))
+
+	banktypes.RegisterMsgServer(app.configurator.MsgServer(), bankkeeper.NewMsgServerImpl(app.CyberbankKeeper.Proxy))
+	banktypes.RegisterQueryServer(app.configurator.QueryServer(), app.CyberbankKeeper.Proxy)
 
 	reflectionSvc, err := runtimeservices.NewReflectionService()
 	if err != nil {
