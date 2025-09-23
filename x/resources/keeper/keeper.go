@@ -33,8 +33,8 @@ type Keeper struct {
 // Exponential supply half-life controls: mint factor = 0.5^(supply / halfLife)
 // Larger halfLife -> slower decay (more mint per same supply)
 var (
-	expHalfLifeVolt = sdk.NewInt(2000000000)  // 2*1e9
-	expHalfLifeAmp  = sdk.NewInt(14000000000) // 1.4*1e10
+	expHalfLifeVolt = sdk.NewInt(4000000000)  // 4*1e9
+	expHalfLifeAmp  = sdk.NewInt(32000000000) // 3.2*1e10
 )
 
 func NewKeeper(
