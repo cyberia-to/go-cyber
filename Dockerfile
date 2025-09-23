@@ -50,6 +50,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends \
 && apt-get install cuda=${CUDA_VER} -y --no-install-recommends \
 && mkdir -p /cyber/cosmovisor/upgrades/v3/bin \
 && mkdir -p /cyber/cosmovisor/upgrades/v4/bin \
+&& mkdir -p /cyber/cosmovisor/upgrades/v6/bin \
  # Compile cyber for v3 version
 ###########################################################################################
 && git checkout v3.0.1 \
