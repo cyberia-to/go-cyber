@@ -15,9 +15,9 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 
-	ctypes "github.com/cybercongress/go-cyber/v5/types"
-	bandwithkeeper "github.com/cybercongress/go-cyber/v5/x/bandwidth/keeper"
-	"github.com/cybercongress/go-cyber/v5/x/resources/types"
+	ctypes "github.com/cybercongress/go-cyber/v6/types"
+	bandwithkeeper "github.com/cybercongress/go-cyber/v6/x/bandwidth/keeper"
+	"github.com/cybercongress/go-cyber/v6/x/resources/types"
 )
 
 type Keeper struct {
@@ -29,6 +29,13 @@ type Keeper struct {
 
 	authority string
 }
+
+// Exponential supply half-life controls: mint factor = 0.5^(supply / halfLife)
+// Larger halfLife -> slower decay (more mint per same supply)
+var (
+	expHalfLifeVolt = sdk.NewInt(4000000000)  // 4*1e9
+	expHalfLifeAmp  = sdk.NewInt(32000000000) // 3.2*1e10
+)
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
@@ -87,27 +94,28 @@ func (k Keeper) ConvertResource(
 	neuron sdk.AccAddress,
 	amount sdk.Coin,
 	resource string,
-	length uint64,
+	_ uint64,
 ) (sdk.Coin, error) {
-	periodAvailable := k.CheckAvailablePeriod(ctx, length, resource)
-	if !periodAvailable {
-		return sdk.Coin{}, types.ErrNotAvailablePeriod
-	}
+	// mint volts or amperes based on current max period and rate
+	// burn hydrogen (not vesting)
+	// put newly minted volts/amperes to vesting schedule with minimal period (1 second) for backward compatibility
+
+	maxPeriod := k.GetMaxPeriod(ctx, resource)
 
 	if k.bankKeeper.SpendableCoins(ctx, neuron).AmountOf(ctypes.SCYB).LT(amount.Amount) {
 		return sdk.Coin{}, sdkerrors.ErrInsufficientFunds
 	}
 
-	// comment this for local dev
-	//if uint32(length) < k.GetParams(ctx).MinInvestmintPeriod {
-	//	return sdk.Coin{}, types.ErrNotAvailablePeriod
-	//}
-
-	err := k.AddTimeLockedCoinsToAccount(ctx, neuron, sdk.NewCoins(amount), int64(length))
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, neuron, types.ResourcesName, sdk.NewCoins(amount))
 	if err != nil {
 		return sdk.Coin{}, errorsmod.Wrapf(types.ErrTimeLockCoins, err.Error())
 	}
-	minted, err := k.Mint(ctx, neuron, amount, resource, length)
+	err = k.bankKeeper.BurnCoins(ctx, types.ResourcesName, sdk.NewCoins(amount))
+	if err != nil {
+		return sdk.Coin{}, errorsmod.Wrapf(types.ErrBurnCoins, err.Error())
+	}
+
+	minted, err := k.Mint(ctx, neuron, amount, resource, maxPeriod)
 	if err != nil {
 		return sdk.Coin{}, errorsmod.Wrapf(types.ErrIssueCoins, err.Error())
 	}
@@ -299,6 +307,9 @@ func (k Keeper) Mint(ctx sdk.Context, recipientAddr sdk.AccAddress, amt sdk.Coin
 
 	toMint := k.CalculateInvestmint(ctx, amt, resource, length)
 
+	// Apply exponential supply-based decreasing adjustment so each next minter mints less, ceteris paribus.
+	toMint = k.applySupplyExponentialAdjustment(ctx, resource, toMint)
+
 	if toMint.Amount.LT(sdk.NewInt(1000)) {
 		return sdk.Coin{}, errorsmod.Wrapf(types.ErrSmallReturn, recipientAddr.String())
 	}
@@ -312,15 +323,13 @@ func (k Keeper) Mint(ctx sdk.Context, recipientAddr sdk.AccAddress, amt sdk.Coin
 		return sdk.Coin{}, errorsmod.Wrapf(types.ErrSendMintedCoins, recipientAddr.String())
 	}
 	// adding converted resources to vesting schedule
-	err = k.AddTimeLockedCoinsToPeriodicVestingAccount(ctx, recipientAddr, sdk.NewCoins(toMint), int64(length), true)
+	err = k.AddTimeLockedCoinsToAccount(ctx, recipientAddr, sdk.NewCoins(toMint), int64(1))
 	if err != nil {
 		return sdk.Coin{}, errorsmod.Wrapf(types.ErrTimeLockCoins, err.Error())
 	}
 
 	if resource == ctypes.VOLT {
 		k.bandwidthMeter.AddToDesirableBandwidth(ctx, toMint.Amount.Uint64())
-		neuronBandwidth := k.bandwidthMeter.GetAccountBandwidth(ctx, recipientAddr)
-		k.bandwidthMeter.ChargeAccountBandwidth(ctx, neuronBandwidth, 1000)
 	}
 
 	return toMint, nil
@@ -335,7 +344,7 @@ func (k Keeper) CalculateInvestmint(ctx sdk.Context, amt sdk.Coin, resource stri
 	case ctypes.VOLT:
 		cycles := sdk.NewDec(int64(length)).QuoInt64(int64(params.BaseInvestmintPeriodVolt))
 		base := sdk.NewDec(amt.Amount.Int64()).QuoInt64(params.BaseInvestmintAmountVolt.Amount.Int64())
-		
+
 		// NOTE out of parametrization, custom code is applied here in order to shift the HALVINGS START 6M BLOCKS LATER but keep base halving parameter same
 		if ctx.BlockHeight() > 15000000 {
 			halving = sdk.NewDecWithPrec(int64(math.Pow(0.5, float64((ctx.BlockHeight()-6000000)/int64(params.HalvingPeriodVoltBlocks)))*10000), 4)
@@ -372,12 +381,74 @@ func (k Keeper) CalculateInvestmint(ctx sdk.Context, amt sdk.Coin, resource stri
 	return toMint
 }
 
-func (k Keeper) CheckAvailablePeriod(ctx sdk.Context, length uint64, resource string) bool {
+// applySupplyExponentialAdjustment reduces base mint using f = 0.5^(supply / halfLife)
+// where halfLife is resource-specific. Returns a coin with the same denom adjusted by f.
+func (k Keeper) applySupplyExponentialAdjustment(ctx sdk.Context, resource string, base sdk.Coin) sdk.Coin {
+	if !base.Amount.IsPositive() {
+		return base
+	}
+
+	totalSupply := k.bankKeeper.GetSupply(ctx, resource).Amount
+
+	var halfLife sdk.Int
+	switch resource {
+	case ctypes.VOLT:
+		halfLife = expHalfLifeVolt
+	case ctypes.AMPERE:
+		halfLife = expHalfLifeAmp
+	default:
+		return base
+	}
+
+	if !halfLife.IsPositive() {
+		return base
+	}
+
+	// factor = 0.5 ^ (supply / halfLife)
+	// compute using high-precision decimals
+	supplyDec := sdk.NewDecFromInt(totalSupply)
+	halfLifeDec := sdk.NewDecFromInt(halfLife)
+	ratio := supplyDec.Quo(halfLifeDec)
+
+	// Convert to float64 for exponent; bounded to avoid NaN/Inf
+	r64 := ratio.MustFloat64()
+	if math.IsNaN(r64) || math.IsInf(r64, 0) || r64 < 0 {
+		return base
+	}
+	factor := math.Pow(0.5, r64)
+	if factor < 0 {
+		factor = 0
+	}
+	if factor > 1 {
+		factor = 1
+	}
+
+	// Apply factor on base.Amount
+	baseDec := sdk.NewDecFromInt(base.Amount)
+	// Use big.Rat via String to minimize precision drift when multiplying
+	factorDec, err := sdk.NewDecFromStr(fmt.Sprintf("%.18f", factor))
+	if err != nil {
+		return base
+	}
+	adjustedDec := baseDec.Mul(factorDec)
+	adjusted := base
+	adjusted.Amount = adjustedDec.TruncateInt()
+
+	// Ensure we don't drop to zero unexpectedly if base was small but positive
+	if base.Amount.IsPositive() && adjusted.Amount.IsZero() {
+		adjusted.Amount = sdk.OneInt()
+	}
+
+	k.Logger(ctx).Info("Supply exponential adjust", "resource", resource, "supply", totalSupply.String(), "halfLife", halfLife.String(), "factor", fmt.Sprintf("%.10f", factor), "base", base.Amount.String(), "adjusted", adjusted.Amount.String())
+
+	return adjusted
+}
+
+func (k Keeper) GetMaxPeriod(ctx sdk.Context, resource string) uint64 {
 	var availableLength uint64
 	passed := ctx.BlockHeight()
 	params := k.GetParams(ctx)
 
-	// assuming 6 seconds block
 	switch resource {
 	case ctypes.VOLT:
 		halvingVolt := params.HalvingPeriodVoltBlocks
@@ -390,5 +461,5 @@ func (k Keeper) CheckAvailablePeriod(ctx sdk.Context, length uint64, resource st
 		availableLength = uint64(doubling * halvingAmpere * 6)
 	}
 
-	return length <= availableLength
+	return availableLength
 }

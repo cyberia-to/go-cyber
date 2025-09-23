@@ -115,8 +115,8 @@ func validateBaseLoad(i interface{}) error {
 		return fmt.Errorf("base load is more than one: %s", v)
 	}
 
-	if v.LT(sdk.NewDecWithPrec(1, 1)) {
-		return fmt.Errorf("base price is less than one tenth: %s", v)
+	if v.LT(sdk.NewDecWithPrec(1, 2)) {
+		return fmt.Errorf("base price is less than one hundredth: %s", v)
 	}
 
 	return nil

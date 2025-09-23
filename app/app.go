@@ -1,33 +1,47 @@
 package app
 
 import (
+	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
+	"cosmossdk.io/math"
 	"fmt"
+	"github.com/cometbft/cometbft/crypto"
+	"github.com/cometbft/cometbft/libs/bytes"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/server"
-	v5 "github.com/cybercongress/go-cyber/v5/app/upgrades/v5"
-	"github.com/cybercongress/go-cyber/v5/client/docs"
-	bandwidthkeeper "github.com/cybercongress/go-cyber/v5/x/bandwidth/keeper"
-	cyberbankkeeper "github.com/cybercongress/go-cyber/v5/x/cyberbank/keeper"
-	graphkeeper "github.com/cybercongress/go-cyber/v5/x/graph/keeper"
-	rankkeeper "github.com/cybercongress/go-cyber/v5/x/rank/keeper"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	v5 "github.com/cybercongress/go-cyber/v6/app/upgrades/v5"
+	v6 "github.com/cybercongress/go-cyber/v6/app/upgrades/v6"
+	"github.com/cybercongress/go-cyber/v6/client/docs"
+	bandwidthkeeper "github.com/cybercongress/go-cyber/v6/x/bandwidth/keeper"
+	cyberbankkeeper "github.com/cybercongress/go-cyber/v6/x/cyberbank/keeper"
+	graphkeeper "github.com/cybercongress/go-cyber/v6/x/graph/keeper"
+	rankkeeper "github.com/cybercongress/go-cyber/v6/x/rank/keeper"
 	"io"
 	"os"
 	"time"
 
-	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
 
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/x/auth/posthandler"
 
-	v2 "github.com/cybercongress/go-cyber/v5/app/upgrades/v2"
-	v3 "github.com/cybercongress/go-cyber/v5/app/upgrades/v3"
-	v4 "github.com/cybercongress/go-cyber/v5/app/upgrades/v4"
+	v2 "github.com/cybercongress/go-cyber/v6/app/upgrades/v2"
+	v3 "github.com/cybercongress/go-cyber/v6/app/upgrades/v3"
+	v4 "github.com/cybercongress/go-cyber/v6/app/upgrades/v4"
 
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
 
-	"github.com/cybercongress/go-cyber/v5/app/keepers"
-	"github.com/cybercongress/go-cyber/v5/app/upgrades"
+	"github.com/cybercongress/go-cyber/v6/app/keepers"
+	"github.com/cybercongress/go-cyber/v6/app/upgrades"
 
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -66,7 +80,7 @@ import (
 
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 
-	"github.com/cybercongress/go-cyber/v5/utils"
+	"github.com/cybercongress/go-cyber/v6/utils"
 
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 )
@@ -81,7 +95,7 @@ var (
 	NodeDir      = ".cyber"
 	Bech32Prefix = "bostrom"
 
-	Upgrades = []upgrades.Upgrade{v2.Upgrade, v3.Upgrade, v4.Upgrade}
+	Upgrades = []upgrades.Upgrade{v2.Upgrade, v3.Upgrade, v4.Upgrade, v6.Upgrade}
 	Forks    = []upgrades.Fork{v5.Fork}
 )
 
@@ -135,7 +149,7 @@ type App struct {
 }
 
 // New returns a reference to an initialized Cyber Consensus Computer.
-func NewApp(
+func NewBostromApp(
 	logger log.Logger,
 	db dbm.DB,
 	traceStore io.Writer,
@@ -222,17 +236,15 @@ func NewApp(
 	// from sdk.bank/module.go: AppModule RegisterServices
 	// 	m := keeper.NewMigrator(am.keeper.(keeper.BaseKeeper))
 	// NOTE skip bank module from native services registration then initialize manually
-	//delete(app.ModuleManager.Modules, banktypes.ModuleName)
-	//app.ModuleManager.RegisterServices(cfg)
-	//app.ModuleManager.Modules[banktypes.ModuleName] = bank.NewAppModule(encodingConfig.Marshaler, app.CyberbankKeeper.Proxy, app.AccountKeeper)
-	//
-	//banktypes.RegisterMsgServer(cfg.MsgServer(), bankkeeper.NewMsgServerImpl(app.CyberbankKeeper.Proxy))
-	//banktypes.RegisterQueryServer(cfg.QueryServer(), app.CyberbankKeeper.Proxy)
-
 	app.configurator = module.NewConfigurator(appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
-	app.ModuleManager.RegisterServices(app.configurator)
 
+	delete(app.ModuleManager.Modules, banktypes.ModuleName)
+	app.ModuleManager.RegisterServices(app.configurator)
 	autocliv1.RegisterQueryServer(app.GRPCQueryRouter(), runtimeservices.NewAutoCLIQueryService(app.ModuleManager.Modules))
+	app.ModuleManager.Modules[banktypes.ModuleName] = bank.NewAppModule(appCodec, app.CyberbankKeeper.Proxy, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName))
+
+	banktypes.RegisterMsgServer(app.configurator.MsgServer(), bankkeeper.NewMsgServerImpl(app.CyberbankKeeper.Proxy))
+	banktypes.RegisterQueryServer(app.configurator.QueryServer(), app.CyberbankKeeper.Proxy)
 
 	reflectionSvc, err := runtimeservices.NewReflectionService()
 	if err != nil {
@@ -340,7 +352,7 @@ func (app *App) Name() string {
 
 // BeginBlocker application updates every begin block
 func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	BeginBlockForks(ctx, app)
+	//BeginBlockForks(ctx, app)
 	return app.ModuleManager.BeginBlock(ctx, req)
 }
 
@@ -368,7 +380,7 @@ func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.Res
 	for _, account := range app.AccountKeeper.GetAllAccounts(ctx) {
 		app.CyberbankKeeper.InitializeStakeAmpere(
 			account.GetAccountNumber(),
-			uint64(app.CyberbankKeeper.Proxy.GetAccountTotalStakeAmper(ctx, account.GetAddress())),
+			uint64(app.CyberbankKeeper.Proxy.GetAccountStakeAmperPlusRouted(ctx, account.GetAddress())),
 		)
 	}
 
@@ -549,4 +561,144 @@ func (app *App) loadContexts(db dbm.DB, ctx sdk.Context) {
 		"Cyber Consensus Supercomputer is started!",
 		"duration", time.Since(start).String(),
 	)
+}
+
+// InitOsmosisAppForTestnet is broken down into two sections:
+// Required Changes: Changes that, if not made, will cause the testnet to halt or panic
+// Optional Changes: Changes to customize the testnet to one's liking (lower vote times, fund accounts, etc)
+func InitAppForTestnet(app *App, newValAddr bytes.HexBytes, newValPubKey crypto.PubKey, newOperatorAddress, upgradeToTrigger string) *App {
+	//
+	// Required Changes:
+	//
+
+	ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
+	pubkey := &ed25519.PubKey{Key: newValPubKey.Bytes()}
+	pubkeyAny, err := types.NewAnyWithValue(pubkey)
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+
+	// STAKING
+	//
+
+	// Create Validator struct for our new validator.
+	_, bz, err := bech32.DecodeAndConvert(newOperatorAddress)
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	bech32Addr, err := bech32.ConvertAndEncode("bostromvaloper", bz)
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	newVal := stakingtypes.Validator{
+		OperatorAddress: bech32Addr,
+		ConsensusPubkey: pubkeyAny,
+		Jailed:          false,
+		Status:          stakingtypes.Bonded,
+		Tokens:          math.NewInt(900000000000000),
+		DelegatorShares: sdk.MustNewDecFromStr("10000000"),
+		Description: stakingtypes.Description{
+			Moniker: "Testnet Validator",
+		},
+		Commission: stakingtypes.Commission{
+			CommissionRates: stakingtypes.CommissionRates{
+				Rate:          sdk.MustNewDecFromStr("0.05"),
+				MaxRate:       sdk.MustNewDecFromStr("0.1"),
+				MaxChangeRate: sdk.MustNewDecFromStr("0.05"),
+			},
+		},
+		MinSelfDelegation: math.OneInt(),
+	}
+
+	// Remove all validators from power store
+	stakingKey := app.GetKey(stakingtypes.ModuleName)
+	stakingStore := ctx.KVStore(stakingKey)
+	iterator := app.StakingKeeper.ValidatorsPowerStoreIterator(ctx)
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Remove all valdiators from last validators store
+	iterator = app.StakingKeeper.LastValidatorsIterator(ctx)
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Remove all validators from validators store
+	iterator = storetypes.KVStorePrefixIterator(stakingStore, stakingtypes.ValidatorsKey)
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Remove all validators from unbonding queue
+	iterator = storetypes.KVStorePrefixIterator(stakingStore, stakingtypes.ValidatorQueueKey)
+	for ; iterator.Valid(); iterator.Next() {
+		stakingStore.Delete(iterator.Key())
+	}
+	iterator.Close()
+
+	// Add our validator to power and last validators store
+	app.StakingKeeper.SetValidator(ctx, newVal)
+	err = app.StakingKeeper.SetValidatorByConsAddr(ctx, newVal)
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	app.StakingKeeper.SetValidatorByPowerIndex(ctx, newVal)
+	valAddr, err := sdk.ValAddressFromBech32(newVal.GetOperator().String())
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	app.StakingKeeper.SetLastValidatorPower(ctx, valAddr, 0)
+	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(ctx, valAddr); err != nil {
+		panic(err)
+	}
+
+	// DISTRIBUTION
+	//
+
+	// Initialize records for this validator across all distribution stores
+	valAddr, err = sdk.ValAddressFromBech32(newVal.GetOperator().String())
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	app.DistrKeeper.SetValidatorHistoricalRewards(ctx, valAddr, 0, distrtypes.NewValidatorHistoricalRewards(sdk.DecCoins{}, 1))
+	app.DistrKeeper.SetValidatorCurrentRewards(ctx, valAddr, distrtypes.NewValidatorCurrentRewards(sdk.DecCoins{}, 1))
+	app.DistrKeeper.SetValidatorAccumulatedCommission(ctx, valAddr, distrtypes.InitialValidatorAccumulatedCommission())
+	app.DistrKeeper.SetValidatorOutstandingRewards(ctx, valAddr, distrtypes.ValidatorOutstandingRewards{Rewards: sdk.DecCoins{}})
+
+	// SLASHING
+	//
+
+	// Set validator signing info for our new validator.
+	newConsAddr := sdk.ConsAddress(newValAddr.Bytes())
+	newValidatorSigningInfo := slashingtypes.ValidatorSigningInfo{
+		Address:     newConsAddr.String(),
+		StartHeight: app.LastBlockHeight() - 1,
+		Tombstoned:  false,
+	}
+	app.SlashingKeeper.SetValidatorSigningInfo(ctx, newConsAddr, newValidatorSigningInfo)
+
+	//
+	// Optional Changes:
+	//
+
+	// UPGRADE
+	//
+
+	if upgradeToTrigger != "" {
+		upgradePlan := upgradetypes.Plan{
+			Name: upgradeToTrigger,
+			//Height: app.LastBlockHeight() + 10,
+			Height: app.LastBlockHeight(),
+		}
+		err = app.UpgradeKeeper.ScheduleUpgrade(ctx, upgradePlan)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return app
 }

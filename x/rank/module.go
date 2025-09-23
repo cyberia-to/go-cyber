@@ -15,10 +15,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/spf13/cobra"
 
-	"github.com/cybercongress/go-cyber/v5/x/rank/client/cli"
-	"github.com/cybercongress/go-cyber/v5/x/rank/exported"
-	"github.com/cybercongress/go-cyber/v5/x/rank/keeper"
-	"github.com/cybercongress/go-cyber/v5/x/rank/types"
+	"github.com/cybercongress/go-cyber/v6/x/rank/client/cli"
+	"github.com/cybercongress/go-cyber/v6/x/rank/exported"
+	"github.com/cybercongress/go-cyber/v6/x/rank/keeper"
+	"github.com/cybercongress/go-cyber/v6/x/rank/types"
 )
 
 var (
@@ -27,8 +27,9 @@ var (
 )
 
 const (
-	FlagComputeGPU = "compute-gpu"
-	FlagSearchAPI  = "search-api"
+	FlagComputeGPU  = "compute-gpu"
+	FlagComputeMock = "compute-mock"
+	FlagSearchAPI   = "search-api"
 )
 
 type AppModuleBasic struct {
@@ -92,6 +93,7 @@ func NewAppModule(
 
 func AddModuleInitFlags(startCmd *cobra.Command) {
 	startCmd.Flags().Bool(FlagComputeGPU, true, "Compute on GPU")
+	startCmd.Flags().Bool(FlagComputeMock, false, "Compute mock data")
 	startCmd.Flags().Bool(FlagSearchAPI, false, "Run search API")
 }
 

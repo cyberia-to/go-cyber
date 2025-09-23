@@ -1,17 +1,18 @@
 package keeper
 
 import (
+	sdkmath "cosmossdk.io/math"
 	"fmt"
-
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	ctypes "github.com/cybercongress/go-cyber/v6/types"
 
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cybercongress/go-cyber/v5/x/bandwidth/types"
-	gtypes "github.com/cybercongress/go-cyber/v5/x/graph/types"
+	"github.com/cybercongress/go-cyber/v6/x/bandwidth/types"
+	gtypes "github.com/cybercongress/go-cyber/v6/x/graph/types"
 )
 
 type BandwidthMeter struct {
@@ -123,6 +124,11 @@ func (bm BandwidthMeter) AddToDesirableBandwidth(ctx sdk.Context, toAdd uint64) 
 	store.Set(types.TotalBandwidth, sdk.Uint64ToBigEndian(current+toAdd))
 }
 
+func (bm BandwidthMeter) SetDesirableBandwidth(ctx sdk.Context, value uint64) {
+	store := ctx.KVStore(bm.storeKey)
+	store.Set(types.TotalBandwidth, sdk.Uint64ToBigEndian(value))
+}
+
 func (bm *BandwidthMeter) AddToBlockBandwidth(ctx sdk.Context, value uint64) {
 	store := ctx.TransientStore(bm.tkey)
 
@@ -199,6 +205,7 @@ func (bm *BandwidthMeter) GetCurrentCreditPrice() sdk.Dec {
 	return bm.currentCreditPrice
 }
 
+// Adjusting of bandwidth price is disabled after the upgrade to v6, set to base price and never changes
 func (bm *BandwidthMeter) AdjustPrice(ctx sdk.Context) {
 	params := bm.GetParams(ctx)
 
@@ -207,14 +214,10 @@ func (bm *BandwidthMeter) AdjustPrice(ctx sdk.Context) {
 	if baseBandwidth != 0 {
 		telemetry.SetGauge(float32(bm.totalSpentForSlidingWindow)/float32(baseBandwidth), types.ModuleName, "load")
 
-		newPrice := sdk.NewDec(int64(bm.totalSpentForSlidingWindow)).QuoInt64(baseBandwidth)
-		bm.Logger(ctx).Info("Load", "value", newPrice.String())
-		if newPrice.LT(params.BasePrice) {
-			newPrice = params.BasePrice
-		}
-		if newPrice.GT(sdk.OneDec()) {
-			newPrice = sdk.OneDec()
-		}
+		load := sdk.NewDec(int64(bm.totalSpentForSlidingWindow)).QuoInt64(baseBandwidth)
+		bm.Logger(ctx).Info("Load", "value", load.String())
+
+		newPrice := params.BasePrice
 		bm.Logger(ctx).Info("Price", "value", newPrice.String())
 		telemetry.SetGauge(float32(newPrice.MulInt64(1000).RoundInt64()), types.ModuleName, "price")
 
@@ -236,34 +239,38 @@ func (bm *BandwidthMeter) GetPricedTotalCyberlinksCost(ctx sdk.Context, tx sdk.T
 	return uint64(bm.currentCreditPrice.Mul(sdk.NewDec(int64(bm.GetTotalCyberlinksCost(ctx, tx)))).RoundInt64())
 }
 
-func (bm *BandwidthMeter) ConsumeAccountBandwidth(ctx sdk.Context, bw types.NeuronBandwidth, amt uint64) error {
-	err := bw.Consume(amt)
-	if err != nil {
+func (bm *BandwidthMeter) BurnAccountBandwidthVolt(ctx sdk.Context, amt uint64, address sdk.AccAddress) error {
+	coin := sdk.NewCoin(ctypes.VOLT, sdkmath.NewIntFromUint64(amt))
+	if err := bm.stakeProvider.SendCoinsFromAccountToModule(ctx, address, types.BandwidthName, sdk.NewCoins(coin)); err != nil {
 		return err
 	}
-	bm.SetAccountBandwidth(ctx, bw)
+	if err := bm.stakeProvider.BurnCoins(ctx, types.BandwidthName, sdk.NewCoins(coin)); err != nil {
+		return err
+	}
 	return nil
 }
 
-func (bm *BandwidthMeter) ChargeAccountBandwidth(ctx sdk.Context, bw types.NeuronBandwidth, amt uint64) {
-	bw.ApplyCharge(amt)
-	bm.SetAccountBandwidth(ctx, bw)
+func (bm *BandwidthMeter) GetCurrentVoltsAccountBandwidth(ctx sdk.Context, address sdk.AccAddress) types.NeuronBandwidth {
+	balance := bm.stakeProvider.GetAccountStakeVolt(ctx, address)
+	return types.NeuronBandwidth{
+		Neuron:           address.String(),
+		RemainedValue:    uint64(balance),
+		MaxValue:         uint64(balance),
+		LastUpdatedBlock: uint64(ctx.BlockHeight()),
+	}
 }
 
-func (bm *BandwidthMeter) GetCurrentAccountBandwidth(ctx sdk.Context, address sdk.AccAddress) types.NeuronBandwidth {
-	accBw := bm.GetAccountBandwidth(ctx, address)
-	accMaxBw := bm.GetAccountMaxBandwidth(ctx, address)
-	params := bm.GetParams(ctx)
-	accBw.UpdateMax(accMaxBw, uint64(ctx.BlockHeight()), params.RecoveryPeriod)
-	return accBw
+func (bm *BandwidthMeter) SetZeroAccountBandwidth(ctx sdk.Context, address sdk.AccAddress) {
+	bw := types.NeuronBandwidth{
+		Neuron:           address.String(),
+		RemainedValue:    0,
+		MaxValue:         0,
+		LastUpdatedBlock: uint64(ctx.BlockHeight()),
+	}
+
+	ctx.KVStore(bm.storeKey).Set(types.AccountStoreKey(bw.Neuron), bm.cdc.MustMarshal(&bw))
 }
 
-func (bm *BandwidthMeter) GetAccountMaxBandwidth(ctx sdk.Context, addr sdk.AccAddress) uint64 {
-	accStakePercentage := bm.stakeProvider.GetAccountStakePercentageVolt(ctx, addr)
-	return uint64(accStakePercentage * float64(bm.GetDesirableBandwidth(ctx)))
-}
-
-func (bm *BandwidthMeter) UpdateAccountMaxBandwidth(ctx sdk.Context, address sdk.AccAddress) {
-	bw := bm.GetCurrentAccountBandwidth(ctx, address)
-	bm.SetAccountBandwidth(ctx, bw)
+func (bm *BandwidthMeter) HasEnoughAccountBandwidthVolt(ctx sdk.Context, toConsume uint64, address sdk.AccAddress) bool {
+	return uint64(bm.stakeProvider.GetAccountStakeVolt(ctx, address)) >= toConsume
 }
