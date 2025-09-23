@@ -2,6 +2,10 @@ package cmd
 
 import (
 	"errors"
+	"io"
+	"os"
+	"path/filepath"
+
 	"github.com/cometbft/cometbft/crypto"
 	"github.com/cometbft/cometbft/libs/bytes"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -12,9 +16,6 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	v6 "github.com/cybercongress/go-cyber/v6/app/upgrades/v6"
-	"io"
-	"os"
-	"path/filepath"
 
 	"cosmossdk.io/simapp/params"
 
@@ -155,6 +156,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		debug.Cmd(),
 		config.Cmd(),
 		pruning.PruningCmd(newApp),
+		analyzeExportCmd(),
 	)
 
 	server.AddCommands(rootCmd, app.DefaultNodeHome, newApp, ac.appExport, addModuleInitFlags)

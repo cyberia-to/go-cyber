@@ -54,7 +54,8 @@ func CreateV6UpgradeHandler(
 
 		bootSupply := keepers.BankKeeper.GetSupply(ctx, "boot")
 		hydrogenSupply := keepers.BankKeeper.GetSupply(ctx, "hydrogen")
-		baseSupplyBefore := sdk.NewCoins(bootSupply, hydrogenSupply)
+		tocybSupply := keepers.BankKeeper.GetSupply(ctx, "tocyb")
+		baseSupplyBefore := sdk.NewCoins(bootSupply, hydrogenSupply, tocybSupply)
 
 		before = time.Now()
 		// -- burn unvested coins for accounts with periodic vesting accounts
@@ -229,29 +230,44 @@ func CreateV6UpgradeHandler(
 		millivoltSupply := keepers.BankKeeper.GetSupply(ctx, "millivolt")
 		keepers.BandwidthMeter.SetDesirableBandwidth(ctx, millivoltSupply.Amount.Uint64())
 
-		giftCoins := sdk.NewCoin("boot", sdkmath.NewInt(603000000000000))
+		giftBoots := sdk.NewCoin("boot", sdkmath.NewInt(603000000000000))
+		giftTocybs := sdk.NewCoin("tocyb", sdkmath.NewInt(603000000000000))
+		giftCoins := sdk.NewCoins(giftBoots, giftTocybs)
 		giftMSAddress, _ := sdk.AccAddressFromBech32("bostrom1qs9w7ry45axfxjgxa4jmuhjthzfvj78sxh5p6e")
-		if err := keepers.BankKeeper.SendCoinsFromAccountToModule(ctx, giftMSAddress, liquiditytypes.ModuleName, sdk.NewCoins(giftCoins)); err != nil {
+		if err := keepers.BankKeeper.SendCoinsFromAccountToModule(ctx, giftMSAddress, liquiditytypes.ModuleName, giftCoins); err != nil {
 			logger.Error("failed to move gift coins for burning", "addr", giftMSAddress.String(), "coin", giftCoins.String(), "err", err)
 		}
-		if err := keepers.BankKeeper.BurnCoins(ctx, liquiditytypes.ModuleName, sdk.NewCoins(giftCoins)); err != nil {
+		if err := keepers.BankKeeper.BurnCoins(ctx, liquiditytypes.ModuleName, giftCoins); err != nil {
 			logger.Error("failed to burn gift coins", "addr", giftMSAddress.String(), "coin", giftCoins.String(), "err", err)
 		}
 		ctx.Logger().Info("burned gift tokens from multisig", "amount", giftCoins.String())
 
+		congressBoots := sdk.NewCoin("boot", sdkmath.NewInt(136963281024834))
+		congressTocybs := sdk.NewCoin("tocyb", sdkmath.NewInt(115594467532355))
+		congressCoins := sdk.NewCoins(congressBoots, congressTocybs)
+		congressMSAddress, _ := sdk.AccAddressFromBech32("bostrom1xszmhkfjs3s00z2nvtn7evqxw3dtus6yr8e4pw")
+		if err := keepers.BankKeeper.SendCoinsFromAccountToModule(ctx, congressMSAddress, liquiditytypes.ModuleName, congressCoins); err != nil {
+			logger.Error("failed to move congress coins for burning", "addr", congressMSAddress.String(), "coin", congressCoins.String(), "err", err)
+		}
+		if err := keepers.BankKeeper.BurnCoins(ctx, liquiditytypes.ModuleName, congressCoins); err != nil {
+			logger.Error("failed to burn congress coins", "addr", congressMSAddress.String(), "coin", congressCoins.String(), "err", err)
+		}
+		ctx.Logger().Info("burned congress tokens from multisig", "amount", congressCoins.String())
+
 		giftTreasuryCoins := sdk.NewCoin("boot", sdkmath.NewInt(58648526573806))
 		giftTreasuryAddress, _ := sdk.AccAddressFromBech32("bostrom182jzjwdyl5fw43yujnlljddgtrkr04dpd30ywp2yn724u7qhtaqstjzlcu")
 		if err := keepers.BankKeeper.SendCoinsFromAccountToModule(ctx, giftTreasuryAddress, liquiditytypes.ModuleName, sdk.NewCoins(giftTreasuryCoins)); err != nil {
-			logger.Error("failed to move gift coins for burning", "addr", giftTreasuryAddress.String(), "coin", giftCoins.String(), "err", err)
+			logger.Error("failed to move gift treasury coins for burning", "addr", giftTreasuryAddress.String(), "coin", giftTreasuryCoins.String(), "err", err)
 		}
 		if err := keepers.BankKeeper.BurnCoins(ctx, liquiditytypes.ModuleName, sdk.NewCoins(giftTreasuryCoins)); err != nil {
-			logger.Error("failed to burn gift coins", "addr", giftTreasuryAddress.String(), "coin", giftTreasuryCoins.String(), "err", err)
+			logger.Error("failed to burn gift treasury coins", "addr", giftTreasuryAddress.String(), "coin", giftTreasuryCoins.String(), "err", err)
 		}
 		ctx.Logger().Info("burned gift tokens from treasury", "amount", giftTreasuryCoins.String())
 
 		bootSupply = keepers.BankKeeper.GetSupply(ctx, "boot")
 		hydrogenSupply = keepers.BankKeeper.GetSupply(ctx, "hydrogen")
-		baseSupplyAfter := sdk.NewCoins(bootSupply, hydrogenSupply)
+		tocybSupply = keepers.BankKeeper.GetSupply(ctx, "tocyb")
+		baseSupplyAfter := sdk.NewCoins(bootSupply, hydrogenSupply, tocybSupply)
 		logger.Info("base supply", "before", baseSupplyBefore.String(), "after", baseSupplyAfter.String())
 
 		return versionMap, err
