@@ -3,9 +3,9 @@
 ###########################################################################################
 FROM ubuntu:20.04
 
-ENV GO_VERSION '1.22.2'
+ENV GO_VERSION '1.22.7'
 ENV GO_ARCH 'linux-amd64'
-ENV GO_BIN_SHA '5901c52b7a78002aeff14a21f93e0f064f74ce1360fce51c6ee68cd471216a17'
+ENV GO_BIN_SHA 'fc5d49b7a5035f1f1b265c17aa86e9819e6dc9af8260ad61430ee7fbe27881bb'
 ENV DEBIAN_FRONTEND=noninteractive 
 ENV DAEMON_HOME /root/.cyber
 ENV DAEMON_RESTART_AFTER_UPGRADE=true
@@ -67,6 +67,15 @@ RUN apt-get update && apt-get -y install --no-install-recommends \
 && cd  /sources \
 && make build CUDA_ENABLED=true \
 && cp ./build/cyber /cyber/cosmovisor/upgrades/v4/bin/ \
+&& rm -rf ./build \
+ # Compile cyber for v6 version
+###########################################################################################
+&& git checkout v6.0.0 \
+&& cd /sources/x/rank/cuda \
+&& make build \
+&& cd  /sources \
+&& make build CUDA_ENABLED=true \
+&& cp ./build/cyber /cyber/cosmovisor/upgrades/v6/bin/ \
 && rm -rf ./build \
 # Cleanup 
 ###########################################################################################
