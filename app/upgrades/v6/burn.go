@@ -6,7 +6,7 @@ type burnEntry struct {
 	amount string
 }
 
-var hfrEntries = []burnEntry{
+var hfrBurnEntries = []burnEntry{
 	{addr: "bostrom1fvh29xlzzatu390p3lpe7uhdsl7dpffcnlxdsq", denom: "milliampere", amount: "26932298723"},
 	{addr: "bostrom1fvh29xlzzatu390p3lpe7uhdsl7dpffcnlxdsq", denom: "millivolt", amount: "2602715242"},
 	{addr: "bostrom1vt38jz5g2hrszegvs929y6zp59tgkwlsgjkprq", denom: "milliampere", amount: "2882337639"},
@@ -107,4 +107,17 @@ var hfrEntries = []burnEntry{
 	{addr: "bostrom1k09afxhedzgrkn60rrnpa0u66yv3vz7yxj7ja9", denom: "millivolt", amount: "1397957106"},
 	{addr: "bostrom1ay267fakkrgfy9lf2m7wsj8uez2dgylhtkdf9k", denom: "milliampere", amount: "11162598095"},
 	{addr: "bostrom1qqays2hpyw2zy3qhvvvhp8w953hqc8la9w4u7n", denom: "milliampere", amount: "18749017000"},
+	{addr: "bostrom135ca8hdpy9sk0ntwqzpzsvatyl48ptx5j359lz", denom: "millivolt", amount: "229080000000"},
+	{addr: "bostrom12k2pyuylm9t7ugdvz67h9pg4gmmvhn5vu43p0n", denom: "millivolt", amount: "5146755828"},
+	{addr: "bostrom15dme26c0jv6gcxzed4yc4q8d7rlypev0t0vt5c", denom: "millivolt", amount: "2132585268"},
+	{addr: "bostrom12k2pyuylm9t7ugdvz67h9pg4gmmvhn5vu43p0n", denom: "milliampere", amount: "33988579640"},
+}
+
+var dexBurnEntries = []burnEntry{
+	{addr: "bostrom10xu73c3nkcdcf6j6u4j2kzq0cjftfj2nv7xz9y", denom: "milliampere", amount: "37724907920"},
+	{addr: "bostrom1u3u628ue3c5hn7ya4x4cjlk5t2d0unnarrq34k", denom: "millivolt", amount: "3431620200"},
+	{addr: "bostrom1y7au5el59mf8mlak53gfvmr75gr2m2jz6lra0s", denom: "milliampere", amount: "7756244360"},
+	{addr: "bostrom1rfyjzaqpt2aywpnvs456la6c9323nqyysaf7zg", denom: "millivolt", amount: "520683170"},
+	//{addr: "bostrom1jphne3xq7335qvvepkupwcda8yyfp79ggfx7hy", denom: "milliampere", amount: "2120351490"},
+	//{addr: "bostrom1jphne3xq7335qvvepkupwcda8yyfp79ggfx7hy", denom: "millivolt", amount: "144935100"},
 }

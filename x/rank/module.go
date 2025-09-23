@@ -27,8 +27,9 @@ var (
 )
 
 const (
-	FlagComputeGPU = "compute-gpu"
-	FlagSearchAPI  = "search-api"
+	FlagComputeGPU  = "compute-gpu"
+	FlagComputeMock = "compute-mock"
+	FlagSearchAPI   = "search-api"
 )
 
 type AppModuleBasic struct {
@@ -92,6 +93,7 @@ func NewAppModule(
 
 func AddModuleInitFlags(startCmd *cobra.Command) {
 	startCmd.Flags().Bool(FlagComputeGPU, true, "Compute on GPU")
+	startCmd.Flags().Bool(FlagComputeMock, false, "Compute mock data")
 	startCmd.Flags().Bool(FlagSearchAPI, false, "Run search API")
 }
 

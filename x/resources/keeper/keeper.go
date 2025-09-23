@@ -30,6 +30,13 @@ type Keeper struct {
 	authority string
 }
 
+// Exponential supply half-life controls: mint factor = 0.5^(supply / halfLife)
+// Larger halfLife -> slower decay (more mint per same supply)
+var (
+	expHalfLifeVolt = sdk.NewInt(4000000000)  // 4*1e9
+	expHalfLifeAmp  = sdk.NewInt(32000000000) // 3.2*1e10
+)
+
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	key storetypes.StoreKey,
@@ -300,6 +307,9 @@ func (k Keeper) Mint(ctx sdk.Context, recipientAddr sdk.AccAddress, amt sdk.Coin
 
 	toMint := k.CalculateInvestmint(ctx, amt, resource, length)
 
+	// Apply exponential supply-based decreasing adjustment so each next minter mints less, ceteris paribus.
+	toMint = k.applySupplyExponentialAdjustment(ctx, resource, toMint)
+
 	if toMint.Amount.LT(sdk.NewInt(1000)) {
 		return sdk.Coin{}, errorsmod.Wrapf(types.ErrSmallReturn, recipientAddr.String())
 	}
@@ -369,6 +379,69 @@ func (k Keeper) CalculateInvestmint(ctx sdk.Context, amt sdk.Coin, resource stri
 		k.Logger(ctx).Info("Investmint", "cycles", cycles.String(), "base", base.String(), "halving", halving.String(), "mint", toMint.String())
 	}
 	return toMint
+}
+
+// applySupplyExponentialAdjustment reduces base mint using f = 0.5^(supply / halfLife)
+// where halfLife is resource-specific. Returns a coin with the same denom adjusted by f.
+func (k Keeper) applySupplyExponentialAdjustment(ctx sdk.Context, resource string, base sdk.Coin) sdk.Coin {
+	if !base.Amount.IsPositive() {
+		return base
+	}
+
+	totalSupply := k.bankKeeper.GetSupply(ctx, resource).Amount
+
+	var halfLife sdk.Int
+	switch resource {
+	case ctypes.VOLT:
+		halfLife = expHalfLifeVolt
+	case ctypes.AMPERE:
+		halfLife = expHalfLifeAmp
+	default:
+		return base
+	}
+
+	if !halfLife.IsPositive() {
+		return base
+	}
+
+	// factor = 0.5 ^ (supply / halfLife)
+	// compute using high-precision decimals
+	supplyDec := sdk.NewDecFromInt(totalSupply)
+	halfLifeDec := sdk.NewDecFromInt(halfLife)
+	ratio := supplyDec.Quo(halfLifeDec)
+
+	// Convert to float64 for exponent; bounded to avoid NaN/Inf
+	r64 := ratio.MustFloat64()
+	if math.IsNaN(r64) || math.IsInf(r64, 0) || r64 < 0 {
+		return base
+	}
+	factor := math.Pow(0.5, r64)
+	if factor < 0 {
+		factor = 0
+	}
+	if factor > 1 {
+		factor = 1
+	}
+
+	// Apply factor on base.Amount
+	baseDec := sdk.NewDecFromInt(base.Amount)
+	// Use big.Rat via String to minimize precision drift when multiplying
+	factorDec, err := sdk.NewDecFromStr(fmt.Sprintf("%.18f", factor))
+	if err != nil {
+		return base
+	}
+	adjustedDec := baseDec.Mul(factorDec)
+	adjusted := base
+	adjusted.Amount = adjustedDec.TruncateInt()
+
+	// Ensure we don't drop to zero unexpectedly if base was small but positive
+	if base.Amount.IsPositive() && adjusted.Amount.IsZero() {
+		adjusted.Amount = sdk.OneInt()
+	}
+
+	k.Logger(ctx).Info("Supply exponential adjust", "resource", resource, "supply", totalSupply.String(), "halfLife", halfLife.String(), "factor", fmt.Sprintf("%.10f", factor), "base", base.Amount.String(), "adjusted", adjusted.Amount.String())
+
+	return adjusted
 }
 
 func (k Keeper) GetMaxPeriod(ctx sdk.Context, resource string) uint64 {
