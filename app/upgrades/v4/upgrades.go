@@ -6,12 +6,12 @@ import (
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
-	generaltypes "github.com/cybercongress/go-cyber/v6/types"
-	clocktypes "github.com/cybercongress/go-cyber/v6/x/clock/types"
-	tokenfactorytypes "github.com/cybercongress/go-cyber/v6/x/tokenfactory/types"
+	generaltypes "github.com/cybercongress/go-cyber/v7/types"
+	clocktypes "github.com/cybercongress/go-cyber/v7/x/clock/types"
+	tokenfactorytypes "github.com/cybercongress/go-cyber/v7/x/tokenfactory/types"
 	"time"
 
-	liquiditytypes "github.com/cybercongress/go-cyber/v6/x/liquidity/types"
+	liquiditytypes "github.com/cybercongress/go-cyber/v7/x/liquidity/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -26,17 +26,17 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 
-	bandwidthtypes "github.com/cybercongress/go-cyber/v6/x/bandwidth/types"
-	dmntypes "github.com/cybercongress/go-cyber/v6/x/dmn/types"
-	gridtypes "github.com/cybercongress/go-cyber/v6/x/grid/types"
-	ranktypes "github.com/cybercongress/go-cyber/v6/x/rank/types"
-	resourcestypes "github.com/cybercongress/go-cyber/v6/x/resources/types"
+	bandwidthtypes "github.com/cybercongress/go-cyber/v7/x/bandwidth/types"
+	dmntypes "github.com/cybercongress/go-cyber/v7/x/dmn/types"
+	gridtypes "github.com/cybercongress/go-cyber/v7/x/grid/types"
+	ranktypes "github.com/cybercongress/go-cyber/v7/x/rank/types"
+	resourcestypes "github.com/cybercongress/go-cyber/v7/x/resources/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cybercongress/go-cyber/v6/app/keepers"
+	"github.com/cybercongress/go-cyber/v7/app/keepers"
 )
 
 const NewDenomCreationGasConsume uint64 = 2_000_000

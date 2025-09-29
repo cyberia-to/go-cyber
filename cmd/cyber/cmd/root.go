@@ -15,7 +15,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	v6 "github.com/cybercongress/go-cyber/v6/app/upgrades/v6"
+	v6 "github.com/cybercongress/go-cyber/v7/app/upgrades/v6"
 
 	"cosmossdk.io/simapp/params"
 
@@ -26,12 +26,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"github.com/prometheus/client_golang/prometheus"
 
-	"github.com/cybercongress/go-cyber/v6/app"
+	"github.com/cybercongress/go-cyber/v7/app"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 
-	"github.com/cybercongress/go-cyber/v6/x/rank"
+	"github.com/cybercongress/go-cyber/v7/x/rank"
 
 	dbm "github.com/cometbft/cometbft-db"
 	tmcli "github.com/cometbft/cometbft/libs/cli"
@@ -56,7 +56,7 @@ import (
 
 	rosettaCmd "cosmossdk.io/tools/rosetta/cmd"
 	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
-	bostrom "github.com/cybercongress/go-cyber/v6/app"
+	bostrom "github.com/cybercongress/go-cyber/v7/app"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the

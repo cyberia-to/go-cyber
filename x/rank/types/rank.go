@@ -6,8 +6,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/cybercongress/go-cyber/v6/merkle"
-	graphtypes "github.com/cybercongress/go-cyber/v6/x/graph/types"
+	"github.com/cybercongress/go-cyber/v7/merkle"
+	graphtypes "github.com/cybercongress/go-cyber/v7/x/graph/types"
 
 	"github.com/cometbft/cometbft/libs/log"
 )

@@ -8,13 +8,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 
-	ctypes "github.com/cybercongress/go-cyber/v6/types"
-	bandwidthkeeper "github.com/cybercongress/go-cyber/v6/x/bandwidth/keeper"
-	bandwidthtypes "github.com/cybercongress/go-cyber/v6/x/bandwidth/types"
-	cyberbankkeeper "github.com/cybercongress/go-cyber/v6/x/cyberbank/keeper"
+	ctypes "github.com/cybercongress/go-cyber/v7/types"
+	bandwidthkeeper "github.com/cybercongress/go-cyber/v7/x/bandwidth/keeper"
+	bandwidthtypes "github.com/cybercongress/go-cyber/v7/x/bandwidth/types"
+	cyberbankkeeper "github.com/cybercongress/go-cyber/v7/x/cyberbank/keeper"
 
 	// sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cybercongress/go-cyber/v6/x/graph/types"
+	"github.com/cybercongress/go-cyber/v7/x/graph/types"
 )
 
 type msgServer struct {
@@ -69,28 +69,25 @@ func (k msgServer) Cyberlink(goCtx context.Context, msg *types.MsgCyberlink) (*t
 		return nil, types.ErrZeroPower
 	}
 
-	// case when programs and autonomous programs cyberlink
-	if k.GetAccount(ctx, addr).GetPubKey() == nil {
-		cost := uint64(k.GetCurrentCreditPrice().MulInt64(int64(len(msg.Links) * 1000)).TruncateInt64())
+	cost := uint64(k.GetCurrentCreditPrice().MulInt64(int64(len(msg.Links) * 1000)).TruncateInt64())
 
-		currentBlockSpentBandwidth := k.GetCurrentBlockSpentBandwidth(ctx)
-		maxBlockBandwidth := k.GetMaxBlockBandwidth(ctx)
+	currentBlockSpentBandwidth := k.GetCurrentBlockSpentBandwidth(ctx)
+	maxBlockBandwidth := k.GetMaxBlockBandwidth(ctx)
 
-		if !k.HasEnoughAccountBandwidthVolt(ctx, cost, addr) {
-			return nil, bandwidthtypes.ErrNotEnoughBandwidth
-		}
-
-		if (cost + currentBlockSpentBandwidth) > maxBlockBandwidth {
-			return nil, bandwidthtypes.ErrExceededMaxBlockBandwidth
-		}
-
-		err = k.BurnAccountBandwidthVolt(ctx, cost, addr)
-		if err != nil {
-			return nil, bandwidthtypes.ErrNotEnoughBandwidth
-		}
-
-		k.AddToBlockBandwidth(ctx, cost)
+	if !k.HasEnoughAccountBandwidthVolt(ctx, cost, addr) {
+		return nil, bandwidthtypes.ErrNotEnoughBandwidth
 	}
+
+	if (cost + currentBlockSpentBandwidth) > maxBlockBandwidth {
+		return nil, bandwidthtypes.ErrExceededMaxBlockBandwidth
+	}
+
+	err = k.BurnAccountBandwidthVolt(ctx, cost, addr)
+	if err != nil {
+		return nil, bandwidthtypes.ErrNotEnoughBandwidth
+	}
+
+	k.AddToBlockBandwidth(ctx, cost)
 
 	for _, link := range msg.Links {
 		// if cid not exists it automatically means that this is new link

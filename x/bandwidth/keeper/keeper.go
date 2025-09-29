@@ -4,15 +4,15 @@ import (
 	sdkmath "cosmossdk.io/math"
 	"fmt"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	ctypes "github.com/cybercongress/go-cyber/v6/types"
+	ctypes "github.com/cybercongress/go-cyber/v7/types"
 
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cybercongress/go-cyber/v6/x/bandwidth/types"
-	gtypes "github.com/cybercongress/go-cyber/v6/x/graph/types"
+	"github.com/cybercongress/go-cyber/v7/x/bandwidth/types"
+	gtypes "github.com/cybercongress/go-cyber/v7/x/graph/types"
 )
 
 type BandwidthMeter struct {
@@ -233,10 +233,6 @@ func (bm *BandwidthMeter) GetTotalCyberlinksCost(ctx sdk.Context, tx sdk.Tx) uin
 		bandwidthForTx += uint64(len(linkMsg.Links)) * 1000
 	}
 	return bandwidthForTx
-}
-
-func (bm *BandwidthMeter) GetPricedTotalCyberlinksCost(ctx sdk.Context, tx sdk.Tx) uint64 {
-	return uint64(bm.currentCreditPrice.Mul(sdk.NewDec(int64(bm.GetTotalCyberlinksCost(ctx, tx)))).RoundInt64())
 }
 
 func (bm *BandwidthMeter) BurnAccountBandwidthVolt(ctx sdk.Context, amt uint64, address sdk.AccAddress) error {

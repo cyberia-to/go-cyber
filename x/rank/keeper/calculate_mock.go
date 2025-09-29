@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"github.com/cybercongress/go-cyber/v6/x/rank/types"
+	"github.com/cybercongress/go-cyber/v7/x/rank/types"
 )
 
 func mockRank(ctx *types.CalculationContext) types.EMState {

@@ -6,8 +6,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
 
-	"github.com/cybercongress/go-cyber/v6/utils"
-	"github.com/cybercongress/go-cyber/v6/x/graph/types"
+	"github.com/cybercongress/go-cyber/v7/utils"
+	"github.com/cybercongress/go-cyber/v7/x/graph/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

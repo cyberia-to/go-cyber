@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/cybercongress/go-cyber/v6/x/clock/types"
+	"github.com/cybercongress/go-cyber/v7/x/clock/types"
 )
 
 func TestParamsValidate(t *testing.T) {

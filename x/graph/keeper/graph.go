@@ -12,8 +12,8 @@ import (
 
 	"github.com/cometbft/cometbft/libs/log"
 
-	ctypes "github.com/cybercongress/go-cyber/v6/types"
-	"github.com/cybercongress/go-cyber/v6/x/graph/types"
+	ctypes "github.com/cybercongress/go-cyber/v7/types"
+	"github.com/cybercongress/go-cyber/v7/x/graph/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

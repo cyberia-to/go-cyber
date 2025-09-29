@@ -14,10 +14,10 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/auth/keeper"
 
-	"github.com/cybercongress/go-cyber/v6/merkle"
-	graphkeeper "github.com/cybercongress/go-cyber/v6/x/graph/keeper"
-	graphtypes "github.com/cybercongress/go-cyber/v6/x/graph/types"
-	"github.com/cybercongress/go-cyber/v6/x/rank/types"
+	"github.com/cybercongress/go-cyber/v7/merkle"
+	graphkeeper "github.com/cybercongress/go-cyber/v7/x/graph/keeper"
+	graphtypes "github.com/cybercongress/go-cyber/v7/x/graph/types"
+	"github.com/cybercongress/go-cyber/v7/x/rank/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 

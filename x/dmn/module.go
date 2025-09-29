@@ -16,10 +16,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/cybercongress/go-cyber/v6/x/dmn/client/cli"
-	"github.com/cybercongress/go-cyber/v6/x/dmn/exported"
-	"github.com/cybercongress/go-cyber/v6/x/dmn/keeper"
-	"github.com/cybercongress/go-cyber/v6/x/dmn/types"
+	"github.com/cybercongress/go-cyber/v7/x/dmn/client/cli"
+	"github.com/cybercongress/go-cyber/v7/x/dmn/exported"
+	"github.com/cybercongress/go-cyber/v7/x/dmn/keeper"
+	"github.com/cybercongress/go-cyber/v7/x/dmn/types"
 )
 
 var (

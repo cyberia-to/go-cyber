@@ -9,9 +9,9 @@ import (
 	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	ctypes "github.com/cybercongress/go-cyber/v6/types"
-	"github.com/cybercongress/go-cyber/v6/x/cyberbank/types"
-	resourcestypes "github.com/cybercongress/go-cyber/v6/x/resources/types"
+	ctypes "github.com/cybercongress/go-cyber/v7/types"
+	"github.com/cybercongress/go-cyber/v7/x/cyberbank/types"
+	resourcestypes "github.com/cybercongress/go-cyber/v7/x/resources/types"
 )
 
 var _ bank.Keeper = (*Proxy)(nil)
