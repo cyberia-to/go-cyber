@@ -88,6 +88,7 @@ func (k msgServer) Cyberlink(goCtx context.Context, msg *types.MsgCyberlink) (*t
 	}
 
 	k.AddToBlockBandwidth(ctx, cost)
+	k.AddBurnedVolts(ctx, cost)
 
 	for _, link := range msg.Links {
 		// if cid not exists it automatically means that this is new link

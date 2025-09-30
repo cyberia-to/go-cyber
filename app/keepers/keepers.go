@@ -411,6 +411,7 @@ func NewAppKeepers(
 		appKeepers.AccountKeeper,
 		appKeepers.CyberbankKeeper.Proxy,
 		appKeepers.BandwidthMeter,
+		appKeepers.GraphKeeper,
 		govModAddress,
 	)
 

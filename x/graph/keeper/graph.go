@@ -116,6 +116,28 @@ func (gk GraphKeeper) GetLinksCount(ctx sdk.Context) uint64 {
 	return sdk.BigEndianToUint64(linksCountAsBytes)
 }
 
+func (gk GraphKeeper) GetBurnedVolts(ctx sdk.Context) uint64 {
+	store := ctx.KVStore(gk.key)
+	burnedVoltsAsBytes := store.Get(types.BurnedVolts)
+
+	if burnedVoltsAsBytes == nil {
+		return 0
+	}
+	return sdk.BigEndianToUint64(burnedVoltsAsBytes)
+}
+
+func (gk GraphKeeper) AddBurnedVolts(ctx sdk.Context, toBurn uint64) {
+	var burnedVolts = uint64(0)
+
+	store := ctx.KVStore(gk.key)
+	burnedVoltsAsBytes := store.Get(types.BurnedVolts)
+	if burnedVoltsAsBytes != nil {
+		burnedVolts = sdk.BigEndianToUint64(burnedVoltsAsBytes)
+	}
+
+	store.Set(types.BurnedVolts, sdk.Uint64ToBigEndian(burnedVolts+toBurn))
+}
+
 // write links to writer in binary format: <links_count><cid_number_from><cid_number_to><acc_number>...
 func (gk GraphKeeper) WriteLinks(ctx sdk.Context, writer io.Writer) (err error) {
 	uintAsBytes := make([]byte, 8)

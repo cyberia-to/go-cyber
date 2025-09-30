@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"github.com/cybercongress/go-cyber/v7/x/resources/exported"
 	"math"
 
 	errorsmod "cosmossdk.io/errors"
@@ -24,6 +25,7 @@ type Keeper struct {
 	cdc            codec.BinaryCodec
 	storeKey       storetypes.StoreKey
 	accountKeeper  types.AccountKeeper
+	graphKeeper    exported.GraphKeeper
 	bankKeeper     types.BankKeeper
 	bandwidthMeter *bandwithkeeper.BandwidthMeter
 
@@ -43,6 +45,7 @@ func NewKeeper(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	bm *bandwithkeeper.BandwidthMeter,
+	gk exported.GraphKeeper,
 	authority string,
 ) Keeper {
 	if addr := ak.GetModuleAddress(types.ResourcesName); addr == nil {
@@ -55,6 +58,7 @@ func NewKeeper(
 		accountKeeper:  ak,
 		bankKeeper:     bk,
 		bandwidthMeter: bm,
+		graphKeeper:    gk,
 		authority:      authority,
 	}
 	return keeper
@@ -389,6 +393,9 @@ func (k Keeper) applySupplyExponentialAdjustment(ctx sdk.Context, resource strin
 	}
 
 	totalSupply := k.bankKeeper.GetSupply(ctx, resource).Amount
+	if resource == ctypes.VOLT {
+		totalSupply = totalSupply.Add(sdk.NewInt(int64(k.graphKeeper.GetBurnedVolts(ctx))))
+	}
 
 	var halfLife sdk.Int
 	switch resource {
