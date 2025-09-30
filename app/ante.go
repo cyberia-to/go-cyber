@@ -189,19 +189,6 @@ func (dfd DeductFeeBandDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 		return next(newCtx, tx, simulate)
 	}
 
-	bandwidthPayer := feeTx.FeePayer()
-	bandwidthGranter := feeTx.FeeGranter()
-	deductBandwidthFrom := bandwidthPayer
-
-	if bandwidthGranter != nil {
-		deductBandwidthFrom = bandwidthGranter
-	}
-
-	deductBandwidthFromAcc := dfd.accountKeeper.GetAccount(ctx, deductBandwidthFrom)
-	if deductBandwidthFromAcc == nil {
-		return ctx, sdkerrors.ErrUnknownAddress.Wrapf("fee payer address: %s does not exist", deductBandwidthFrom)
-	}
-
 	newCtx := ctx.WithPriority(int64(math.MaxInt64))
 
 	return next(newCtx, tx, simulate)
