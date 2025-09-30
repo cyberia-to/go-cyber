@@ -14,6 +14,7 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	v7 "github.com/cybercongress/go-cyber/v7/app/upgrades/v7"
 
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -95,7 +96,7 @@ var (
 	NodeDir      = ".cyber"
 	Bech32Prefix = "bostrom"
 
-	Upgrades = []upgrades.Upgrade{v2.Upgrade, v3.Upgrade, v4.Upgrade, v6.Upgrade}
+	Upgrades = []upgrades.Upgrade{v2.Upgrade, v3.Upgrade, v4.Upgrade, v6.Upgrade, v7.Upgrade}
 	Forks    = []upgrades.Fork{v5.Fork}
 )
 
