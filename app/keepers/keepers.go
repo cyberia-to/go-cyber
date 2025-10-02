@@ -404,6 +404,7 @@ func NewAppKeepers(
 	)
 	appKeepers.CyberbankKeeper.SetGridKeeper(&appKeepers.GridKeeper)
 	appKeepers.CyberbankKeeper.SetAccountKeeper(appKeepers.AccountKeeper)
+	appKeepers.CyberbankKeeper.SetGraphKeeper(appKeepers.GraphKeeper)
 
 	appKeepers.ResourcesKeeper = resourceskeeper.NewKeeper(
 		appCodec,

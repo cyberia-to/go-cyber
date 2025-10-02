@@ -269,6 +269,9 @@ func (k Keeper) applySupplyExponentialAdjustment(ctx sdk.Context, resource strin
 	if resource == ctypes.VOLT {
 		totalSupply = totalSupply.Add(sdk.NewInt(int64(k.graphKeeper.GetBurnedVolts(ctx))))
 	}
+	if resource == ctypes.AMPERE {
+		totalSupply = totalSupply.Add(sdk.NewInt(int64(k.graphKeeper.GetBurnedAmperes(ctx))))
+	}
 
 	var halfLife sdk.Int
 	switch resource {

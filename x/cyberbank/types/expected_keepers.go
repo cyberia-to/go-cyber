@@ -14,3 +14,8 @@ type AccountKeeper interface {
 type EnergyKeeper interface {
 	GetRoutedToEnergy(ctx sdk.Context, delegate sdk.AccAddress) sdk.Coins
 }
+
+type GraphKeeper interface {
+	AddBurnedVolts(ctx sdk.Context, toBurn uint64)
+	AddBurnedAmperes(ctx sdk.Context, toBurn uint64)
+}

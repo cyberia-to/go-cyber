@@ -25,6 +25,7 @@ var (
 	LinksCount    = append(GlobalStoreKeyPrefix, []byte("cyberlinksAmount")...)
 	HasNewLinks   = append(GlobalStoreKeyPrefix, []byte("blockHasNewLinks")...)
 	BurnedVolts   = append(GlobalStoreKeyPrefix, []byte("burnedVolts")...)
+	BurnedAmperes = append(GlobalStoreKeyPrefix, []byte("burnedAmperes")...)
 )
 
 func CidStoreKey(cid Cid) []byte {
