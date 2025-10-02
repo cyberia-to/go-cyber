@@ -267,12 +267,11 @@ func NewBostromApp(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
-				BankKeeper:      app.CyberbankKeeper.Proxy,
+				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			BandwidthMeter:    app.BandwidthMeter,
 			IBCKeeper:         app.IBCKeeper,
 			TXCounterStoreKey: app.GetKey(wasmtypes.StoreKey),
 			WasmConfig:        &wasmConfig,
