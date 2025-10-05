@@ -33,6 +33,9 @@ func CreateV7UpgradeHandler(
 			return nil, err
 		}
 
+		cidCount := keepers.GraphKeeper.GetCidsCount(ctx)
+		keepers.RankKeeper.SetDebugMerkleTrees(ctx, cidCount)
+
 		after := time.Now()
 		ctx.Logger().Info("upgrade time", "duration ms", after.Sub(before).Milliseconds())
 
