@@ -25,6 +25,14 @@ func CreateV7UpgradeHandler(
 			return nil, err
 		}
 		logger.Info(fmt.Sprintf("post migrate version map: %v", versionMap))
+
+		rankParams := keepers.RankKeeper.GetParams(ctx)
+		rankParams.CalculationPeriod = 10
+		err = keepers.RankKeeper.SetParams(ctx, rankParams)
+		if err != nil {
+			return nil, err
+		}
+
 		after := time.Now()
 		ctx.Logger().Info("upgrade time", "duration ms", after.Sub(before).Milliseconds())
 
