@@ -1,16 +1,15 @@
-package v2
+package v7
 
 import (
 	store "github.com/cosmos/cosmos-sdk/store/types"
-
 	"github.com/cybercongress/go-cyber/v7/app/upgrades"
 )
 
-const UpgradeName = "cyberfrey"
+const UpgradeName = "v7"
 
 var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,
-	CreateUpgradeHandler: CreateV2UpgradeHandler,
+	CreateUpgradeHandler: CreateV7UpgradeHandler,
 	StoreUpgrades: store.StoreUpgrades{
 		Added: []string{},
 	},

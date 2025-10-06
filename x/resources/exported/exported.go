@@ -16,3 +16,8 @@ type (
 		GetParamSet(ctx sdk.Context, ps ParamSet)
 	}
 )
+
+type GraphKeeper interface {
+	GetBurnedVolts(ctx sdk.Context) uint64
+	GetBurnedAmperes(ctx sdk.Context) uint64
+}

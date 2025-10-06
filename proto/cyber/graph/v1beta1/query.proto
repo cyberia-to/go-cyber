@@ -9,6 +9,9 @@ service Query {
   rpc GraphStats(QueryGraphStatsRequest) returns (QueryGraphStatsResponse) {
     option (google.api.http).get = "/cyber/graph/v1beta1/graph_stats";
   }
+  rpc BurnStats(QueryBurnStatsRequest) returns (QueryBurnStatsResponse) {
+    option (google.api.http).get = "/cyber/graph/v1beta1/burn_stats";
+  }
 }
 
 message QueryGraphStatsRequest {}
@@ -16,4 +19,11 @@ message QueryGraphStatsRequest {}
 message QueryGraphStatsResponse {
   uint64 cyberlinks = 1;
   uint64 particles = 2;
+}
+
+message QueryBurnStatsRequest {}
+
+message QueryBurnStatsResponse {
+  uint64 millivolt = 1;
+  uint64 milliampere = 2;
 }

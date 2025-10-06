@@ -16,9 +16,9 @@ import (
 	icahost "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host"
 	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
-	clocktypes "github.com/cybercongress/go-cyber/v6/x/clock/types"
-	tokenfactorykeeper "github.com/cybercongress/go-cyber/v6/x/tokenfactory/keeper"
-	tokenfactorytypes "github.com/cybercongress/go-cyber/v6/x/tokenfactory/types"
+	clocktypes "github.com/cybercongress/go-cyber/v7/x/clock/types"
+	tokenfactorykeeper "github.com/cybercongress/go-cyber/v7/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/cybercongress/go-cyber/v7/x/tokenfactory/types"
 	"os"
 	"path/filepath"
 
@@ -77,31 +77,31 @@ import (
 
 	"github.com/spf13/cast"
 
-	liquiditykeeper "github.com/cybercongress/go-cyber/v6/x/liquidity/keeper"
-	liquiditytypes "github.com/cybercongress/go-cyber/v6/x/liquidity/types"
+	liquiditykeeper "github.com/cybercongress/go-cyber/v7/x/liquidity/keeper"
+	liquiditytypes "github.com/cybercongress/go-cyber/v7/x/liquidity/types"
 
-	wasmplugins "github.com/cybercongress/go-cyber/v6/plugins"
-	bandwidthkeeper "github.com/cybercongress/go-cyber/v6/x/bandwidth/keeper"
-	bandwidthtypes "github.com/cybercongress/go-cyber/v6/x/bandwidth/types"
-	cyberbankkeeper "github.com/cybercongress/go-cyber/v6/x/cyberbank/keeper"
-	dmnkeeper "github.com/cybercongress/go-cyber/v6/x/dmn/keeper"
-	dmntypes "github.com/cybercongress/go-cyber/v6/x/dmn/types"
-	graphkeeper "github.com/cybercongress/go-cyber/v6/x/graph/keeper"
-	graphtypes "github.com/cybercongress/go-cyber/v6/x/graph/types"
-	gridkeeper "github.com/cybercongress/go-cyber/v6/x/grid/keeper"
-	gridtypes "github.com/cybercongress/go-cyber/v6/x/grid/types"
-	"github.com/cybercongress/go-cyber/v6/x/rank"
-	rankkeeper "github.com/cybercongress/go-cyber/v6/x/rank/keeper"
-	ranktypes "github.com/cybercongress/go-cyber/v6/x/rank/types"
-	resourceskeeper "github.com/cybercongress/go-cyber/v6/x/resources/keeper"
-	resourcestypes "github.com/cybercongress/go-cyber/v6/x/resources/types"
+	wasmplugins "github.com/cybercongress/go-cyber/v7/plugins"
+	bandwidthkeeper "github.com/cybercongress/go-cyber/v7/x/bandwidth/keeper"
+	bandwidthtypes "github.com/cybercongress/go-cyber/v7/x/bandwidth/types"
+	cyberbankkeeper "github.com/cybercongress/go-cyber/v7/x/cyberbank/keeper"
+	dmnkeeper "github.com/cybercongress/go-cyber/v7/x/dmn/keeper"
+	dmntypes "github.com/cybercongress/go-cyber/v7/x/dmn/types"
+	graphkeeper "github.com/cybercongress/go-cyber/v7/x/graph/keeper"
+	graphtypes "github.com/cybercongress/go-cyber/v7/x/graph/types"
+	gridkeeper "github.com/cybercongress/go-cyber/v7/x/grid/keeper"
+	gridtypes "github.com/cybercongress/go-cyber/v7/x/grid/types"
+	"github.com/cybercongress/go-cyber/v7/x/rank"
+	rankkeeper "github.com/cybercongress/go-cyber/v7/x/rank/keeper"
+	ranktypes "github.com/cybercongress/go-cyber/v7/x/rank/types"
+	resourceskeeper "github.com/cybercongress/go-cyber/v7/x/resources/keeper"
+	resourcestypes "github.com/cybercongress/go-cyber/v7/x/resources/types"
 
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 
 	govv1beta "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
-	clockkeeper "github.com/cybercongress/go-cyber/v6/x/clock/keeper"
+	clockkeeper "github.com/cybercongress/go-cyber/v7/x/clock/keeper"
 
 	"github.com/cometbft/cometbft/libs/log"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
@@ -404,6 +404,7 @@ func NewAppKeepers(
 	)
 	appKeepers.CyberbankKeeper.SetGridKeeper(&appKeepers.GridKeeper)
 	appKeepers.CyberbankKeeper.SetAccountKeeper(appKeepers.AccountKeeper)
+	appKeepers.CyberbankKeeper.SetGraphKeeper(appKeepers.GraphKeeper)
 
 	appKeepers.ResourcesKeeper = resourceskeeper.NewKeeper(
 		appCodec,
@@ -411,6 +412,7 @@ func NewAppKeepers(
 		appKeepers.AccountKeeper,
 		appKeepers.CyberbankKeeper.Proxy,
 		appKeepers.BandwidthMeter,
+		appKeepers.GraphKeeper,
 		govModAddress,
 	)
 

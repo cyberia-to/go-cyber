@@ -1,4 +1,4 @@
-module github.com/cybercongress/go-cyber/v6
+module github.com/cybercongress/go-cyber/v7
 
 go 1.22.7
 

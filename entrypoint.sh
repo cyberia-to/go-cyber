@@ -37,6 +37,11 @@ then
   cp -r /cyber/cosmovisor/upgrades/v6  /root/.cyber/cosmovisor/upgrades/v6
 fi
 
+if [  -d "/root/.cyber/cosmovisor/upgrades/v7/" ]
+then
+  cp -r /cyber/cosmovisor/upgrades/v7  /root/.cyber/cosmovisor/upgrades/v7
+fi
+
 if [ ! -f "/root/.cyber/config/genesis.json" ]
 then
   cp /genesis.json /root/.cyber/config/

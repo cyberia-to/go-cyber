@@ -6,8 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cybercongress/go-cyber/v6/x/dmn/keeper"
-	"github.com/cybercongress/go-cyber/v6/x/dmn/types"
+	"github.com/cybercongress/go-cyber/v7/x/dmn/keeper"
+	"github.com/cybercongress/go-cyber/v7/x/dmn/types"
 )
 
 func BeginBlock(ctx sdk.Context, k keeper.Keeper) {

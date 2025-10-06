@@ -5,16 +5,16 @@ import (
 	"time"
 
 	sdkmath "cosmossdk.io/math"
-	liquiditytypes "github.com/cybercongress/go-cyber/v6/x/liquidity/types"
+	liquiditytypes "github.com/cybercongress/go-cyber/v7/x/liquidity/types"
 
-	bandwidthtypes "github.com/cybercongress/go-cyber/v6/x/bandwidth/types"
+	bandwidthtypes "github.com/cybercongress/go-cyber/v7/x/bandwidth/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"github.com/cybercongress/go-cyber/v6/app/keepers"
-	resourcestypes "github.com/cybercongress/go-cyber/v6/x/resources/types"
+	"github.com/cybercongress/go-cyber/v7/app/keepers"
+	resourcestypes "github.com/cybercongress/go-cyber/v7/x/resources/types"
 )
 
 func CreateV6UpgradeHandler(

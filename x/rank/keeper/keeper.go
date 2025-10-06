@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/binary"
 	"fmt"
 	"strconv"
@@ -14,10 +15,10 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/auth/keeper"
 
-	"github.com/cybercongress/go-cyber/v6/merkle"
-	graphkeeper "github.com/cybercongress/go-cyber/v6/x/graph/keeper"
-	graphtypes "github.com/cybercongress/go-cyber/v6/x/graph/types"
-	"github.com/cybercongress/go-cyber/v6/x/rank/types"
+	"github.com/cybercongress/go-cyber/v7/merkle"
+	graphkeeper "github.com/cybercongress/go-cyber/v7/x/graph/keeper"
+	graphtypes "github.com/cybercongress/go-cyber/v7/x/graph/types"
+	"github.com/cybercongress/go-cyber/v7/x/rank/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -340,6 +341,21 @@ func (sk StateKeeper) StoreNextMerkleTree(ctx sdk.Context, treeAsBytes []byte) {
 	if bytes.Compare(sk.GetNextMerkleTree(ctx), treeAsBytes) != 0 { //nolint:gosimple
 		store.Set(types.NextMerkleTree, treeAsBytes)
 	}
+}
+
+func (sk StateKeeper) SetDebugMerkleTrees(ctx sdk.Context, cidCount uint64) {
+	merkleTree := merkle.NewTree(sha256.New(), false)
+	zeroRankBytes := make([]byte, 8)
+
+	for i := uint64(0); i < cidCount; i++ {
+		merkleTree.Push(zeroRankBytes)
+	}
+
+	treeBytes := merkleTree.ExportSubtreesRoots()
+
+	store := ctx.KVStore(sk.storeKey)
+	store.Set(types.LatestMerkleTree, treeBytes)
+	store.Set(types.NextMerkleTree, treeBytes)
 }
 
 func (sk StateKeeper) GetNextRankCidCount(ctx sdk.Context) uint64 {

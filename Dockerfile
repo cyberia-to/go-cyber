@@ -51,6 +51,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends \
 && mkdir -p /cyber/cosmovisor/upgrades/v3/bin \
 && mkdir -p /cyber/cosmovisor/upgrades/v4/bin \
 && mkdir -p /cyber/cosmovisor/upgrades/v6/bin \
+&& mkdir -p /cyber/cosmovisor/upgrades/v7/bin \
  # Compile cyber for v3 version
 ###########################################################################################
 && git checkout v3.0.1 \
@@ -77,6 +78,15 @@ RUN apt-get update && apt-get -y install --no-install-recommends \
 && cd  /sources \
 && make build CUDA_ENABLED=true \
 && cp ./build/cyber /cyber/cosmovisor/upgrades/v6/bin/ \
+&& rm -rf ./build \
+ # Compile cyber for v6 version
+###########################################################################################
+&& git checkout v7.0.0 \
+&& cd /sources/x/rank/cuda \
+&& make build \
+&& cd  /sources \
+&& make build CUDA_ENABLED=true \
+&& cp ./build/cyber /cyber/cosmovisor/upgrades/v7/bin/ \
 && rm -rf ./build \
 # Cleanup 
 ###########################################################################################

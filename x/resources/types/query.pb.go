@@ -6,10 +6,6 @@ package types
 import (
 	context "context"
 	fmt "fmt"
-	io "io"
-	math "math"
-	math_bits "math/bits"
-
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
@@ -18,14 +14,15 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	io "io"
+	math "math"
+	math_bits "math/bits"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
-var (
-	_ = proto.Marshal
-	_ = fmt.Errorf
-	_ = math.Inf
-)
+var _ = proto.Marshal
+var _ = fmt.Errorf
+var _ = math.Inf
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -33,7 +30,8 @@ var (
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type QueryParamsRequest struct{}
+type QueryParamsRequest struct {
+}
 
 func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
 func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
@@ -41,11 +39,9 @@ func (*QueryParamsRequest) ProtoMessage()    {}
 func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_4135536742b8fe64, []int{0}
 }
-
 func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-
 func (m *QueryParamsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_QueryParamsRequest.Marshal(b, m, deterministic)
@@ -58,15 +54,12 @@ func (m *QueryParamsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-
 func (m *QueryParamsRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_QueryParamsRequest.Merge(m, src)
 }
-
 func (m *QueryParamsRequest) XXX_Size() int {
 	return m.Size()
 }
-
 func (m *QueryParamsRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_QueryParamsRequest.DiscardUnknown(m)
 }
@@ -83,11 +76,9 @@ func (*QueryParamsResponse) ProtoMessage()    {}
 func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_4135536742b8fe64, []int{1}
 }
-
 func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-
 func (m *QueryParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_QueryParamsResponse.Marshal(b, m, deterministic)
@@ -100,15 +91,12 @@ func (m *QueryParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-
 func (m *QueryParamsResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_QueryParamsResponse.Merge(m, src)
 }
-
 func (m *QueryParamsResponse) XXX_Size() int {
 	return m.Size()
 }
-
 func (m *QueryParamsResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_QueryParamsResponse.DiscardUnknown(m)
 }
@@ -134,11 +122,9 @@ func (*QueryInvestmintRequest) ProtoMessage()    {}
 func (*QueryInvestmintRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_4135536742b8fe64, []int{2}
 }
-
 func (m *QueryInvestmintRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-
 func (m *QueryInvestmintRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_QueryInvestmintRequest.Marshal(b, m, deterministic)
@@ -151,15 +137,12 @@ func (m *QueryInvestmintRequest) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-
 func (m *QueryInvestmintRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_QueryInvestmintRequest.Merge(m, src)
 }
-
 func (m *QueryInvestmintRequest) XXX_Size() int {
 	return m.Size()
 }
-
 func (m *QueryInvestmintRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_QueryInvestmintRequest.DiscardUnknown(m)
 }
@@ -197,11 +180,9 @@ func (*QueryInvestmintResponse) ProtoMessage()    {}
 func (*QueryInvestmintResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_4135536742b8fe64, []int{3}
 }
-
 func (m *QueryInvestmintResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-
 func (m *QueryInvestmintResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_QueryInvestmintResponse.Marshal(b, m, deterministic)
@@ -214,15 +195,12 @@ func (m *QueryInvestmintResponse) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-
 func (m *QueryInvestmintResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_QueryInvestmintResponse.Merge(m, src)
 }
-
 func (m *QueryInvestmintResponse) XXX_Size() int {
 	return m.Size()
 }
-
 func (m *QueryInvestmintResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_QueryInvestmintResponse.DiscardUnknown(m)
 }
@@ -236,11 +214,109 @@ func (m *QueryInvestmintResponse) GetAmount() types.Coin {
 	return types.Coin{}
 }
 
+type QueryAdjustedPriceRequest struct {
+	Base     types.Coin `protobuf:"bytes,1,opt,name=base,proto3" json:"base"`
+	Resource string     `protobuf:"bytes,2,opt,name=resource,proto3" json:"resource,omitempty"`
+}
+
+func (m *QueryAdjustedPriceRequest) Reset()         { *m = QueryAdjustedPriceRequest{} }
+func (m *QueryAdjustedPriceRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAdjustedPriceRequest) ProtoMessage()    {}
+func (*QueryAdjustedPriceRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4135536742b8fe64, []int{4}
+}
+func (m *QueryAdjustedPriceRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAdjustedPriceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAdjustedPriceRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAdjustedPriceRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAdjustedPriceRequest.Merge(m, src)
+}
+func (m *QueryAdjustedPriceRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAdjustedPriceRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAdjustedPriceRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAdjustedPriceRequest proto.InternalMessageInfo
+
+func (m *QueryAdjustedPriceRequest) GetBase() types.Coin {
+	if m != nil {
+		return m.Base
+	}
+	return types.Coin{}
+}
+
+func (m *QueryAdjustedPriceRequest) GetResource() string {
+	if m != nil {
+		return m.Resource
+	}
+	return ""
+}
+
+type QueryAdjustedPriceResponse struct {
+	Adjusted types.Coin `protobuf:"bytes,1,opt,name=adjusted,proto3" json:"adjusted"`
+}
+
+func (m *QueryAdjustedPriceResponse) Reset()         { *m = QueryAdjustedPriceResponse{} }
+func (m *QueryAdjustedPriceResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAdjustedPriceResponse) ProtoMessage()    {}
+func (*QueryAdjustedPriceResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4135536742b8fe64, []int{5}
+}
+func (m *QueryAdjustedPriceResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAdjustedPriceResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAdjustedPriceResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAdjustedPriceResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAdjustedPriceResponse.Merge(m, src)
+}
+func (m *QueryAdjustedPriceResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAdjustedPriceResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAdjustedPriceResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAdjustedPriceResponse proto.InternalMessageInfo
+
+func (m *QueryAdjustedPriceResponse) GetAdjusted() types.Coin {
+	if m != nil {
+		return m.Adjusted
+	}
+	return types.Coin{}
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "cyber.resources.v1beta1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "cyber.resources.v1beta1.QueryParamsResponse")
 	proto.RegisterType((*QueryInvestmintRequest)(nil), "cyber.resources.v1beta1.QueryInvestmintRequest")
 	proto.RegisterType((*QueryInvestmintResponse)(nil), "cyber.resources.v1beta1.QueryInvestmintResponse")
+	proto.RegisterType((*QueryAdjustedPriceRequest)(nil), "cyber.resources.v1beta1.QueryAdjustedPriceRequest")
+	proto.RegisterType((*QueryAdjustedPriceResponse)(nil), "cyber.resources.v1beta1.QueryAdjustedPriceResponse")
 }
 
 func init() {
@@ -248,41 +324,44 @@ func init() {
 }
 
 var fileDescriptor_4135536742b8fe64 = []byte{
-	// 428 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x93, 0x41, 0x8b, 0x13, 0x31,
-	0x14, 0xc7, 0x27, 0x75, 0x1d, 0x34, 0xde, 0xe2, 0xb2, 0x5b, 0x07, 0x99, 0x2d, 0xe3, 0xa5, 0xb2,
-	0x6e, 0x62, 0x77, 0x11, 0x4f, 0x5e, 0xd6, 0x93, 0x07, 0x41, 0x07, 0x4f, 0xde, 0x32, 0x43, 0x48,
-	0x07, 0x3a, 0x79, 0xd3, 0x49, 0xa6, 0xd8, 0xab, 0xe0, 0x5d, 0x10, 0xfc, 0x08, 0x7e, 0x96, 0x7a,
-	0x2b, 0x78, 0xf1, 0x24, 0xd2, 0xfa, 0x41, 0xa4, 0x49, 0x3a, 0x55, 0xca, 0x48, 0xf1, 0xd6, 0xbc,
-	0xfc, 0xdf, 0xff, 0xff, 0x7b, 0xaf, 0x19, 0xfc, 0x20, 0x9f, 0x67, 0xa2, 0x66, 0xb5, 0xd0, 0xd0,
-	0xd4, 0xb9, 0xd0, 0x6c, 0x36, 0xca, 0x84, 0xe1, 0x23, 0x36, 0x6d, 0x44, 0x3d, 0xa7, 0x55, 0x0d,
-	0x06, 0xc8, 0xa9, 0x15, 0xd1, 0x56, 0x44, 0xbd, 0x28, 0x3a, 0x96, 0x20, 0xc1, 0x6a, 0xd8, 0xe6,
-	0x97, 0x93, 0x47, 0xf7, 0x25, 0x80, 0x9c, 0x08, 0xc6, 0xab, 0x82, 0x71, 0xa5, 0xc0, 0x70, 0x53,
-	0x80, 0xd2, 0xfe, 0xb6, 0x33, 0xd1, 0xcc, 0x2b, 0xb1, 0x15, 0xc5, 0x39, 0xe8, 0x12, 0x34, 0xcb,
-	0xb8, 0x16, 0xad, 0x20, 0x87, 0x42, 0xb9, 0xfb, 0xe4, 0x18, 0x93, 0xd7, 0x1b, 0xc0, 0x57, 0xbc,
-	0xe6, 0xa5, 0x4e, 0xc5, 0xb4, 0x11, 0xda, 0x24, 0x6f, 0xf0, 0xdd, 0xbf, 0xaa, 0xba, 0x02, 0xa5,
-	0x05, 0x79, 0x86, 0xc3, 0xca, 0x56, 0xfa, 0x68, 0x80, 0x86, 0x77, 0x2e, 0xcf, 0x68, 0xc7, 0x3c,
-	0xd4, 0x35, 0x5e, 0x1f, 0x2d, 0x7e, 0x9c, 0x05, 0xa9, 0x6f, 0x4a, 0x3e, 0x20, 0x7c, 0x62, 0x6d,
-	0x5f, 0xa8, 0x99, 0xd0, 0xa6, 0x2c, 0x94, 0xf1, 0x81, 0xe4, 0x29, 0x0e, 0x79, 0x09, 0x8d, 0x32,
-	0xde, 0xf9, 0x1e, 0x75, 0xdc, 0x74, 0xc3, 0xdd, 0xba, 0x3e, 0x87, 0x42, 0x6d, 0x3d, 0x9d, 0x9c,
-	0x44, 0xf8, 0xd6, 0x36, 0xbd, 0xdf, 0x1b, 0xa0, 0xe1, 0xed, 0xb4, 0x3d, 0x93, 0x13, 0x1c, 0x4e,
-	0x84, 0x92, 0x66, 0xdc, 0xbf, 0x31, 0x40, 0xc3, 0xa3, 0xd4, 0x9f, 0x92, 0x14, 0x9f, 0xee, 0x61,
-	0xf8, 0x09, 0xff, 0x97, 0xe3, 0xf2, 0x6b, 0x0f, 0xdf, 0xb4, 0xa6, 0xe4, 0x33, 0xc2, 0xa1, 0x1b,
-	0x9f, 0x9c, 0x77, 0xee, 0x67, 0x7f, 0xe7, 0xd1, 0xa3, 0xc3, 0xc4, 0x0e, 0x34, 0x19, 0xbd, 0xff,
-	0xf6, 0xeb, 0x53, 0xef, 0x9c, 0x3c, 0x64, 0x5d, 0xaf, 0x60, 0x57, 0x71, 0xeb, 0x27, 0x5f, 0x10,
-	0xc6, 0xbb, 0x91, 0x09, 0xfb, 0x77, 0xde, 0xde, 0x7f, 0x14, 0x3d, 0x3e, 0xbc, 0xc1, 0x43, 0x3e,
-	0xb1, 0x90, 0x8c, 0x5c, 0x1c, 0x00, 0x59, 0xb4, 0xed, 0xd7, 0x2f, 0x17, 0xab, 0x18, 0x2d, 0x57,
-	0x31, 0xfa, 0xb9, 0x8a, 0xd1, 0xc7, 0x75, 0x1c, 0x2c, 0xd7, 0x71, 0xf0, 0x7d, 0x1d, 0x07, 0x6f,
-	0xaf, 0x64, 0x61, 0xc6, 0x4d, 0x46, 0x73, 0x28, 0x9d, 0x65, 0x0e, 0x4a, 0xd6, 0x42, 0x6b, 0x26,
-	0xe1, 0xc2, 0x65, 0xbc, 0xfb, 0xc3, 0xd3, 0x7e, 0x08, 0x59, 0x68, 0x5f, 0xfa, 0xd5, 0xef, 0x00,
-	0x00, 0x00, 0xff, 0xff, 0x4d, 0x17, 0x2b, 0x71, 0xa2, 0x03, 0x00, 0x00,
+	// 511 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x94, 0x41, 0x6b, 0xd4, 0x40,
+	0x14, 0xc7, 0x77, 0xda, 0x35, 0xd4, 0x11, 0x2f, 0x63, 0x69, 0xb7, 0x41, 0xd2, 0x25, 0x5e, 0x56,
+	0x6a, 0x33, 0xee, 0x06, 0x11, 0x11, 0x0f, 0xd6, 0x93, 0x07, 0xa1, 0x06, 0x2f, 0x7a, 0x91, 0x24,
+	0x1d, 0xd2, 0xc8, 0x66, 0x5e, 0x9a, 0x99, 0x14, 0xf7, 0x2a, 0x78, 0x17, 0x04, 0x3f, 0x82, 0x5f,
+	0xc0, 0x2f, 0xd1, 0x63, 0xc1, 0x8b, 0x27, 0x91, 0x5d, 0xbf, 0x87, 0x92, 0x99, 0x49, 0xd6, 0xb2,
+	0xdd, 0x25, 0xf6, 0x96, 0xcc, 0xfc, 0xdf, 0xff, 0xff, 0x7b, 0xbc, 0xc7, 0xe0, 0x3b, 0xf1, 0x24,
+	0x62, 0x05, 0x2d, 0x98, 0x80, 0xb2, 0x88, 0x99, 0xa0, 0xa7, 0xc3, 0x88, 0xc9, 0x70, 0x48, 0x4f,
+	0x4a, 0x56, 0x4c, 0xbc, 0xbc, 0x00, 0x09, 0x64, 0x5b, 0x89, 0xbc, 0x46, 0xe4, 0x19, 0x91, 0xbd,
+	0x99, 0x40, 0x02, 0x4a, 0x43, 0xab, 0x2f, 0x2d, 0xb7, 0x6f, 0x27, 0x00, 0xc9, 0x98, 0xd1, 0x30,
+	0x4f, 0x69, 0xc8, 0x39, 0xc8, 0x50, 0xa6, 0xc0, 0x85, 0xb9, 0x5d, 0x9a, 0x28, 0x27, 0x39, 0xab,
+	0x45, 0x4e, 0x0c, 0x22, 0x03, 0x41, 0xa3, 0x50, 0xb0, 0x46, 0x10, 0x43, 0xca, 0xf5, 0xbd, 0xbb,
+	0x89, 0xc9, 0xcb, 0x0a, 0xf0, 0x30, 0x2c, 0xc2, 0x4c, 0x04, 0xec, 0xa4, 0x64, 0x42, 0xba, 0xaf,
+	0xf0, 0xad, 0x0b, 0xa7, 0x22, 0x07, 0x2e, 0x18, 0x79, 0x82, 0xad, 0x5c, 0x9d, 0xf4, 0x50, 0x1f,
+	0x0d, 0x6e, 0x8c, 0x76, 0xbd, 0x25, 0xfd, 0x78, 0xba, 0xf0, 0xa0, 0x7b, 0xf6, 0x73, 0xb7, 0x13,
+	0x98, 0x22, 0xf7, 0x23, 0xc2, 0x5b, 0xca, 0xf6, 0x39, 0x3f, 0x65, 0x42, 0x66, 0x29, 0x97, 0x26,
+	0x90, 0x3c, 0xc4, 0x56, 0x98, 0x41, 0xc9, 0xa5, 0x71, 0xde, 0xf1, 0x34, 0xb7, 0x57, 0x71, 0x37,
+	0xae, 0xcf, 0x20, 0xe5, 0xb5, 0xa7, 0x96, 0x13, 0x1b, 0x6f, 0xd4, 0xe9, 0xbd, 0xb5, 0x3e, 0x1a,
+	0x5c, 0x0f, 0x9a, 0x7f, 0xb2, 0x85, 0xad, 0x31, 0xe3, 0x89, 0x3c, 0xee, 0xad, 0xf7, 0xd1, 0xa0,
+	0x1b, 0x98, 0x3f, 0x37, 0xc0, 0xdb, 0x0b, 0x18, 0xa6, 0xc3, 0xab, 0x72, 0xb8, 0x63, 0xbc, 0xa3,
+	0x3c, 0x9f, 0x1e, 0xbd, 0x2b, 0x85, 0x64, 0x47, 0x87, 0x45, 0x1a, 0xb3, 0xba, 0x3b, 0x1f, 0x77,
+	0xab, 0xfa, 0xb6, 0x9e, 0x4a, 0xbc, 0xaa, 0x33, 0xf7, 0x35, 0xb6, 0x2f, 0x4b, 0x33, 0x4d, 0x3c,
+	0xc6, 0x1b, 0xa1, 0xb9, 0x68, 0x1b, 0xd9, 0x14, 0x8c, 0xfe, 0xac, 0xe3, 0x6b, 0xca, 0x9b, 0x7c,
+	0x41, 0xd8, 0xd2, 0x73, 0x24, 0x7b, 0x4b, 0x07, 0xbd, 0xb8, 0x3c, 0xf6, 0xbd, 0x76, 0x62, 0x0d,
+	0xeb, 0x0e, 0x3f, 0x7c, 0xff, 0xfd, 0x79, 0x6d, 0x8f, 0xdc, 0xa5, 0xcb, 0xd6, 0x79, 0x7e, 0xa2,
+	0xf7, 0x88, 0x7c, 0x45, 0x18, 0xcf, 0x67, 0x47, 0xe8, 0xea, 0xbc, 0x85, 0x65, 0xb3, 0xef, 0xb7,
+	0x2f, 0x30, 0x90, 0x0f, 0x14, 0x24, 0x25, 0xfb, 0x2d, 0x20, 0xd3, 0x39, 0xd9, 0x37, 0x84, 0x6f,
+	0x5e, 0x18, 0x11, 0x19, 0xad, 0x8e, 0xbe, 0x6c, 0x7b, 0x6c, 0xff, 0xbf, 0x6a, 0x0c, 0xf1, 0x23,
+	0x45, 0xec, 0x93, 0x61, 0x0b, 0xe2, 0x7a, 0xf6, 0x6f, 0xf3, 0xca, 0xe2, 0xe0, 0xc5, 0xd9, 0xd4,
+	0x41, 0xe7, 0x53, 0x07, 0xfd, 0x9a, 0x3a, 0xe8, 0xd3, 0xcc, 0xe9, 0x9c, 0xcf, 0x9c, 0xce, 0x8f,
+	0x99, 0xd3, 0x79, 0xe3, 0x27, 0xa9, 0x3c, 0x2e, 0x23, 0x2f, 0x86, 0x4c, 0xdb, 0xc6, 0xc0, 0x93,
+	0x82, 0x09, 0x41, 0x13, 0xd8, 0xd7, 0x39, 0xef, 0xff, 0xf1, 0x55, 0xef, 0x50, 0x64, 0xa9, 0x87,
+	0xc6, 0xff, 0x1b, 0x00, 0x00, 0xff, 0xff, 0x41, 0xf7, 0xc8, 0xa5, 0x21, 0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
-var (
-	_ context.Context
-	_ grpc.ClientConn
-)
+var _ context.Context
+var _ grpc.ClientConn
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
@@ -294,6 +373,7 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	Investmint(ctx context.Context, in *QueryInvestmintRequest, opts ...grpc.CallOption) (*QueryInvestmintResponse, error)
+	AdjustedPrice(ctx context.Context, in *QueryAdjustedPriceRequest, opts ...grpc.CallOption) (*QueryAdjustedPriceResponse, error)
 }
 
 type queryClient struct {
@@ -322,21 +402,34 @@ func (c *queryClient) Investmint(ctx context.Context, in *QueryInvestmintRequest
 	return out, nil
 }
 
+func (c *queryClient) AdjustedPrice(ctx context.Context, in *QueryAdjustedPriceRequest, opts ...grpc.CallOption) (*QueryAdjustedPriceResponse, error) {
+	out := new(QueryAdjustedPriceResponse)
+	err := c.cc.Invoke(ctx, "/cyber.resources.v1beta1.Query/AdjustedPrice", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	Investmint(context.Context, *QueryInvestmintRequest) (*QueryInvestmintResponse, error)
+	AdjustedPrice(context.Context, *QueryAdjustedPriceRequest) (*QueryAdjustedPriceResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
-type UnimplementedQueryServer struct{}
+type UnimplementedQueryServer struct {
+}
 
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
-
 func (*UnimplementedQueryServer) Investmint(ctx context.Context, req *QueryInvestmintRequest) (*QueryInvestmintResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Investmint not implemented")
+}
+func (*UnimplementedQueryServer) AdjustedPrice(ctx context.Context, req *QueryAdjustedPriceRequest) (*QueryAdjustedPriceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AdjustedPrice not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -379,6 +472,24 @@ func _Query_Investmint_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_AdjustedPrice_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAdjustedPriceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AdjustedPrice(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cyber.resources.v1beta1.Query/AdjustedPrice",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AdjustedPrice(ctx, req.(*QueryAdjustedPriceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "cyber.resources.v1beta1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -390,6 +501,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Investmint",
 			Handler:    _Query_Investmint_Handler,
+		},
+		{
+			MethodName: "AdjustedPrice",
+			Handler:    _Query_AdjustedPrice_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -530,6 +645,79 @@ func (m *QueryInvestmintResponse) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryAdjustedPriceRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAdjustedPriceRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAdjustedPriceRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Resource) > 0 {
+		i -= len(m.Resource)
+		copy(dAtA[i:], m.Resource)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Resource)))
+		i--
+		dAtA[i] = 0x12
+	}
+	{
+		size, err := m.Base.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAdjustedPriceResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAdjustedPriceResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAdjustedPriceResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.Adjusted.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -541,7 +729,6 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-
 func (m *QueryParamsRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -591,14 +778,38 @@ func (m *QueryInvestmintResponse) Size() (n int) {
 	return n
 }
 
+func (m *QueryAdjustedPriceRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Base.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	l = len(m.Resource)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryAdjustedPriceResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Adjusted.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
 func sovQuery(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
-
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-
 func (m *QueryParamsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -649,7 +860,6 @@ func (m *QueryParamsRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-
 func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -733,7 +943,6 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-
 func (m *QueryInvestmintRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -868,7 +1077,6 @@ func (m *QueryInvestmintRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-
 func (m *QueryInvestmintResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -952,7 +1160,204 @@ func (m *QueryInvestmintResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *QueryAdjustedPriceRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAdjustedPriceRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAdjustedPriceRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Base", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Base.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Resource", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Resource = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
 
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAdjustedPriceResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAdjustedPriceResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAdjustedPriceResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Adjusted", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Adjusted.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func skipQuery(dAtA []byte) (n int, err error) {
 	l := len(dAtA)
 	iNdEx := 0

@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	"github.com/cybercongress/go-cyber/v6/x/clock/types"
+	"github.com/cybercongress/go-cyber/v7/x/clock/types"
 )
 
 func GetQueryCmd() *cobra.Command {

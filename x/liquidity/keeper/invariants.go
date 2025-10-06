@@ -6,7 +6,7 @@ import (
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cybercongress/go-cyber/v6/x/liquidity/types"
+	"github.com/cybercongress/go-cyber/v7/x/liquidity/types"
 )
 
 // RegisterInvariants registers all liquidity invariants.

@@ -6,24 +6,21 @@ package types
 import (
 	context "context"
 	fmt "fmt"
-	io "io"
-	math "math"
-	math_bits "math/bits"
-
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	io "io"
+	math "math"
+	math_bits "math/bits"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
-var (
-	_ = proto.Marshal
-	_ = fmt.Errorf
-	_ = math.Inf
-)
+var _ = proto.Marshal
+var _ = fmt.Errorf
+var _ = math.Inf
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -31,7 +28,8 @@ var (
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type QueryGraphStatsRequest struct{}
+type QueryGraphStatsRequest struct {
+}
 
 func (m *QueryGraphStatsRequest) Reset()         { *m = QueryGraphStatsRequest{} }
 func (m *QueryGraphStatsRequest) String() string { return proto.CompactTextString(m) }
@@ -39,11 +37,9 @@ func (*QueryGraphStatsRequest) ProtoMessage()    {}
 func (*QueryGraphStatsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1588f994db3ad35c, []int{0}
 }
-
 func (m *QueryGraphStatsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-
 func (m *QueryGraphStatsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_QueryGraphStatsRequest.Marshal(b, m, deterministic)
@@ -56,15 +52,12 @@ func (m *QueryGraphStatsRequest) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-
 func (m *QueryGraphStatsRequest) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_QueryGraphStatsRequest.Merge(m, src)
 }
-
 func (m *QueryGraphStatsRequest) XXX_Size() int {
 	return m.Size()
 }
-
 func (m *QueryGraphStatsRequest) XXX_DiscardUnknown() {
 	xxx_messageInfo_QueryGraphStatsRequest.DiscardUnknown(m)
 }
@@ -82,11 +75,9 @@ func (*QueryGraphStatsResponse) ProtoMessage()    {}
 func (*QueryGraphStatsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1588f994db3ad35c, []int{1}
 }
-
 func (m *QueryGraphStatsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-
 func (m *QueryGraphStatsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
 		return xxx_messageInfo_QueryGraphStatsResponse.Marshal(b, m, deterministic)
@@ -99,15 +90,12 @@ func (m *QueryGraphStatsResponse) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-
 func (m *QueryGraphStatsResponse) XXX_Merge(src proto.Message) {
 	xxx_messageInfo_QueryGraphStatsResponse.Merge(m, src)
 }
-
 func (m *QueryGraphStatsResponse) XXX_Size() int {
 	return m.Size()
 }
-
 func (m *QueryGraphStatsResponse) XXX_DiscardUnknown() {
 	xxx_messageInfo_QueryGraphStatsResponse.DiscardUnknown(m)
 }
@@ -128,40 +116,133 @@ func (m *QueryGraphStatsResponse) GetParticles() uint64 {
 	return 0
 }
 
+type QueryBurnStatsRequest struct {
+}
+
+func (m *QueryBurnStatsRequest) Reset()         { *m = QueryBurnStatsRequest{} }
+func (m *QueryBurnStatsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryBurnStatsRequest) ProtoMessage()    {}
+func (*QueryBurnStatsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1588f994db3ad35c, []int{2}
+}
+func (m *QueryBurnStatsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBurnStatsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBurnStatsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBurnStatsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBurnStatsRequest.Merge(m, src)
+}
+func (m *QueryBurnStatsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBurnStatsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBurnStatsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBurnStatsRequest proto.InternalMessageInfo
+
+type QueryBurnStatsResponse struct {
+	Millivolt   uint64 `protobuf:"varint,1,opt,name=millivolt,proto3" json:"millivolt,omitempty"`
+	Milliampere uint64 `protobuf:"varint,2,opt,name=milliampere,proto3" json:"milliampere,omitempty"`
+}
+
+func (m *QueryBurnStatsResponse) Reset()         { *m = QueryBurnStatsResponse{} }
+func (m *QueryBurnStatsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryBurnStatsResponse) ProtoMessage()    {}
+func (*QueryBurnStatsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1588f994db3ad35c, []int{3}
+}
+func (m *QueryBurnStatsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBurnStatsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBurnStatsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBurnStatsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBurnStatsResponse.Merge(m, src)
+}
+func (m *QueryBurnStatsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBurnStatsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBurnStatsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBurnStatsResponse proto.InternalMessageInfo
+
+func (m *QueryBurnStatsResponse) GetMillivolt() uint64 {
+	if m != nil {
+		return m.Millivolt
+	}
+	return 0
+}
+
+func (m *QueryBurnStatsResponse) GetMilliampere() uint64 {
+	if m != nil {
+		return m.Milliampere
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*QueryGraphStatsRequest)(nil), "cyber.graph.v1beta1.QueryGraphStatsRequest")
 	proto.RegisterType((*QueryGraphStatsResponse)(nil), "cyber.graph.v1beta1.QueryGraphStatsResponse")
+	proto.RegisterType((*QueryBurnStatsRequest)(nil), "cyber.graph.v1beta1.QueryBurnStatsRequest")
+	proto.RegisterType((*QueryBurnStatsResponse)(nil), "cyber.graph.v1beta1.QueryBurnStatsResponse")
 }
 
 func init() { proto.RegisterFile("cyber/graph/v1beta1/query.proto", fileDescriptor_1588f994db3ad35c) }
 
 var fileDescriptor_1588f994db3ad35c = []byte{
-	// 283 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x90, 0xb1, 0x4a, 0xc4, 0x30,
-	0x18, 0xc7, 0x9b, 0x43, 0x05, 0x33, 0x46, 0xd0, 0x72, 0x1c, 0xf1, 0xe8, 0x74, 0xa0, 0x26, 0x9c,
-	0xbe, 0x81, 0x8b, 0x38, 0x7a, 0x0e, 0x82, 0x8b, 0xa4, 0x25, 0xe4, 0x8a, 0x35, 0xc9, 0xe5, 0x4b,
-	0xc5, 0xae, 0x3e, 0x81, 0xe2, 0xe8, 0x0b, 0x39, 0x1e, 0xb8, 0x38, 0x4a, 0xeb, 0x83, 0x48, 0xd3,
-	0x83, 0x13, 0xec, 0x70, 0x63, 0xbe, 0xef, 0xf7, 0xff, 0xe5, 0xcf, 0x87, 0x0f, 0xb3, 0x2a, 0x95,
-	0x8e, 0x2b, 0x27, 0xec, 0x9c, 0x3f, 0x4e, 0x53, 0xe9, 0xc5, 0x94, 0x2f, 0x4a, 0xe9, 0x2a, 0x66,
-	0x9d, 0xf1, 0x86, 0xec, 0x05, 0x80, 0x05, 0x80, 0xad, 0x80, 0xe1, 0x48, 0x19, 0xa3, 0x0a, 0xc9,
-	0x85, 0xcd, 0xb9, 0xd0, 0xda, 0x78, 0xe1, 0x73, 0xa3, 0xa1, 0x8b, 0x24, 0x31, 0xde, 0xbf, 0x6a,
-	0x0d, 0x17, 0x6d, 0xe6, 0xda, 0x0b, 0x0f, 0x33, 0xb9, 0x28, 0x25, 0xf8, 0xe4, 0x06, 0x1f, 0xfc,
-	0xdb, 0x80, 0x35, 0x1a, 0x24, 0xa1, 0x18, 0x87, 0x9f, 0x8a, 0x5c, 0xdf, 0x43, 0x8c, 0xc6, 0x68,
-	0xb2, 0x35, 0xfb, 0x33, 0x21, 0x23, 0xbc, 0x6b, 0x85, 0xf3, 0x79, 0x56, 0x48, 0x88, 0x07, 0x61,
-	0xbd, 0x1e, 0x9c, 0xbe, 0x23, 0xbc, 0x1d, 0xcc, 0xe4, 0x15, 0x61, 0xbc, 0xd6, 0x93, 0x23, 0xd6,
-	0xd3, 0x9f, 0xf5, 0xd7, 0x1b, 0x1e, 0x6f, 0x06, 0x77, 0x8d, 0x93, 0xc9, 0xf3, 0xe7, 0xcf, 0xdb,
-	0x20, 0x21, 0x63, 0xde, 0x77, 0xc3, 0xf0, 0xba, 0x83, 0x36, 0x71, 0x7e, 0xf9, 0x51, 0x53, 0xb4,
-	0xac, 0x29, 0xfa, 0xae, 0x29, 0x7a, 0x69, 0x68, 0xb4, 0x6c, 0x68, 0xf4, 0xd5, 0xd0, 0xe8, 0x96,
-	0xab, 0xdc, 0xcf, 0xcb, 0x94, 0x65, 0xe6, 0xa1, 0xb3, 0x64, 0x46, 0x2b, 0x27, 0x01, 0xb8, 0x32,
-	0x27, 0x9d, 0xf6, 0x69, 0x25, 0xf6, 0x95, 0x95, 0x90, 0xee, 0x84, 0x13, 0x9f, 0xfd, 0x06, 0x00,
-	0x00, 0xff, 0xff, 0x72, 0x08, 0x86, 0x71, 0xb8, 0x01, 0x00, 0x00,
+	// 361 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x52, 0xc1, 0x4e, 0x2a, 0x31,
+	0x14, 0xa5, 0xe4, 0x3d, 0x13, 0xea, 0xae, 0x46, 0x21, 0x84, 0x14, 0x9c, 0x8d, 0x44, 0x74, 0x1a,
+	0xf4, 0x0f, 0xd8, 0x18, 0x97, 0xe2, 0x42, 0xe3, 0xc6, 0x74, 0x26, 0xcd, 0xd0, 0x38, 0xb4, 0xa5,
+	0xed, 0x10, 0xd9, 0xba, 0x37, 0xd1, 0xf8, 0x19, 0xfe, 0x88, 0x4b, 0x12, 0x37, 0x2e, 0x0d, 0xf8,
+	0x21, 0x86, 0x4e, 0x23, 0xa8, 0x63, 0xc2, 0xf2, 0x9e, 0x7b, 0xee, 0x39, 0xe7, 0xde, 0x16, 0x36,
+	0xe3, 0x49, 0xc4, 0x34, 0x49, 0x34, 0x55, 0x03, 0x32, 0xee, 0x46, 0xcc, 0xd2, 0x2e, 0x19, 0x65,
+	0x4c, 0x4f, 0x42, 0xa5, 0xa5, 0x95, 0x68, 0xcb, 0x11, 0x42, 0x47, 0x08, 0x3d, 0xa1, 0xde, 0x48,
+	0xa4, 0x4c, 0x52, 0x46, 0xa8, 0xe2, 0x84, 0x0a, 0x21, 0x2d, 0xb5, 0x5c, 0x0a, 0x93, 0x8f, 0x04,
+	0x35, 0xb8, 0x73, 0xb6, 0x50, 0x38, 0x59, 0xcc, 0x9c, 0x5b, 0x6a, 0x4d, 0x9f, 0x8d, 0x32, 0x66,
+	0x6c, 0x70, 0x01, 0xab, 0xbf, 0x3a, 0x46, 0x49, 0x61, 0x18, 0xc2, 0x10, 0x3a, 0xa7, 0x94, 0x8b,
+	0x1b, 0x53, 0x03, 0x2d, 0xd0, 0xfe, 0xd7, 0x5f, 0x41, 0x50, 0x03, 0x56, 0x14, 0xd5, 0x96, 0xc7,
+	0x29, 0x33, 0xb5, 0xb2, 0x6b, 0x2f, 0x81, 0xa0, 0x0a, 0xb7, 0x9d, 0x70, 0x2f, 0xd3, 0xe2, 0x9b,
+	0xe3, 0xa5, 0xcf, 0xb2, 0xd2, 0xf0, 0x86, 0x0d, 0x58, 0x19, 0xf2, 0x34, 0xe5, 0x63, 0x99, 0x5a,
+	0xef, 0xb7, 0x04, 0x50, 0x0b, 0x6e, 0xba, 0x82, 0x0e, 0x15, 0xd3, 0xcc, 0x1b, 0xae, 0x42, 0x47,
+	0xcf, 0x65, 0xf8, 0xdf, 0x49, 0xa3, 0x47, 0x00, 0xe1, 0x72, 0x23, 0xd4, 0x09, 0x0b, 0x4e, 0x16,
+	0x16, 0x5f, 0xa4, 0x7e, 0xb0, 0x1e, 0x39, 0xcf, 0x1c, 0xb4, 0xef, 0x5e, 0x3f, 0x9e, 0xca, 0x01,
+	0x6a, 0x91, 0xa2, 0x67, 0x73, 0xd5, 0xb5, 0x71, 0x21, 0xee, 0x01, 0xac, 0x7c, 0xed, 0x8c, 0xf6,
+	0xff, 0x76, 0xf9, 0x79, 0xb1, 0x7a, 0x67, 0x2d, 0xae, 0x0f, 0xb4, 0xe7, 0x02, 0xed, 0xa2, 0x66,
+	0x61, 0xa0, 0x28, 0xd3, 0x22, 0xcf, 0xd3, 0x3b, 0x7d, 0x99, 0x61, 0x30, 0x9d, 0x61, 0xf0, 0x3e,
+	0xc3, 0xe0, 0x61, 0x8e, 0x4b, 0xd3, 0x39, 0x2e, 0xbd, 0xcd, 0x71, 0xe9, 0x8a, 0x24, 0xdc, 0x0e,
+	0xb2, 0x28, 0x8c, 0xe5, 0x30, 0x17, 0x89, 0xa5, 0x48, 0x34, 0x33, 0x86, 0x24, 0xf2, 0x30, 0x57,
+	0xbd, 0xf5, 0xba, 0x76, 0xa2, 0x98, 0x89, 0x36, 0xdc, 0x2f, 0x3b, 0xfe, 0x0c, 0x00, 0x00, 0xff,
+	0xff, 0x55, 0x5d, 0xaf, 0x89, 0xbb, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
-var (
-	_ context.Context
-	_ grpc.ClientConn
-)
+var _ context.Context
+var _ grpc.ClientConn
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
@@ -172,6 +253,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
 	GraphStats(ctx context.Context, in *QueryGraphStatsRequest, opts ...grpc.CallOption) (*QueryGraphStatsResponse, error)
+	BurnStats(ctx context.Context, in *QueryBurnStatsRequest, opts ...grpc.CallOption) (*QueryBurnStatsResponse, error)
 }
 
 type queryClient struct {
@@ -191,16 +273,30 @@ func (c *queryClient) GraphStats(ctx context.Context, in *QueryGraphStatsRequest
 	return out, nil
 }
 
+func (c *queryClient) BurnStats(ctx context.Context, in *QueryBurnStatsRequest, opts ...grpc.CallOption) (*QueryBurnStatsResponse, error) {
+	out := new(QueryBurnStatsResponse)
+	err := c.cc.Invoke(ctx, "/cyber.graph.v1beta1.Query/BurnStats", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	GraphStats(context.Context, *QueryGraphStatsRequest) (*QueryGraphStatsResponse, error)
+	BurnStats(context.Context, *QueryBurnStatsRequest) (*QueryBurnStatsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
-type UnimplementedQueryServer struct{}
+type UnimplementedQueryServer struct {
+}
 
 func (*UnimplementedQueryServer) GraphStats(ctx context.Context, req *QueryGraphStatsRequest) (*QueryGraphStatsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GraphStats not implemented")
+}
+func (*UnimplementedQueryServer) BurnStats(ctx context.Context, req *QueryBurnStatsRequest) (*QueryBurnStatsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BurnStats not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -225,6 +321,24 @@ func _Query_GraphStats_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_BurnStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBurnStatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).BurnStats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cyber.graph.v1beta1.Query/BurnStats",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).BurnStats(ctx, req.(*QueryBurnStatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "cyber.graph.v1beta1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -232,6 +346,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GraphStats",
 			Handler:    _Query_GraphStats_Handler,
+		},
+		{
+			MethodName: "BurnStats",
+			Handler:    _Query_BurnStats_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -294,6 +412,62 @@ func (m *QueryGraphStatsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryBurnStatsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBurnStatsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBurnStatsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBurnStatsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBurnStatsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBurnStatsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Milliampere != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Milliampere))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.Millivolt != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Millivolt))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -305,7 +479,6 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-
 func (m *QueryGraphStatsRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -330,14 +503,36 @@ func (m *QueryGraphStatsResponse) Size() (n int) {
 	return n
 }
 
+func (m *QueryBurnStatsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryBurnStatsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Millivolt != 0 {
+		n += 1 + sovQuery(uint64(m.Millivolt))
+	}
+	if m.Milliampere != 0 {
+		n += 1 + sovQuery(uint64(m.Milliampere))
+	}
+	return n
+}
+
 func sovQuery(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
-
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-
 func (m *QueryGraphStatsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -388,7 +583,6 @@ func (m *QueryGraphStatsRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-
 func (m *QueryGraphStatsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -477,7 +671,144 @@ func (m *QueryGraphStatsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *QueryBurnStatsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBurnStatsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBurnStatsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
 
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBurnStatsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBurnStatsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBurnStatsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Millivolt", wireType)
+			}
+			m.Millivolt = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Millivolt |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Milliampere", wireType)
+			}
+			m.Milliampere = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Milliampere |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func skipQuery(dAtA []byte) (n int, err error) {
 	l := len(dAtA)
 	iNdEx := 0

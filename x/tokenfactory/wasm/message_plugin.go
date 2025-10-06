@@ -2,7 +2,7 @@ package wasm
 
 import (
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
-	pluginstypes "github.com/cybercongress/go-cyber/v6/plugins/types"
+	pluginstypes "github.com/cybercongress/go-cyber/v7/plugins/types"
 
 	errorsmod "cosmossdk.io/errors"
 
@@ -10,9 +10,9 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	tokenfactorykeeper "github.com/cybercongress/go-cyber/v6/x/tokenfactory/keeper"
-	tokenfactorytypes "github.com/cybercongress/go-cyber/v6/x/tokenfactory/types"
-	bindingstypes "github.com/cybercongress/go-cyber/v6/x/tokenfactory/wasm/types"
+	tokenfactorykeeper "github.com/cybercongress/go-cyber/v7/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/cybercongress/go-cyber/v7/x/tokenfactory/types"
+	bindingstypes "github.com/cybercongress/go-cyber/v7/x/tokenfactory/wasm/types"
 )
 
 type Messenger struct {

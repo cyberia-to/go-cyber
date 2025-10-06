@@ -2,12 +2,11 @@ package types
 
 import (
 	"crypto/sha256"
-	"encoding/binary"
 	"sort"
 	"time"
 
-	"github.com/cybercongress/go-cyber/v6/merkle"
-	graphtypes "github.com/cybercongress/go-cyber/v6/x/graph/types"
+	"github.com/cybercongress/go-cyber/v7/merkle"
+	graphtypes "github.com/cybercongress/go-cyber/v7/x/graph/types"
 
 	"github.com/cometbft/cometbft/libs/log"
 )
@@ -59,10 +58,9 @@ func NewRank(state EMState, logger log.Logger, fullTree bool) Rank {
 
 	start = time.Now()
 	merkleTree := merkle.NewTree(sha256.New(), fullTree)
-	for _, u64 := range rankValues {
-		rankBytes := make([]byte, 8)
-		binary.LittleEndian.PutUint64(rankBytes, u64)
-		merkleTree.Push(rankBytes)
+	zeroRankBytes := make([]byte, 8)
+	for _, _ = range rankValues {
+		merkleTree.Push(zeroRankBytes)
 	}
 	logger.Info("Rank constructing tree", "duration", time.Since(start).String())
 
@@ -99,6 +97,12 @@ func NewFromMerkle(cidCount uint64, treeBytes []byte) Rank {
 	}
 
 	rank.MerkleTree.ImportSubtreesRoots(treeBytes)
+
+	if cidCount > 0 {
+		rank.RankValues = make([]uint64, cidCount)
+		rank.EntropyValues = make([]uint64, cidCount)
+	}
+
 	return rank
 }
 

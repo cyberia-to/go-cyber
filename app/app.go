@@ -14,16 +14,17 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	v7 "github.com/cybercongress/go-cyber/v7/app/upgrades/v7"
 
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	v5 "github.com/cybercongress/go-cyber/v6/app/upgrades/v5"
-	v6 "github.com/cybercongress/go-cyber/v6/app/upgrades/v6"
-	"github.com/cybercongress/go-cyber/v6/client/docs"
-	bandwidthkeeper "github.com/cybercongress/go-cyber/v6/x/bandwidth/keeper"
-	cyberbankkeeper "github.com/cybercongress/go-cyber/v6/x/cyberbank/keeper"
-	graphkeeper "github.com/cybercongress/go-cyber/v6/x/graph/keeper"
-	rankkeeper "github.com/cybercongress/go-cyber/v6/x/rank/keeper"
+	v5 "github.com/cybercongress/go-cyber/v7/app/upgrades/v5"
+	v6 "github.com/cybercongress/go-cyber/v7/app/upgrades/v6"
+	"github.com/cybercongress/go-cyber/v7/client/docs"
+	bandwidthkeeper "github.com/cybercongress/go-cyber/v7/x/bandwidth/keeper"
+	cyberbankkeeper "github.com/cybercongress/go-cyber/v7/x/cyberbank/keeper"
+	graphkeeper "github.com/cybercongress/go-cyber/v7/x/graph/keeper"
+	rankkeeper "github.com/cybercongress/go-cyber/v7/x/rank/keeper"
 	"io"
 	"os"
 	"time"
@@ -33,15 +34,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/x/auth/posthandler"
 
-	v2 "github.com/cybercongress/go-cyber/v6/app/upgrades/v2"
-	v3 "github.com/cybercongress/go-cyber/v6/app/upgrades/v3"
-	v4 "github.com/cybercongress/go-cyber/v6/app/upgrades/v4"
+	v2 "github.com/cybercongress/go-cyber/v7/app/upgrades/v2"
+	v3 "github.com/cybercongress/go-cyber/v7/app/upgrades/v3"
+	v4 "github.com/cybercongress/go-cyber/v7/app/upgrades/v4"
 
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
 
-	"github.com/cybercongress/go-cyber/v6/app/keepers"
-	"github.com/cybercongress/go-cyber/v6/app/upgrades"
+	"github.com/cybercongress/go-cyber/v7/app/keepers"
+	"github.com/cybercongress/go-cyber/v7/app/upgrades"
 
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -80,7 +81,7 @@ import (
 
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 
-	"github.com/cybercongress/go-cyber/v6/utils"
+	"github.com/cybercongress/go-cyber/v7/utils"
 
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 )
@@ -95,7 +96,7 @@ var (
 	NodeDir      = ".cyber"
 	Bech32Prefix = "bostrom"
 
-	Upgrades = []upgrades.Upgrade{v2.Upgrade, v3.Upgrade, v4.Upgrade, v6.Upgrade}
+	Upgrades = []upgrades.Upgrade{v2.Upgrade, v3.Upgrade, v4.Upgrade, v6.Upgrade, v7.Upgrade}
 	Forks    = []upgrades.Fork{v5.Fork}
 )
 
@@ -266,12 +267,11 @@ func NewBostromApp(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
-				BankKeeper:      app.CyberbankKeeper.Proxy,
+				BankKeeper:      app.BankKeeper,
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			BandwidthMeter:    app.BandwidthMeter,
 			IBCKeeper:         app.IBCKeeper,
 			TXCounterStoreKey: app.GetKey(wasmtypes.StoreKey),
 			WasmConfig:        &wasmConfig,

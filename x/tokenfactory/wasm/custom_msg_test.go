@@ -11,9 +11,9 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cybercongress/go-cyber/v6/app"
-	"github.com/cybercongress/go-cyber/v6/x/tokenfactory/types"
-	bindings "github.com/cybercongress/go-cyber/v6/x/tokenfactory/wasm/types"
+	"github.com/cybercongress/go-cyber/v7/app"
+	"github.com/cybercongress/go-cyber/v7/x/tokenfactory/types"
+	bindings "github.com/cybercongress/go-cyber/v7/x/tokenfactory/wasm/types"
 )
 
 func TestCreateDenomMsg(t *testing.T) {

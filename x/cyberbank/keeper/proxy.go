@@ -9,9 +9,9 @@ import (
 	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	ctypes "github.com/cybercongress/go-cyber/v6/types"
-	"github.com/cybercongress/go-cyber/v6/x/cyberbank/types"
-	resourcestypes "github.com/cybercongress/go-cyber/v6/x/resources/types"
+	ctypes "github.com/cybercongress/go-cyber/v7/types"
+	"github.com/cybercongress/go-cyber/v7/x/cyberbank/types"
+	resourcestypes "github.com/cybercongress/go-cyber/v7/x/resources/types"
 )
 
 var _ bank.Keeper = (*Proxy)(nil)
@@ -22,6 +22,7 @@ type Proxy struct {
 	bk bank.Keeper
 	ak authkeeper.AccountKeeper
 	ek types.EnergyKeeper
+	gk types.GraphKeeper
 
 	coinsTransferHooks []types.CoinsTransferHook
 }
@@ -109,6 +110,10 @@ func (p *Proxy) SetAccountKeeper(ak authkeeper.AccountKeeper) {
 	p.ak = ak
 }
 
+func (p *Proxy) SetGraphKeeper(gk types.GraphKeeper) {
+	p.gk = gk
+}
+
 func (p *Proxy) OnCoinsTransfer(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress) {
 	for _, hook := range p.coinsTransferHooks {
 		hook(ctx, from, to)
@@ -178,6 +183,12 @@ func (p *Proxy) SendCoins(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.A
 		}
 		if err := p.bk.BurnCoins(ctx, resourcestypes.ResourcesName, burnCoins); err != nil {
 			return err
+		}
+		if burnCoins.AmountOf(ctypes.VOLT).IsPositive() {
+			p.gk.AddBurnedVolts(ctx, burnCoins.AmountOf(ctypes.VOLT).Uint64())
+		}
+		if burnCoins.AmountOf(ctypes.VOLT).IsPositive() {
+			p.gk.AddBurnedAmperes(ctx, burnCoins.AmountOf(ctypes.AMPERE).Uint64())
 		}
 	}
 

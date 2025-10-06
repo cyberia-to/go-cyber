@@ -12,8 +12,8 @@ import (
 
 	"github.com/cometbft/cometbft/libs/log"
 
-	ctypes "github.com/cybercongress/go-cyber/v6/types"
-	"github.com/cybercongress/go-cyber/v6/x/graph/types"
+	ctypes "github.com/cybercongress/go-cyber/v7/types"
+	"github.com/cybercongress/go-cyber/v7/x/graph/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -114,6 +114,50 @@ func (gk GraphKeeper) GetLinksCount(ctx sdk.Context) uint64 {
 		return 0
 	}
 	return sdk.BigEndianToUint64(linksCountAsBytes)
+}
+
+func (gk GraphKeeper) GetBurnedVolts(ctx sdk.Context) uint64 {
+	store := ctx.KVStore(gk.key)
+	burnedVoltsAsBytes := store.Get(types.BurnedVolts)
+
+	if burnedVoltsAsBytes == nil {
+		return 0
+	}
+	return sdk.BigEndianToUint64(burnedVoltsAsBytes)
+}
+
+func (gk GraphKeeper) AddBurnedVolts(ctx sdk.Context, toBurn uint64) {
+	var burnedVolts = uint64(0)
+
+	store := ctx.KVStore(gk.key)
+	burnedVoltsAsBytes := store.Get(types.BurnedVolts)
+	if burnedVoltsAsBytes != nil {
+		burnedVolts = sdk.BigEndianToUint64(burnedVoltsAsBytes)
+	}
+
+	store.Set(types.BurnedVolts, sdk.Uint64ToBigEndian(burnedVolts+toBurn))
+}
+
+func (gk GraphKeeper) GetBurnedAmperes(ctx sdk.Context) uint64 {
+	store := ctx.KVStore(gk.key)
+	burnedAmperesAsBytes := store.Get(types.BurnedAmperes)
+
+	if burnedAmperesAsBytes == nil {
+		return 0
+	}
+	return sdk.BigEndianToUint64(burnedAmperesAsBytes)
+}
+
+func (gk GraphKeeper) AddBurnedAmperes(ctx sdk.Context, toBurn uint64) {
+	var burnedAmperes = uint64(0)
+
+	store := ctx.KVStore(gk.key)
+	burnedAmperesAsBytes := store.Get(types.BurnedAmperes)
+	if burnedAmperesAsBytes != nil {
+		burnedAmperes = sdk.BigEndianToUint64(burnedAmperesAsBytes)
+	}
+
+	store.Set(types.BurnedAmperes, sdk.Uint64ToBigEndian(burnedAmperes+toBurn))
 }
 
 // write links to writer in binary format: <links_count><cid_number_from><cid_number_to><acc_number>...

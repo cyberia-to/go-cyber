@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"github.com/cybercongress/go-cyber/v7/x/resources/exported"
 	"math"
 
 	errorsmod "cosmossdk.io/errors"
@@ -15,15 +16,16 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 
-	ctypes "github.com/cybercongress/go-cyber/v6/types"
-	bandwithkeeper "github.com/cybercongress/go-cyber/v6/x/bandwidth/keeper"
-	"github.com/cybercongress/go-cyber/v6/x/resources/types"
+	ctypes "github.com/cybercongress/go-cyber/v7/types"
+	bandwithkeeper "github.com/cybercongress/go-cyber/v7/x/bandwidth/keeper"
+	"github.com/cybercongress/go-cyber/v7/x/resources/types"
 )
 
 type Keeper struct {
 	cdc            codec.BinaryCodec
 	storeKey       storetypes.StoreKey
 	accountKeeper  types.AccountKeeper
+	graphKeeper    exported.GraphKeeper
 	bankKeeper     types.BankKeeper
 	bandwidthMeter *bandwithkeeper.BandwidthMeter
 
@@ -43,6 +45,7 @@ func NewKeeper(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	bm *bandwithkeeper.BandwidthMeter,
+	gk exported.GraphKeeper,
 	authority string,
 ) Keeper {
 	if addr := ak.GetModuleAddress(types.ResourcesName); addr == nil {
@@ -55,6 +58,7 @@ func NewKeeper(
 		accountKeeper:  ak,
 		bankKeeper:     bk,
 		bandwidthMeter: bm,
+		graphKeeper:    gk,
 		authority:      authority,
 	}
 	return keeper
@@ -161,140 +165,13 @@ func (k Keeper) addCoinsToVestingSchedule(ctx sdk.Context, addr sdk.AccAddress, 
 	acc := k.accountKeeper.GetAccount(ctx, addr)
 	vacc := acc.(*vestingtypes.PeriodicVestingAccount)
 
-	// Add the new vesting coins to OriginalVesting
-	vacc.OriginalVesting = vacc.OriginalVesting.Add(amt...)
+	// just mock short vesting period for backward compatibility with ui
 
-	// update vesting periods
-	// EndTime = 100
-	// BlockTime  = 110
-	// length == 6
-	if vacc.EndTime < ctx.BlockTime().Unix() {
-		// edge case one - the vesting account's end time is in the past (ie, all previous vesting periods have completed)
-		// append a new period to the vesting account, update the end time, update the account in the store and return
-		// newPeriodLength := (ctx.BlockTime().Unix() - vacc.EndTime) + length // 110 - 100 + 6 = 16
-		// newPeriod := types.NewPeriod(amt, newPeriodLength)
-		// vacc.VestingPeriods = append(vacc.VestingPeriods, newPeriod)
-		// vacc.EndTime = ctx.BlockTime().Unix() + length
-		// k.accountKeeper.SetAccount(ctx, vacc)
-		// return nil
-
-		// edge case one - the vesting account's end time is in the past (ie, all previous vesting periods have completed)
-		// delete all passed periods, add a new period to the vesting account, update the end time, update the account in the store and return
-		// newPeriodLength := (ctx.BlockTime().Unix() - vacc.EndTime) + length // 110 - 100 + 6 = 16
-		newPeriod := types.NewPeriod(amt, length)
-		vacc.VestingPeriods = append(vestingtypes.Periods{}, newPeriod)
-		vacc.StartTime = ctx.BlockTime().Unix()
-		vacc.EndTime = ctx.BlockTime().Unix() + length
-		vacc.OriginalVesting = newPeriod.Amount
-		k.accountKeeper.SetAccount(ctx, vacc)
-		return nil
-	}
-	// StartTime = 110
-	// BlockTime = 100
-	// length = 6
-	// this will not happen in case of resource module
-	if vacc.StartTime > ctx.BlockTime().Unix() {
-		// edge case two - the vesting account's start time is in the future (all periods have not started)
-		// update the start time to now and adjust the period lengths in place - a new period will be inserted in the next code block
-		updatedPeriods := vestingtypes.Periods{}
-		for i, period := range vacc.VestingPeriods {
-			updatedPeriod := period
-			if i == 0 {
-				updatedPeriod = types.NewPeriod(period.Amount, (vacc.StartTime-ctx.BlockTime().Unix())+period.Length) // 110 - 100 + 6 = 16
-			}
-			updatedPeriods = append(updatedPeriods, updatedPeriod)
-		}
-		vacc.VestingPeriods = updatedPeriods
-		vacc.StartTime = ctx.BlockTime().Unix()
-	}
-
-	if len(vacc.VestingPeriods) == int(k.GetParams(ctx).MaxSlots) && !mergeSlot {
-		// case when there are already filled slots and no one already passed
-		if vacc.StartTime+vacc.VestingPeriods[0].Length > ctx.BlockTime().Unix() {
-			return types.ErrFullSlots
-		} else { //nolint:revive
-			// TODO refactor next code blocks
-			// case when there are passed slots and we are clean them to free space to new ones
-			activePeriods := vestingtypes.Periods{}
-			accumulatedLength := int64(0)
-			shiftStartTime := int64(0)
-			for _, period := range vacc.VestingPeriods {
-				if vacc.StartTime+period.Length+accumulatedLength > ctx.BlockTime().Unix() {
-					activePeriods = append(activePeriods, period)
-				} else {
-					shiftStartTime += period.Length
-				}
-				accumulatedLength += period.Length
-			}
-
-			updatedPeriods := vestingtypes.Periods{}
-			updatedOriginalVesting := sdk.Coins{}
-			for _, period := range activePeriods {
-				updatedOriginalVesting = updatedOriginalVesting.Add(period.Amount...)
-				updatedPeriods = append(updatedPeriods, period)
-			}
-			vacc.OriginalVesting = updatedOriginalVesting.Add(amt...)
-			vacc.VestingPeriods = updatedPeriods
-			vacc.StartTime += shiftStartTime
-		}
-	}
-
-	// logic for inserting a new vesting period into the existing vesting schedule
-	remainingLength := vacc.EndTime - ctx.BlockTime().Unix()
-	elapsedTime := ctx.BlockTime().Unix() - vacc.StartTime
-	proposedEndTime := ctx.BlockTime().Unix() + length
-	if remainingLength < length {
-		// in the case that the proposed length is longer than the remaining length of all vesting periods, create a new period with length equal to the difference between the proposed length and the previous total length
-		newPeriodLength := length - remainingLength
-		newPeriod := types.NewPeriod(amt, newPeriodLength)
-		vacc.VestingPeriods = append(vacc.VestingPeriods, newPeriod)
-		// update the end time so that the sum of all period lengths equals endTime - startTime
-		vacc.EndTime = proposedEndTime
-	} else {
-		// In the case that the proposed length is less than or equal to the sum of all previous period lengths, insert the period and update other periods as necessary.
-		// EXAMPLE (l is length, a is amount)
-		// Original Periods: {[l: 1 a: 1], [l: 2, a: 1], [l:8, a:3], [l: 5, a: 3]}
-		// Period we want to insert [l: 5, a: x]
-		// Expected result:
-		// {[l: 1, a: 1], [l:2, a: 1], [l:2, a:x], [l:6, a:3], [l:5, a:3]}
-
-		// StartTime = 100
-		// Periods = [5,5,5,5]
-		// EndTime = 120
-		// BlockTime = 101
-		// length = 2
-
-		// for period in Periods:
-		// iteration  1:
-		// lengthCounter = 5
-		// if 5 < 101 - 100 + 2 - no
-		// if 5 = 3 - no
-		// else
-		// newperiod = 2 - 0
-		newPeriods := vestingtypes.Periods{}
-		lengthCounter := int64(0)
-		appendRemaining := false
-		for _, period := range vacc.VestingPeriods {
-			if appendRemaining {
-				newPeriods = append(newPeriods, period)
-				continue
-			}
-			lengthCounter += period.Length
-			if lengthCounter < elapsedTime+length { //nolint:gocritic
-				newPeriods = append(newPeriods, period)
-			} else if lengthCounter == elapsedTime+length {
-				newPeriod := types.NewPeriod(period.Amount.Add(amt...), period.Length)
-				newPeriods = append(newPeriods, newPeriod)
-				appendRemaining = true
-			} else {
-				newPeriod := types.NewPeriod(amt, elapsedTime+length-types.GetTotalVestingPeriodLength(newPeriods))
-				previousPeriod := types.NewPeriod(period.Amount, period.Length-newPeriod.Length)
-				newPeriods = append(newPeriods, newPeriod, previousPeriod)
-				appendRemaining = true
-			}
-		}
-		vacc.VestingPeriods = newPeriods
-	}
+	newPeriod := types.NewPeriod(amt, length)
+	vacc.VestingPeriods = append(vestingtypes.Periods{}, newPeriod)
+	vacc.StartTime = ctx.BlockTime().Unix()
+	vacc.EndTime = ctx.BlockTime().Unix() + length
+	vacc.OriginalVesting = newPeriod.Amount
 	k.accountKeeper.SetAccount(ctx, vacc)
 	return nil
 }
@@ -307,7 +184,7 @@ func (k Keeper) Mint(ctx sdk.Context, recipientAddr sdk.AccAddress, amt sdk.Coin
 
 	toMint := k.CalculateInvestmint(ctx, amt, resource, length)
 
-	// Apply exponential supply-based decreasing adjustment so each next minter mints less, ceteris paribus.
+	// Apply exponential supply-based decreasing adjustment so each next minter mints less
 	toMint = k.applySupplyExponentialAdjustment(ctx, resource, toMint)
 
 	if toMint.Amount.LT(sdk.NewInt(1000)) {
@@ -389,6 +266,12 @@ func (k Keeper) applySupplyExponentialAdjustment(ctx sdk.Context, resource strin
 	}
 
 	totalSupply := k.bankKeeper.GetSupply(ctx, resource).Amount
+	if resource == ctypes.VOLT {
+		totalSupply = totalSupply.Add(sdk.NewInt(int64(k.graphKeeper.GetBurnedVolts(ctx))))
+	}
+	if resource == ctypes.AMPERE {
+		totalSupply = totalSupply.Add(sdk.NewInt(int64(k.graphKeeper.GetBurnedAmperes(ctx))))
+	}
 
 	var halfLife sdk.Int
 	switch resource {

@@ -109,6 +109,8 @@
     - [Msg](#cyber.dmn.v1beta1.Msg)
   
 - [cyber/graph/v1beta1/query.proto](#cyber/graph/v1beta1/query.proto)
+    - [QueryBurnStatsRequest](#cyber.graph.v1beta1.QueryBurnStatsRequest)
+    - [QueryBurnStatsResponse](#cyber.graph.v1beta1.QueryBurnStatsResponse)
     - [QueryGraphStatsRequest](#cyber.graph.v1beta1.QueryGraphStatsRequest)
     - [QueryGraphStatsResponse](#cyber.graph.v1beta1.QueryGraphStatsResponse)
   
@@ -254,6 +256,8 @@
     - [GenesisState](#cyber.resources.v1beta1.GenesisState)
   
 - [cyber/resources/v1beta1/query.proto](#cyber/resources/v1beta1/query.proto)
+    - [QueryAdjustedPriceRequest](#cyber.resources.v1beta1.QueryAdjustedPriceRequest)
+    - [QueryAdjustedPriceResponse](#cyber.resources.v1beta1.QueryAdjustedPriceResponse)
     - [QueryInvestmintRequest](#cyber.resources.v1beta1.QueryInvestmintRequest)
     - [QueryInvestmintResponse](#cyber.resources.v1beta1.QueryInvestmintResponse)
     - [QueryParamsRequest](#cyber.resources.v1beta1.QueryParamsRequest)
@@ -1559,6 +1563,32 @@ Since: cosmos-sdk 0.47 | |
 
 
 
+<a name="cyber.graph.v1beta1.QueryBurnStatsRequest"></a>
+
+### QueryBurnStatsRequest
+
+
+
+
+
+
+
+<a name="cyber.graph.v1beta1.QueryBurnStatsResponse"></a>
+
+### QueryBurnStatsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `millivolt` | [uint64](#uint64) |  |  |
+| `milliampere` | [uint64](#uint64) |  |  |
+
+
+
+
+
+
 <a name="cyber.graph.v1beta1.QueryGraphStatsRequest"></a>
 
 ### QueryGraphStatsRequest
@@ -1599,6 +1629,7 @@ Since: cosmos-sdk 0.47 | |
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `GraphStats` | [QueryGraphStatsRequest](#cyber.graph.v1beta1.QueryGraphStatsRequest) | [QueryGraphStatsResponse](#cyber.graph.v1beta1.QueryGraphStatsResponse) |  | GET|/cyber/graph/v1beta1/graph_stats|
+| `BurnStats` | [QueryBurnStatsRequest](#cyber.graph.v1beta1.QueryBurnStatsRequest) | [QueryBurnStatsResponse](#cyber.graph.v1beta1.QueryBurnStatsResponse) |  | GET|/cyber/graph/v1beta1/burn_stats|
 
  <!-- end services -->
 
@@ -3450,6 +3481,37 @@ Query defines the gRPC query service for the liquidity module.
 
 
 
+<a name="cyber.resources.v1beta1.QueryAdjustedPriceRequest"></a>
+
+### QueryAdjustedPriceRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `base` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `resource` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="cyber.resources.v1beta1.QueryAdjustedPriceResponse"></a>
+
+### QueryAdjustedPriceResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `adjusted` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+
+
+
+
+
+
 <a name="cyber.resources.v1beta1.QueryInvestmintRequest"></a>
 
 ### QueryInvestmintRequest
@@ -3522,6 +3584,7 @@ Query defines the gRPC query service for the liquidity module.
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `Params` | [QueryParamsRequest](#cyber.resources.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#cyber.resources.v1beta1.QueryParamsResponse) |  | GET|/cyber/resources/v1beta1/resources/params|
 | `Investmint` | [QueryInvestmintRequest](#cyber.resources.v1beta1.QueryInvestmintRequest) | [QueryInvestmintResponse](#cyber.resources.v1beta1.QueryInvestmintResponse) |  | GET|/cyber/resources/v1beta1/resources/investmint|
+| `AdjustedPrice` | [QueryAdjustedPriceRequest](#cyber.resources.v1beta1.QueryAdjustedPriceRequest) | [QueryAdjustedPriceResponse](#cyber.resources.v1beta1.QueryAdjustedPriceResponse) |  | GET|/cyber/resources/v1beta1/resources/adjusted_price|
 
  <!-- end services -->
 
