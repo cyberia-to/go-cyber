@@ -17,6 +17,11 @@ service Query {
     option (google.api.http).get =
         "/cyber/resources/v1beta1/resources/investmint";
   }
+  rpc AdjustedPrice(QueryAdjustedPriceRequest)
+      returns (QueryAdjustedPriceResponse) {
+    option (google.api.http).get =
+        "/cyber/resources/v1beta1/resources/adjusted_price";
+  }
 }
 
 message QueryParamsRequest {}
@@ -33,4 +38,13 @@ message QueryInvestmintRequest {
 
 message QueryInvestmintResponse {
   cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryAdjustedPriceRequest {
+  cosmos.base.v1beta1.Coin base = 1 [ (gogoproto.nullable) = false ];
+  string resource = 2;
+}
+
+message QueryAdjustedPriceResponse {
+  cosmos.base.v1beta1.Coin adjusted = 1 [ (gogoproto.nullable) = false ];
 }

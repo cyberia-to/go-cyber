@@ -184,7 +184,7 @@ func (k Keeper) Mint(ctx sdk.Context, recipientAddr sdk.AccAddress, amt sdk.Coin
 
 	toMint := k.CalculateInvestmint(ctx, amt, resource, length)
 
-	// Apply exponential supply-based decreasing adjustment so each next minter mints less, ceteris paribus.
+	// Apply exponential supply-based decreasing adjustment so each next minter mints less
 	toMint = k.applySupplyExponentialAdjustment(ctx, resource, toMint)
 
 	if toMint.Amount.LT(sdk.NewInt(1000)) {
