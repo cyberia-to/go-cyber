@@ -14,6 +14,7 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	v65 "github.com/cybercongress/go-cyber/v6/app/upgrades/v65"
 
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -96,7 +97,7 @@ var (
 	Bech32Prefix = "bostrom"
 
 	Upgrades = []upgrades.Upgrade{v2.Upgrade, v3.Upgrade, v4.Upgrade, v6.Upgrade}
-	Forks    = []upgrades.Fork{v5.Fork}
+	Forks    = []upgrades.Fork{v5.Fork, v65.Fork}
 )
 
 // These constants are derived from the above variables.
@@ -352,7 +353,7 @@ func (app *App) Name() string {
 
 // BeginBlocker application updates every begin block
 func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	//BeginBlockForks(ctx, app)
+	BeginBlockForks(ctx, app)
 	return app.ModuleManager.BeginBlock(ctx, req)
 }
 
