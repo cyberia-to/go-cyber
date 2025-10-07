@@ -7,7 +7,7 @@ import (
 const (
 	UpgradeName = "v65"
 
-	UpgradeHeight = 20_810_050
+	UpgradeHeight = 20_810_055
 )
 
 var Fork = upgrades.Fork{
