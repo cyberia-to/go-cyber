@@ -72,7 +72,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends \
 && rm -rf ./build \
  # Compile cyber for v6 version
 ###########################################################################################
-&& git checkout v6.0.1 \
+&& git checkout v6.5.0 \
 && cd /sources/x/rank/cuda \
 && make build \
 && cd  /sources \
