@@ -30,6 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget ca-certifi
 
 
 COPY . /sources
+COPY vendor-local /sources/vendor-local
 WORKDIR /sources
 
 # Install CUDA, build tools and compile cyber
