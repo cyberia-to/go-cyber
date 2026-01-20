@@ -11,7 +11,7 @@ require (
 	github.com/CosmWasm/wasmd v0.46.0
 	github.com/CosmWasm/wasmvm v1.5.9
 	github.com/armon/go-metrics v0.4.1
-	github.com/cometbft/cometbft v0.37.15
+	github.com/cometbft/cometbft v0.37.16
 	github.com/cometbft/cometbft-db v0.12.0
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
 	github.com/cosmos/cosmos-sdk v0.47.16
@@ -207,6 +207,9 @@ require (
 replace (
 	// use cosmos fork of keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
+
+	// cometbft security fix (vendored locally for reproducible Docker builds)
+	github.com/cometbft/cometbft => ./vendor-local/cometbft-sec-tachyon-0.37.x-tachyon-fix
 
 	github.com/cosmos/cosmos-sdk => github.com/cybercongress/cosmos-sdk v0.47.15-0.20250911123242-45d67c430be3
 
