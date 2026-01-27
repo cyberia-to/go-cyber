@@ -10,7 +10,6 @@
 
 # Build
 vendor
-vendor-local
 build
 tools/bin/*
 examples/build/*

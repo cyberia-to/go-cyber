@@ -6,7 +6,7 @@ FROM ubuntu:20.04
 ENV GO_VERSION '1.22.7'
 ENV GO_ARCH 'linux-amd64'
 ENV GO_BIN_SHA 'fc5d49b7a5035f1f1b265c17aa86e9819e6dc9af8260ad61430ee7fbe27881bb'
-ENV DEBIAN_FRONTEND=noninteractive 
+ENV DEBIAN_FRONTEND=noninteractive
 ENV DAEMON_HOME /root/.cyber
 ENV DAEMON_RESTART_AFTER_UPGRADE=true
 ENV DAEMON_ALLOW_DOWNLOAD_BINARIES=true
@@ -26,11 +26,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget ca-certifi
 && echo "${GO_BIN_SHA} *go.tgz" | sha256sum -c - \
 && tar -C /usr/local -xzf go.tgz \
 && rm go.tgz \
-&& go version 
+&& go version
 
 
 COPY . /sources
-COPY vendor-local /sources/vendor-local
 WORKDIR /sources
 
 # Install CUDA, build tools and compile cyber
@@ -89,7 +88,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends \
 && make build CUDA_ENABLED=true \
 && cp ./build/cyber /cyber/cosmovisor/upgrades/v7/bin/ \
 && rm -rf ./build \
-# Cleanup 
+# Cleanup
 ###########################################################################################
 && apt-get purge -y git \
     make \
@@ -101,7 +100,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends \
 && go clean --cache -i \
 && apt-get remove --purge '^nvidia-.*' -y \
 && apt-get autoremove -y \
-&& apt-get clean 
+&& apt-get clean
 
 # Install cosmovisor
 ###########################################################################################
@@ -118,7 +117,7 @@ COPY start_script.sh start_script.sh
 COPY entrypoint.sh /entrypoint.sh
 RUN wget -O /genesis.json https://gateway.ipfs.cybernode.ai/ipfs/QmYubyVNfghD4xCrTFj26zBwrF9s5GJhi1TmxvrwmJCipr \
 && chmod +x start_script.sh \
-&& chmod +x /entrypoint.sh 
+&& chmod +x /entrypoint.sh
 
 #  Start
 ###############################################################################
