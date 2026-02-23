@@ -426,6 +426,228 @@ Step 2: go-cyber v0.53 + CosmWasm 3.0
 
 ---
 
+## Graph State Sync and Light Client
+
+### Current Architecture
+
+The knowledge graph has three layers of state:
+
+1. **Graph store (IAVL):** CID registry, cyberlinks stored as `CompactLink` (24 bytes: `from_cid uint64 + to_cid uint64 + account uint64`), and neuron degree counters. All stored in IAVL trees under `x/graph` module store keys.
+
+2. **In-memory index (`IndexKeeper`):** On node startup, the full graph is loaded from IAVL into RAM as adjacency lists (`outLinks`, `inLinks` maps). This is the structure that the rank algorithm reads.
+
+3. **Rank values (in-memory):** `float64[]` array holding the PageRank for every CID. Computed by GPU (CUDA) or CPU every `CalculationPeriod` blocks (default: 5). Only the merkle tree root hashes of rank values are stored on-chain — the actual rank values are **never persisted to disk**.
+
+### Current Bottleneck: Rank Recalculation on Sync
+
+The snapshot extensions (`x/rank/keeper/snapshotter.go`, `x/graph/keeper/snapshotter.go`) currently work as follows:
+
+- **`SnapshotExtension()`** — writes **nothing** (empty payload for both graph and rank).
+- **`RestoreExtension()`** — reloads the full graph into memory from IAVL, then **triggers a full rank calculation from scratch**.
+
+This means every node that restores from a state-sync snapshot must:
+1. Load the entire graph into RAM (iterating all IAVL leaves)
+2. Run a full PageRank computation (GPU or CPU)
+3. Wait for convergence before the node can serve queries
+
+For a graph with millions of cyberlinks, this takes significant time and requires GPU hardware just to sync.
+
+### Proposed Improvements
+
+#### A. Serialize Rank Values in Snapshot Extension (Step 1)
+
+The highest-impact change: write actual rank values into the snapshot payload.
+
+```
+SnapshotExtension():
+  1. Write cidCount (uint64)
+  2. Write rankValues[] (cidCount × 8 bytes, uint64 encoded)
+
+RestoreExtension():
+  1. Read rank values from payload
+  2. Build merkle tree from values
+  3. Verify merkle root matches on-chain LatestMerkleTree
+  4. Load into networkCidRank — node is immediately ready
+```
+
+Note: karma/entropy/luminosity have been removed from consensus state. Negentropy is now computed at query time from rank values (no storage needed).
+
+Benefits:
+- **No GPU required for sync.** Nodes without CUDA can still sync and serve rank queries.
+- **Sync time drops from minutes/hours to seconds.** Reading a flat array is O(n), versus PageRank iteration which is O(n × k × iterations).
+- **Merkle verification ensures correctness.** The on-chain `LatestMerkleTree` (stored every block) acts as the commitment — restored rank values are verified against it.
+
+Estimated payload size: for 10M CIDs, rank values ≈ 80 MB (uncompressed). Snapshot compression (zstd) typically achieves 3-5x on numeric data.
+
+#### B. Incremental Graph Export Endpoint (Step 1)
+
+Add a gRPC query endpoint for incremental graph sync:
+
+```protobuf
+service Query {
+  rpc CyberlinksAfter(CyberlinksAfterRequest) returns (CyberlinksAfterResponse);
+}
+
+message CyberlinksAfterRequest {
+  uint64 after_height = 1;
+  uint64 limit = 2;
+}
+```
+
+This allows indexers (cyberindex) and light clients to fetch only new cyberlinks since a given height, rather than scanning the full IAVL tree. The graph module already tracks links per block (`GetCurrentBlockNewLinks`), so the data is available — it just needs a query endpoint.
+
+#### C. Graph Store Separation (Step 2, with SDK v0.53)
+
+SDK v0.53 introduces pluggable storage backends and IAVL v2. This opens the possibility of storing the graph in a more efficient structure:
+
+- **Current:** Cyberlinks stored as individual IAVL key-value pairs. Each link read/write goes through the full IAVL tree path (O(log n) with proof generation overhead).
+- **Future option:** Store cyberlinks in a flat append-only store (no proof needed for individual links) while keeping only the graph merkle root in IAVL for consensus. This would dramatically reduce storage overhead and speedup full graph iteration.
+
+This is a larger architectural change that becomes feasible with the storage flexibility in SDK v0.53+.
+
+### Light Client Architecture
+
+#### D. Rank Inclusion Proofs (Step 1)
+
+The codebase already has the foundation: `merkle/tree.go` implements an RFC-6962 merkle tree with `GetIndexProofs()` and `ValidateIndexByProofs()` methods. The tree supports two modes:
+
+- `full=false` — stores only subtree roots (used for consensus, 40 hashes for 1 trillion links)
+- `full=true` — stores all nodes (enables proof generation for any leaf)
+
+To enable rank proofs for light clients:
+
+1. **Run rank merkle tree in `full=true` mode** on nodes that serve light clients (configurable flag, e.g. `--rank-proofs=true`).
+2. **Add `QueryRankWithProof` gRPC endpoint:**
+   ```
+   Request:  { particle: "QmHash..." }
+   Response: { rank: uint64, cid_number: uint64, proofs: []Proof, merkle_root: bytes }
+   ```
+3. **Client verification:** The light client fetches the latest block header (which contains app_hash), extracts the rank module's store commitment, and verifies the merkle proof chain: `rank_value → rank_merkle_root → module_store_hash → app_hash`.
+
+#### E. Graph Inclusion Proofs (Already Available)
+
+Cyberlinks stored in IAVL already support merkle proofs natively — this is a built-in IAVL feature. Any gRPC query with `prove=true` returns an IAVL merkle proof that can be verified against the app hash.
+
+A light client can verify that a specific cyberlink exists by:
+1. Querying the cyberlink with proof
+2. Verifying the IAVL proof against the graph module's store hash in the block header
+
+#### F. CometBFT Light Client Integration (Step 1)
+
+CometBFT v0.38 includes a production-ready light client that verifies block headers using validator signatures without downloading full blocks. Combined with the above:
+
+```
+Full verification path:
+  CometBFT light client → verified block header → app_hash
+    → IAVL proof for graph queries (cyberlink existence)
+    → RFC-6962 proof for rank queries (rank value for a CID)
+```
+
+This enables a fully trustless light client that can:
+- Verify any cyberlink exists in the knowledge graph
+- Verify the rank of any particle (CID)
+- All without downloading the full chain state or running PageRank
+
+### Graph Sync and Light Client Checklist
+
+- [ ] Implement rank values serialization in `RankSnapshotter.SnapshotExtension()`
+- [ ] Implement rank values deserialization and merkle verification in `RankSnapshotter.RestoreExtension()`
+- [ ] Add `--rank-proofs` node flag to control `full=true` merkle tree mode
+- [ ] Add `QueryRankWithProof` gRPC endpoint to `x/rank` module
+- [ ] Add `CyberlinksAfter` gRPC endpoint to `x/graph` module for incremental sync
+- [ ] Benchmark snapshot size with rank values for production graph size
+- [ ] Test state-sync restore without GPU (verify rank values loaded from snapshot)
+- [ ] Document light client verification protocol
+- [ ] Evaluate graph store separation feasibility after SDK v0.53 migration
+
+---
+
+## CybeRank Computation Fixes (Consensus-Breaking)
+
+These issues were found during a code audit of the rank computation (`x/rank/keeper/calculate_cpu.go`, `x/rank/cuda/rank.cu`). They require a coordinated chain upgrade since they affect consensus state (rank values feed into the on-chain merkle tree commitment).
+
+### Issue 1: CRITICAL — Divide by Zero in `getNormalizedStake()` (CPU only)
+
+**File:** `x/rank/keeper/calculate_cpu.go:94-96`
+
+```go
+func getNormalizedStake(ctx *types.CalculationContext, agent uint64) uint64 {
+    return ctx.GetStakes()[agent] / ctx.GetNeudegs()[agent]
+}
+```
+
+If `neudeg == 0` for any account appearing in links, this **panics** with integer divide by zero. The GPU code guards against this (`calculate_gpu.go:48-53`):
+
+```go
+if neudeg != 0 {
+    stakes[neuron] = stake / neudeg
+} else {
+    stakes[neuron] = 0
+}
+```
+
+The CPU code does not have this guard. This is a **CPU/GPU divergence** — if the same edge case is hit, GPU returns 0 while CPU crashes.
+
+**Fix:**
+```go
+func getNormalizedStake(ctx *types.CalculationContext, agent uint64) uint64 {
+    neudeg := ctx.GetNeudegs()[agent]
+    if neudeg == 0 {
+        return 0
+    }
+    return ctx.GetStakes()[agent] / neudeg
+}
+```
+
+### Issue 2: MEDIUM — Dangling Node Detection Uses Wrong Direction
+
+**File:** `x/rank/keeper/calculate_cpu.go:26`
+
+```go
+if len(inLinks[graphtypes.CidNumber(i)]) == 0 {
+    danglingNodesSize++
+}
+```
+
+Standard PageRank defines **dangling nodes** as nodes with **no outgoing links** (sinks). This code counts nodes with **no incoming links** instead. Both CPU and GPU implementations have this same behavior — it's consistent but deviates from textbook PageRank.
+
+Additionally, `defaultRankWithCorrection` is computed **once** before iteration and frozen. In standard PageRank, dangling mass must be recomputed each iteration as rank values change.
+
+**Impact:** The algorithm converges to a well-defined fixed point, but it is not the textbook PageRank fixed point. Whether to fix this is a design decision — changing it would alter all rank values.
+
+### Issue 3: MEDIUM — Potential Integer Overflow in Stake Accumulation
+
+**Files:** `calculate_cpu.go:78-83`, `calculate_cpu.go:86-92`
+
+`getOverallLinkStake()` and `getOverallOutLinksStake()` accumulate `uint64` sums without overflow checks. With high stakes (e.g., 10^18 per account) and many contributors per link, the sum could exceed `uint64` max (~1.84 × 10^19), silently wrapping around and producing incorrect weights.
+
+**Fix:** Add overflow-safe arithmetic or assert bounds on individual normalized stakes.
+
+### Issue 4: LOW — Nodes Without In-Links Miss Correction Term
+
+**File:** `calculate_cpu.go:54`
+
+`step()` only iterates `ctx.GetInLinks()`, so nodes without incoming links retain `defaultRank = (1-d)/N` instead of `defaultRankWithCorrection = d*(danglingMass/N) + (1-d)/N`. They miss the redistribution correction. Both CPU and GPU have this same behavior.
+
+### Issue 5: PERFORMANCE — `getOverallOutLinksStake()` Redundant Recomputation
+
+**File:** `calculate_cpu.go:86-92`
+
+The total outgoing stake for a CID is recomputed every time it appears as a source in some other CID's in-links. This is O(|V| × avg_degree²). The GPU precomputes this once. Could be memoized in the CPU path for significant speedup.
+
+### Rank Fix Checklist
+
+These fixes must ship as part of a chain upgrade (Step 1 or a dedicated rank-fix upgrade):
+
+- [ ] Fix `getNormalizedStake` divide by zero guard (CPU parity with GPU)
+- [ ] Decide on dangling node direction: keep as-is (document) or fix to standard PageRank (consensus-breaking)
+- [ ] Add overflow protection to stake accumulation
+- [ ] Document the intentional deviations from textbook PageRank
+- [ ] If any rank computation changes are made: compute expected rank delta on mainnet state export to assess migration impact
+- [ ] Precompute `getOverallOutLinksStake` per CID in the CPU path (performance, not consensus)
+
+---
+
 ## Execution Checklist
 
 ### Pre-work
