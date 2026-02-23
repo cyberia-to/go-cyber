@@ -40,15 +40,21 @@ service Query {
     option (google.api.http).get = "/cyber/rank/v1beta1/is_any_link_exist";
   }
 
+  // Per-particle focus entropy: -pi*log2(pi) from the rank distribution.
+  // Computed at query time, no state stored.
   rpc ParticleNegentropy(QueryNegentropyPartilceRequest)
       returns (QueryNegentropyParticleResponse) {
     option (google.api.http).get = "/cyber/rank/v1beta1/negentropy/{particle}";
   }
 
+  // System-wide negentropy: J(pi) = log2(n) - H(pi).
+  // Measures how far the focus distribution deviates from uniform.
+  // Computed at query time from current rank values, no state stored.
   rpc Negentropy(QueryNegentropyRequest) returns (QueryNegentropyResponse) {
     option (google.api.http).get = "/cyber/rank/v1beta1/negentropy";
   }
 
+  // Deprecated: karma removed. Stub kept for wire compatibility.
   rpc Karma(QueryKarmaRequest) returns (QueryKarmaResponse) {
     option (google.api.http).get = "/cyber/rank/v1beta1/karma/{neuron}";
   }
@@ -90,13 +96,9 @@ message QueryIsAnyLinkExistRequest {
 message QueryLinkExistResponse { bool exist = 1; }
 
 message QueryNegentropyPartilceRequest { string particle = 1; }
-
 message QueryNegentropyParticleResponse { uint64 entropy = 1; }
-
 message QueryNegentropyRequest {}
-
 message QueryNegentropyResponse { uint64 negentropy = 1; }
-
+// Deprecated: karma removed
 message QueryKarmaRequest { string neuron = 1; }
-
 message QueryKarmaResponse { uint64 karma = 1; }

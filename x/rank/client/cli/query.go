@@ -34,7 +34,6 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryIsAnyLinkExist(),
 		GetCmdQueryNegentropyParticle(),
 		GetCmdQueryNegentropy(),
-		GetCmdQueryKarma(),
 	)
 
 	return queryCmd
@@ -332,7 +331,7 @@ func GetCmdQueryIsAnyLinkExist() *cobra.Command {
 func GetCmdQueryNegentropyParticle() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "negentropy [particle]",
-		Short: "Query the current negentropy of given particle",
+		Short: "Query focus entropy contribution of a particle: -pi*log2(pi)",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -364,9 +363,9 @@ func GetCmdQueryNegentropyParticle() *cobra.Command {
 
 func GetCmdQueryNegentropy() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "negentropy",
-		Short: "Query the current negentropy of whole graph",
-		Args:  cobra.ExactArgs(0),
+		Use:   "negentropy-total",
+		Short: "Query system-wide negentropy: J(pi) = log2(n) - H(pi)",
+		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -391,36 +390,4 @@ func GetCmdQueryNegentropy() *cobra.Command {
 	return cmd
 }
 
-func GetCmdQueryKarma() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "karma [neuron]",
-		Short: "Query the current karma of given neuron",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-			queryClient := types.NewQueryClient(clientCtx)
 
-			address, err := sdk.AccAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
-
-			res, err := queryClient.Karma(
-				context.Background(),
-				&types.QueryKarmaRequest{Neuron: address.String()},
-			)
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
-
-	return cmd
-}

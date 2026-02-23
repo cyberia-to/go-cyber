@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"math"
 
 	errorsmod "cosmossdk.io/errors"
 	"github.com/ipfs/go-cid"
@@ -193,48 +194,89 @@ func (sk StateKeeper) IsAnyLinkExist(goCtx context.Context, req *types.QueryIsAn
 	return &types.QueryLinkExistResponse{Exist: exists}, nil
 }
 
-func (sk *StateKeeper) ParticleNegentropy(goCtx context.Context, request *types.QueryNegentropyPartilceRequest) (*types.QueryNegentropyParticleResponse, error) {
-	if request == nil {
+// ParticleNegentropy returns the per-particle contribution to focus entropy.
+// Computed at query time from RankValues: -πi × log2(πi) scaled by 1e15.
+// No state is stored; this is a pure function of the current rank distribution.
+func (sk *StateKeeper) ParticleNegentropy(goCtx context.Context, req *types.QueryNegentropyPartilceRequest) (*types.QueryNegentropyParticleResponse, error) {
+	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	cidNum, exist := sk.graphKeeper.GetCidNumber(ctx, graphtypes.Cid(request.Particle))
+	cidNum, exist := sk.graphKeeper.GetCidNumber(ctx, graphtypes.Cid(req.Particle))
 	if !exist {
-		return nil, errorsmod.Wrap(graphtypes.ErrCidNotFound, request.Particle)
+		return nil, errorsmod.Wrap(graphtypes.ErrCidNotFound, req.Particle)
 	}
 
-	entropyValue := sk.GetEntropy(cidNum)
-	return &types.QueryNegentropyParticleResponse{Entropy: entropyValue}, nil
+	rankValues := sk.networkCidRank.RankValues
+	if rankValues == nil || uint64(cidNum) >= uint64(len(rankValues)) {
+		return &types.QueryNegentropyParticleResponse{Entropy: 0}, nil
+	}
+
+	totalRank := uint64(0)
+	for _, r := range rankValues {
+		totalRank += r
+	}
+	if totalRank == 0 {
+		return &types.QueryNegentropyParticleResponse{Entropy: 0}, nil
+	}
+
+	ri := rankValues[cidNum]
+	if ri == 0 {
+		return &types.QueryNegentropyParticleResponse{Entropy: 0}, nil
+	}
+
+	// -πi × log2(πi), scaled to uint64 by 1e15
+	pi := float64(ri) / float64(totalRank)
+	contribution := -pi * math.Log2(pi)
+	entropy := uint64(contribution * 1e15)
+
+	return &types.QueryNegentropyParticleResponse{Entropy: entropy}, nil
 }
 
+// Negentropy returns system-wide negentropy: J(π) = log2(n) − H(π).
+// Computed at query time from RankValues. No state is stored.
+// H(π) = −Σ πi × log2(πi), where πi = rankValue_i / Σ rankValues.
+// J(π) measures how far the focus distribution deviates from uniform.
 func (sk *StateKeeper) Negentropy(_ context.Context, _ *types.QueryNegentropyRequest) (*types.QueryNegentropyResponse, error) {
-	negentropy := sk.GetNegEntropy()
-	return &types.QueryNegentropyResponse{Negentropy: negentropy}, nil
+	rankValues := sk.networkCidRank.RankValues
+	n := uint64(len(rankValues))
+	if n == 0 {
+		return &types.QueryNegentropyResponse{Negentropy: 0}, nil
+	}
+
+	totalRank := uint64(0)
+	for _, r := range rankValues {
+		totalRank += r
+	}
+	if totalRank == 0 {
+		return &types.QueryNegentropyResponse{Negentropy: 0}, nil
+	}
+
+	// H(π) = −Σ πi × log2(πi)
+	h := 0.0
+	for _, r := range rankValues {
+		if r == 0 {
+			continue
+		}
+		pi := float64(r) / float64(totalRank)
+		h -= pi * math.Log2(pi)
+	}
+
+	// J(π) = log2(n) − H(π)
+	logN := math.Log2(float64(n))
+	negentropy := logN - h
+	if negentropy < 0 {
+		negentropy = 0
+	}
+
+	// Scale to uint64 by 1e15 (same convention as rank values)
+	result := uint64(negentropy * 1e15)
+	return &types.QueryNegentropyResponse{Negentropy: result}, nil
 }
 
-func (sk *StateKeeper) Karma(goCtx context.Context, request *types.QueryKarmaRequest) (*types.QueryKarmaResponse, error) {
-	if request == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "empty request")
-	}
-
-	addr, err := sdk.AccAddressFromBech32(request.Neuron)
-	if err != nil {
-		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidAddress, err.Error())
-	}
-
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	var accountNum uint64
-	account := sk.accountKeeper.GetAccount(ctx, addr)
-	if account != nil {
-		accountNum = account.GetAccountNumber()
-	} else {
-		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "Invalid neuron address")
-	}
-
-	karma := sk.GetKarma(accountNum)
-
-	return &types.QueryKarmaResponse{Karma: karma}, nil
+// Deprecated: karma removed. Stub kept for protobuf interface compatibility.
+func (sk *StateKeeper) Karma(_ context.Context, _ *types.QueryKarmaRequest) (*types.QueryKarmaResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "karma removed")
 }
