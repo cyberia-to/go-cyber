@@ -9,8 +9,5 @@ void calculate_rank(
     uint64_t *outLinksUsers,                                  /*all outgoing links from all users*/
     double dampingFactor,                                     /* value of damping factor*/
     double tolerance,                                         /* value of needed tolerance */
-    double *rank,                                             /* array index - cid index*/
-    double *entropy,                                          /* array index - cid index*/
-    double *luminosity,                                       /* array index - cid index*/
-    double *karma                                             /* array index - cid index*/
+    double *rank                                              /* array index - cid index*/
 );

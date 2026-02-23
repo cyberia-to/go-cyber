@@ -287,17 +287,6 @@ func (sk *StateKeeper) GetMerkleTree() *merkle.Tree {
 	return sk.networkCidRank.MerkleTree
 }
 
-func (sk *StateKeeper) GetKarma(accountNumber uint64) (karma uint64) {
-	return sk.networkCidRank.KarmaValues[accountNumber]
-}
-
-func (sk *StateKeeper) GetEntropy(cidNum graphtypes.CidNumber) uint64 {
-	return sk.networkCidRank.EntropyValues[cidNum]
-}
-
-func (sk *StateKeeper) GetNegEntropy() uint64 {
-	return sk.networkCidRank.NegEntropy
-}
 
 func (sk *StateKeeper) GetIndexError() error {
 	return sk.getIndexError()

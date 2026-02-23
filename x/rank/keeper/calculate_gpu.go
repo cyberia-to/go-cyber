@@ -23,9 +23,7 @@ func calculateRankGPU(ctx *types.CalculationContext, logger log.Logger) types.EM
 	start := time.Now()
 	if ctx.GetCidsCount() == 0 {
 		return types.EMState{
-			RankValues:    make([]float64, 0),
-			EntropyValues: make([]float64, 0),
-			KarmaValues:   make([]float64, 0),
+			RankValues: make([]float64, 0),
 		}
 	}
 
@@ -36,9 +34,6 @@ func calculateRankGPU(ctx *types.CalculationContext, logger log.Logger) types.EM
 	stakesCount := ctx.GetNeuronsCount()
 
 	rank := make([]float64, cidsCount)
-	entropy := make([]float64, cidsCount)
-	luminosity := make([]float64, cidsCount)
-	karma := make([]float64, stakesCount)
 
 	inLinksCount := make([]uint32, cidsCount)
 	outLinksCount := make([]uint32, cidsCount)
@@ -104,23 +99,17 @@ func calculateRankGPU(ctx *types.CalculationContext, logger log.Logger) types.EM
 
 	start = time.Now()
 	cRank := (*C.double)(&rank[0])
-	cEntropy := (*C.double)(&entropy[0])
-	cLuminosity := (*C.double)(&luminosity[0])
-	cKarma := (*C.double)(&karma[0])
 	C.calculate_rank(
 		cStakes, cStakesSize, cCidsSize, cLinksSize,
 		cInLinksCount, cOutLinksCount,
 		cInLinksOuts, cOutLinksIns,
 		cInLinksUsers, cOutLinksUsers,
 		cDampingFactor, cTolerance,
-		cRank, cEntropy, cLuminosity, cKarma,
+		cRank,
 	)
 	logger.Info("Rank computation", "duration", time.Since(start).String())
 
-	// return rank
 	return types.EMState{
-		RankValues:    rank,
-		EntropyValues: entropy,
-		KarmaValues:   karma,
+		RankValues: rank,
 	}
 }

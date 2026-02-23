@@ -10,9 +10,6 @@ const (
 	QueryTop            = "top"
 	QueryIsLinkExist    = "is_link_exist"
 	QueryIsAnyLinkExist = "is_any_link_exist"
-	QueryKarma          = "karma"
-	QueryEntropy        = "entropy"
-	QueryNegentropy     = "negentropy"
 )
 
 type QueryRankParams struct {
@@ -57,18 +54,3 @@ func NewQueryIsAnyLinkExistParams(from, to string) QueryIsAnyLinkExistParams {
 	return QueryIsAnyLinkExistParams{from, to}
 }
 
-type QueryEntropyParams struct {
-	Cid string
-}
-
-func NewQueryEntropyParams(cid string) QueryEntropyParams {
-	return QueryEntropyParams{cid}
-}
-
-type QueryKarmaParams struct {
-	Address sdk.AccAddress
-}
-
-func NewQueryKarmaParams(account sdk.AccAddress) QueryKarmaParams {
-	return QueryKarmaParams{account}
-}

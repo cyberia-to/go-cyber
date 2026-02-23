@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"math"
-
 	graphtypes "github.com/cybercongress/go-cyber/v7/x/graph/types"
 	"github.com/cybercongress/go-cyber/v7/x/rank/types"
 )
@@ -15,15 +13,11 @@ func calculateRankCPU(ctx *types.CalculationContext) types.EMState {
 	size := ctx.GetCidsCount()
 	if size == 0 || len(ctx.GetStakes()) == 0 {
 		return types.EMState{
-			RankValues:    []float64{},
-			EntropyValues: []float64{},
-			KarmaValues:   []float64{},
+			RankValues: []float64{},
 		}
 	}
 
 	rank := make([]float64, size)
-	entropy := make([]float64, size)
-	karma := make([]float64, len(ctx.GetStakes()))
 	defaultRank := (1.0 - dampingFactor) / float64(size)
 	danglingNodesSize := uint64(0)
 
@@ -49,14 +43,8 @@ func calculateRankCPU(ctx *types.CalculationContext) types.EMState {
 		steps++
 	}
 
-	// experimental features, out of consensus, available with API
-	entropyCalc(ctx, entropy, size, dampingFactor)
-	karmaCalc(ctx, rank, entropy, karma)
-
 	return types.EMState{
-		RankValues:    rank,
-		EntropyValues: entropy,
-		KarmaValues:   karma,
+		RankValues: rank,
 	}
 }
 
@@ -77,7 +65,6 @@ func step(ctx *types.CalculationContext, defaultRankWithCorrection float64, damp
 					continue
 				}
 				weight := float64(linkStake) / float64(jCidOutStake)
-				// if math.IsNaN(weight) { weight = float64(0) }
 				ksum = prevrank[j]*weight + ksum // force no-fma here by explicit conversion
 			}
 			rank[cid] = ksum*dampingFactor + defaultRankWithCorrection // force no-fma here by explicit conversion
@@ -91,7 +78,6 @@ func getOverallLinkStake(ctx *types.CalculationContext, from graphtypes.CidNumbe
 	stake := uint64(0)
 	users := ctx.GetOutLinks()[from][to]
 	for user := range users {
-		// stake += ctx.GetStakes()[uint64(user)]
 		stake += getNormalizedStake(ctx, uint64(user))
 	}
 	return stake
@@ -101,14 +87,6 @@ func getOverallOutLinksStake(ctx *types.CalculationContext, from graphtypes.CidN
 	stake := uint64(0)
 	for to := range ctx.GetOutLinks()[from] {
 		stake += getOverallLinkStake(ctx, from, to)
-	}
-	return stake
-}
-
-func getOverallInLinksStake(ctx *types.CalculationContext, from graphtypes.CidNumber) uint64 {
-	stake := uint64(0)
-	for to := range ctx.GetInLinks()[from] {
-		stake += getOverallLinkStake(ctx, to, from) // reverse order here
 	}
 	return stake
 }
@@ -134,66 +112,3 @@ func calculateChange(prevrank, rank []float64) float64 {
 	return maxDiff
 }
 
-func entropyCalc(ctx *types.CalculationContext, entropy []float64, cidsCount int64, dampingFactor float64) {
-	swd := make([]float64, cidsCount)
-	sumswd := make([]float64, cidsCount)
-	for i := range swd {
-		swd[i] = dampingFactor*float64(
-			getOverallInLinksStake(ctx, graphtypes.CidNumber(i))) + (1-dampingFactor)*float64(
-			getOverallOutLinksStake(ctx, graphtypes.CidNumber(i)))
-	}
-
-	for i := range sumswd {
-		for to := range ctx.GetInLinks()[graphtypes.CidNumber(i)] {
-			sumswd[i] += dampingFactor * swd[to]
-		}
-		for to := range ctx.GetOutLinks()[graphtypes.CidNumber(i)] {
-			sumswd[i] += (1 - dampingFactor) * swd[to]
-		}
-	}
-
-	for i := range entropy {
-		if swd[i] == 0 {
-			continue
-		}
-		for to := range ctx.GetInLinks()[graphtypes.CidNumber(i)] {
-			if sumswd[to] == 0 {
-				continue
-			}
-			entropy[i] += math.Abs(-swd[i] / sumswd[to] * math.Log2(swd[i]/sumswd[to]))
-		}
-		for to := range ctx.GetOutLinks()[graphtypes.CidNumber(i)] {
-			if sumswd[to] == 0 {
-				continue
-			}
-			entropy[i] += math.Abs(-swd[i] / sumswd[to] * math.Log2(swd[i]/sumswd[to]))
-		}
-	}
-}
-
-func karmaCalc(ctx *types.CalculationContext, rank []float64, entropy []float64, karma []float64) {
-	for from := range ctx.GetOutLinks() {
-		stake := getOverallOutLinksStake(ctx, from)
-		for to := range ctx.GetOutLinks()[from] {
-			if stake == 0 {
-				continue
-			}
-			users := ctx.GetOutLinks()[from][to]
-			for user := range users {
-				// if (ctx.GetStakes()[uint64(user)] == 0) { continue }
-				if getNormalizedStake(ctx, uint64(user)) == 0 {
-					continue
-				}
-				// w := float64(ctx.GetStakes()[uint64(user)]) / float64(stake)
-				// FIXME here maybe have mistake as user stake is normalized by neuron degree, but links stake is global of link
-				w := float64(getNormalizedStake(ctx, uint64(user))) / float64(stake)
-				if math.IsNaN(w) {
-					w = float64(0)
-				}
-				luminosity := rank[from] * entropy[from]
-				karma[user] += w * luminosity
-				// TODO need to update algorithm and add normalization of total stake of neurons to global stake
-			}
-		}
-	}
-}
