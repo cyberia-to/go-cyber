@@ -1,0 +1,2 @@
+## Script pull peers from RPC Node 
+http get https ://rpc.space-pussy.cybernode.ai:443/net_info | get result.peers | each {|i| $i | get remote_ip node_info.id node_info.listen_addr} | each {|i| $'($i.1)@($i.0):($i.2 | split row ":" | last)'} | str join ',' | $'persistent_peers = "($in)"'

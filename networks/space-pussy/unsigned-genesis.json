@@ -1,0 +1,1063 @@
+{
+  "genesis_time": "2022-10-03T19:55:00Z",
+  "chain_id": "space-pussy",
+  "initial_height": "1",
+  "consensus_params": {
+    "block": {
+      "max_bytes": "4194304",
+      "max_gas": "25000000",
+      "time_iota_ms": "1000"
+    },
+    "evidence": {
+      "max_age_num_blocks": "100000",
+      "max_age_duration": "172800000000000",
+      "max_bytes": "1048576"
+    },
+    "validator": {
+      "pub_key_types": [
+        "ed25519"
+      ]
+    },
+    "version": {}
+  },
+  "app_hash": "",
+  "app_state": {
+    "auth": {
+      "params": {
+        "max_memo_characters": "1024",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "20",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      },
+      "accounts": [
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1d8754xqa9245pctlfcyv8eah468neqznm33fvz",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1gxhs5wzam5rlgf6cs0lkme400ut64d4njdhaf7",
+          "pub_key": null,
+          "account_number": "1",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1j3w0aa7s6665puyls9lwx9ej6cz2afysuy0v80",
+          "pub_key": null,
+          "account_number": "2",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy13hepw93y8mjcew7mfra5z7ju7k658534dpd39u",
+          "pub_key": null,
+          "account_number": "3",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1m5rf5fvhrl76s3xkvh3kde0p4dpwzewurch92s",
+          "pub_key": null,
+          "account_number": "4",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1gdpk4xeyeqzdkdwc0c2zrd8ltrthnze3a42c0n",
+          "pub_key": null,
+          "account_number": "5",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1zaefvwrgk2g45k68a3ngahgq0xky5zged294fr",
+          "pub_key": null,
+          "account_number": "6",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1ke3aflev7cr75gxa54k6qwrajfc53vqh4yfjj0",
+          "pub_key": null,
+          "account_number": "7",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1e8238v24qccht9mqc2w0r4luq462yxttjjv5pq",
+          "pub_key": null,
+          "account_number": "8",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1956s252r7du0jfeskaauep4lm6a9wn2pktntq0",
+          "pub_key": null,
+          "account_number": "9",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1r28nhrkwcvqs4qss2l7zqdvc2qfdl8ar6f4gqe",
+          "pub_key": null,
+          "account_number": "10",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy12kpw3e9ypjal6upmju9smwgjhwefpt7v0smhkt",
+          "pub_key": null,
+          "account_number": "11",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1qkw8dtdansmvayk2jxfkpel9q4d20rvfazxykl",
+          "pub_key": null,
+          "account_number": "12",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1rj7zt2pzuzwhjlr24u0prnqqxm3xexavpd7xp0",
+          "pub_key": null,
+          "account_number": "13",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy17zdyl3gfssc3vzzyxptnr0xl8z0pnte9a8zjjx",
+          "pub_key": null,
+          "account_number": "14",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1vg8lh3dsp7023kz79mlk642dux9vu038pmp4ma",
+          "pub_key": null,
+          "account_number": "15",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy10trdf5eyfcmc9graltx4hmpgznhrm7hdgt5mf6",
+          "pub_key": null,
+          "account_number": "16",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1v46pz6ddetfc3tnvdr28ss0l48jhazgyeqlumh",
+          "pub_key": null,
+          "account_number": "17",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1fnwevu5z89qd5tx6qdpfxh6u3dttc6kc6hfa9y",
+          "pub_key": null,
+          "account_number": "18",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy14hrqklee0tx6asycyfj357keql2jr5rdq9h34a",
+          "pub_key": null,
+          "account_number": "19",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1r8d26xgfxr80v3slu8r6z7wkl4h7f99qa4hhqg",
+          "pub_key": null,
+          "account_number": "20",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1r7q209q5yeh9d37pftdsm2eqtrl45ry8lmrfet",
+          "pub_key": null,
+          "account_number": "21",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy13jnp8uk4xnqcvdejcnq9rphm9actc90pf2r4ka",
+          "pub_key": null,
+          "account_number": "22",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1hyrtrdqnayvvtznddczjymjcj2jagcqugfp2rl",
+          "pub_key": null,
+          "account_number": "23",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1kfqme88c6vq8mt0smw29z67k4zz2ykr6km5rck",
+          "pub_key": null,
+          "account_number": "24",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1u2kvnwxmmpru764l5ht3nxkfwwu6ytw4s3zzsr",
+          "pub_key": null,
+          "account_number": "25",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1d59yxkz9uem873a3nyt5j379hsa7tjpvej0xfh",
+          "pub_key": null,
+          "account_number": "26",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1uynj0jhl059u9t5h4ug9075jrepdz4cwasmeqa",
+          "pub_key": null,
+          "account_number": "27",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy14fwr9m4rf27r3txv5luvph98nrckyu2qkfsn0f",
+          "pub_key": null,
+          "account_number": "28",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1n8hu3cqsn3txf0ltdk3x0sff2s0yt96xyffz3m",
+          "pub_key": null,
+          "account_number": "29",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1p5sudrdkr9r8a84s7fh27tkhdrhujhqatztfqf",
+          "pub_key": null,
+          "account_number": "30",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1p74unan6vpp9frdcz2nhv8z59jx295njwzfmc0",
+          "pub_key": null,
+          "account_number": "31",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1jxzpz4ggqefs5ps7veupd8zfy5a62cgyrm7rr8",
+          "pub_key": null,
+          "account_number": "32",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1ezpth4mp3eeqdt49kgqd5ctr69xev6v2zggvl2",
+          "pub_key": null,
+          "account_number": "33",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1wm4026rxqcrkh09k806m6y4lys942etx75v0xt",
+          "pub_key": null,
+          "account_number": "34",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1gwlqmqc9nrnuu8fanls76exyrzum9xjmdtlgnl",
+          "pub_key": null,
+          "account_number": "35",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1ezqvp6aga74ms7jqrfwhrm7266sn2m50afvapg",
+          "pub_key": null,
+          "account_number": "36",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1cwu6g93hnfm44zyl8cnkn58dsakxh2ac49m8c3",
+          "pub_key": null,
+          "account_number": "37",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1rxdzc0c80u9wympy8sgmx32ra0df5dztx0v7xh",
+          "pub_key": null,
+          "account_number": "38",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy10jmsqhf7mwquv0wa08hegxqaasvue5tnn7wn79",
+          "pub_key": null,
+          "account_number": "39",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1m0tjgkrh4td9fcp8nnssu3rfdahzfgdsaurjuv",
+          "pub_key": null,
+          "account_number": "40",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1g65rmjkeuy5rywx04s4fvwfylmlz98vq87mdq7",
+          "pub_key": null,
+          "account_number": "41",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.ModuleAccount",
+          "base_account": {
+              "account_number": "42",
+              "address": "pussy1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8wqwz53",
+              "pub_key": null,
+              "sequence": "0"
+          },
+          "name": "distribution",
+          "permissions": []
+      }
+      ]
+    },
+    "authz": {
+      "authorization": []
+    },
+    "bandwidth": {
+      "params": {
+        "recovery_period": "16000",
+        "adjust_price_period": "5",
+        "base_price": "0.250000000000000000",
+        "max_block_bandwidth": "25000",
+        "base_load": "0.100000000000000000"
+      }
+    },
+    "bank": {
+      "params": {
+        "send_enabled": [],
+        "default_send_enabled": true
+      },
+      "balances": [
+        {
+          "address": "pussy1d8754xqa9245pctlfcyv8eah468neqznm33fvz",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1gxhs5wzam5rlgf6cs0lkme400ut64d4njdhaf7",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1j3w0aa7s6665puyls9lwx9ej6cz2afysuy0v80",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy13hepw93y8mjcew7mfra5z7ju7k658534dpd39u",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1m5rf5fvhrl76s3xkvh3kde0p4dpwzewurch92s",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1gdpk4xeyeqzdkdwc0c2zrd8ltrthnze3a42c0n",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1zaefvwrgk2g45k68a3ngahgq0xky5zged294fr",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1ke3aflev7cr75gxa54k6qwrajfc53vqh4yfjj0",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1e8238v24qccht9mqc2w0r4luq462yxttjjv5pq",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1956s252r7du0jfeskaauep4lm6a9wn2pktntq0",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1r28nhrkwcvqs4qss2l7zqdvc2qfdl8ar6f4gqe",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy12kpw3e9ypjal6upmju9smwgjhwefpt7v0smhkt",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1qkw8dtdansmvayk2jxfkpel9q4d20rvfazxykl",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1rj7zt2pzuzwhjlr24u0prnqqxm3xexavpd7xp0",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy17zdyl3gfssc3vzzyxptnr0xl8z0pnte9a8zjjx",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1vg8lh3dsp7023kz79mlk642dux9vu038pmp4ma",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy10trdf5eyfcmc9graltx4hmpgznhrm7hdgt5mf6",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1v46pz6ddetfc3tnvdr28ss0l48jhazgyeqlumh",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1fnwevu5z89qd5tx6qdpfxh6u3dttc6kc6hfa9y",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy14hrqklee0tx6asycyfj357keql2jr5rdq9h34a",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1r8d26xgfxr80v3slu8r6z7wkl4h7f99qa4hhqg",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1r7q209q5yeh9d37pftdsm2eqtrl45ry8lmrfet",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy13jnp8uk4xnqcvdejcnq9rphm9actc90pf2r4ka",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1hyrtrdqnayvvtznddczjymjcj2jagcqugfp2rl",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1kfqme88c6vq8mt0smw29z67k4zz2ykr6km5rck",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1u2kvnwxmmpru764l5ht3nxkfwwu6ytw4s3zzsr",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1d59yxkz9uem873a3nyt5j379hsa7tjpvej0xfh",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1uynj0jhl059u9t5h4ug9075jrepdz4cwasmeqa",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy14fwr9m4rf27r3txv5luvph98nrckyu2qkfsn0f",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1n8hu3cqsn3txf0ltdk3x0sff2s0yt96xyffz3m",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1p5sudrdkr9r8a84s7fh27tkhdrhujhqatztfqf",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1p74unan6vpp9frdcz2nhv8z59jx295njwzfmc0",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1jxzpz4ggqefs5ps7veupd8zfy5a62cgyrm7rr8",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1ezpth4mp3eeqdt49kgqd5ctr69xev6v2zggvl2",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1wm4026rxqcrkh09k806m6y4lys942etx75v0xt",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1gwlqmqc9nrnuu8fanls76exyrzum9xjmdtlgnl",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1ezqvp6aga74ms7jqrfwhrm7266sn2m50afvapg",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1cwu6g93hnfm44zyl8cnkn58dsakxh2ac49m8c3",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1rxdzc0c80u9wympy8sgmx32ra0df5dztx0v7xh",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy10jmsqhf7mwquv0wa08hegxqaasvue5tnn7wn79",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1m0tjgkrh4td9fcp8nnssu3rfdahzfgdsaurjuv",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1g65rmjkeuy5rywx04s4fvwfylmlz98vq87mdq7",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8wqwz53",
+          "coins": [
+              {
+                  "amount": "958000000000000000",
+                  "denom": "pussy"
+              }
+          ]
+      }
+      ],
+      "supply": [
+        {
+          "amount": "1000000000000000000",
+          "denom": "pussy"
+        }
+      ],
+      "denom_metadata": [
+        {
+          "description": "The staking token of space-pussy",
+          "base": "pussy",
+          "display": "pussy",
+          "name": "Pussy token",
+          "symbol": "PUSSY",
+          "denom_units": [
+            {
+              "denom": "pussy",
+              "exponent": 0,
+              "aliases": [
+                "PUSSY"
+              ]
+            }
+          ]
+        },
+        {
+          "description": "The liquid staking token of Space-pussy",
+          "base": "liquidpussy",
+          "display": "liquidpussy",
+          "name": "liquidpussy",
+          "symbol": "LIQUIDPUSSY",
+          "denom_units": [
+            {
+              "denom": "liquidpussy",
+              "exponent": 0,
+              "aliases": [
+                "LIQUIDPUSSY"
+              ]
+            }
+          ]
+        },
+        {
+          "description": "The power token of Space-pussy",
+          "base": "milliampere",
+          "display": "ampere",
+          "name": "Space-pussy Ampere",
+          "symbol": "AMPERE",
+          "denom_units": [
+            {
+              "denom": "milliampere",
+              "exponent": 0,
+              "aliases": []
+            },
+            {
+              "denom": "ampere",
+              "exponent": 3,
+              "aliases": [
+                "AMPERE"
+              ]
+            }
+          ]
+        },
+        {
+          "description": "The bandwidth token of Space-pussy",
+          "base": "millivolt",
+          "display": "volt",
+          "name": "Space-pussy Volt",
+          "symbol": "VOLT",
+          "denom_units": [
+            {
+              "denom": "millivolt",
+              "exponent": 0,
+              "aliases": []
+            },
+            {
+              "denom": "volt",
+              "exponent": 3,
+              "aliases": [
+                "VOLT"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "capability": {
+      "index": "1",
+      "owners": []
+    },
+    "crisis": {
+      "constant_fee": {
+        "denom": "pussy",
+        "amount": "10000000"
+      }
+    },
+    "cyberbank": null,
+    "distribution": {
+      "params": {
+        "community_tax": "0.000000000000000000",
+        "base_proposer_reward": "0.010000000000000000",
+        "bonus_proposer_reward": "0.030000000000000000",
+        "withdraw_addr_enabled": true
+      },
+      "fee_pool": {
+        "community_pool": [
+          {
+            "amount": "958000000000000000",
+            "denom": "pussy"
+          }
+        ]
+      },
+      "delegator_withdraw_infos": [],
+      "previous_proposer": "",
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
+    },
+    "dmn": {
+      "params": {
+        "max_slots": 4,
+        "max_gas": 2500000,
+        "fee_ttl": 50
+      }
+    },
+    "evidence": {
+      "evidence": []
+    },
+    "feegrant": {
+      "allowances": []
+    },
+    "genutil": {
+      "gen_txs": []
+    },
+    "gov": {
+      "starting_proposal_id": "1",
+      "deposits": [],
+      "votes": [],
+      "proposals": [],
+      "deposit_params": {
+        "min_deposit": [
+          {
+            "denom": "pussy",
+            "amount": "100000000000"
+          }
+        ],
+        "max_deposit_period": "23650000s"
+      },
+      "voting_params": {
+        "voting_period": "345600s"
+      },
+      "tally_params": {
+        "quorum": "0.250000000000000000",
+        "threshold": "0.500000000000000000",
+        "veto_threshold": "0.250000000000000000"
+      }
+    },
+    "graph": null,
+    "grid": {
+      "params": {
+        "max_routes": 16
+      },
+      "routes": []
+    },
+    "ibc": {
+      "client_genesis": {
+        "clients": [],
+        "clients_consensus": [],
+        "clients_metadata": [],
+        "params": {
+          "allowed_clients": [
+            "06-solomachine",
+            "07-tendermint"
+          ]
+        },
+        "create_localhost": false,
+        "next_client_sequence": "0"
+      },
+      "connection_genesis": {
+        "connections": [],
+        "client_connection_paths": [],
+        "next_connection_sequence": "0",
+        "params": {
+          "max_expected_time_per_block": "30000000000"
+        }
+      },
+      "channel_genesis": {
+        "channels": [],
+        "acknowledgements": [],
+        "commitments": [],
+        "receipts": [],
+        "send_sequences": [],
+        "recv_sequences": [],
+        "ack_sequences": [],
+        "next_channel_sequence": "0"
+      }
+    },
+    "liquidity": {
+      "params": {
+        "pool_types": [
+          {
+            "id": 1,
+            "name": "StandardLiquidityPool",
+            "min_reserve_coin_num": 2,
+            "max_reserve_coin_num": 2,
+            "description": "Standard liquidity pool with pool price function X/Y, ESPM constraint, and two kinds of reserve coins"
+          }
+        ],
+        "min_init_deposit_amount": "1000000",
+        "init_pool_coin_mint_amount": "1000000000000",
+        "max_reserve_coin_amount": "0",
+        "pool_creation_fee": [
+          {
+            "denom": "pussy",
+            "amount": "1000000000"
+          }
+        ],
+        "swap_fee_rate": "0.003000000000000000",
+        "withdraw_fee_rate": "0.003000000000000000",
+        "max_order_amount_ratio": "0.100000000000000000",
+        "unit_batch_height": 1,
+        "circuit_breaker_enabled": false
+      },
+      "pool_records": []
+    },
+    "mint": {
+      "minter": {
+        "inflation": "0.050000000000000000",
+        "annual_provisions": "0.000000000000000000"
+      },
+      "params": {
+        "mint_denom": "pussy",
+        "inflation_rate_change": "0.030000000000000000",
+        "inflation_max": "0.030000000000000000",
+        "inflation_min": "0.010000000000000000",
+        "goal_bonded": "0.100000000000000000",
+        "blocks_per_year": "6311520"
+      }
+    },
+    "params": null,
+    "rank": {
+      "params": {
+        "calculation_period": "5",
+        "damping_factor": "0.800000000000000000",
+        "tolerance": "0.001000000000000000"
+      }
+    },
+    "resources": {
+      "params": {
+        "max_slots": 8,
+        "halving_period_volt_blocks": 6000000,
+        "halving_period_ampere_blocks": 6000000,
+        "base_investmint_period_volt": 2592000,
+        "base_investmint_period_ampere": 2592000,
+        "min_investmint_period": 86400,
+        "base_investmint_amount_volt": {
+          "denom": "liquidpussy",
+          "amount": "1000000000"
+        },
+        "base_investmint_amount_ampere": {
+          "denom": "liquidpussy",
+          "amount": "100000000"
+        }
+      }
+    },
+    "slashing": {
+      "params": {
+        "signed_blocks_window": "10000",
+        "min_signed_per_window": "0.050000000000000000",
+        "downtime_jail_duration": "600s",
+        "slash_fraction_double_sign": "0.050000000000000000",
+        "slash_fraction_downtime": "0.000100000000000000"
+      },
+      "signing_infos": [],
+      "missed_blocks": []
+    },
+    "staking": {
+      "params": {
+        "unbonding_time": "2419200s",
+        "max_validators": 69,
+        "max_entries": 35,
+        "historical_entries": 10000,
+        "bond_denom": "pussy"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": [],
+      "validators": [],
+      "delegations": [],
+      "unbonding_delegations": [],
+      "redelegations": [],
+      "exported": false
+    },
+    "transfer": {
+      "port_id": "transfer",
+      "denom_traces": [],
+      "params": {
+        "send_enabled": true,
+        "receive_enabled": true
+      }
+    },
+    "upgrade": {},
+    "vesting": {},
+    "wasm": {
+      "params": {
+        "code_upload_access": {
+          "permission": "Everybody",
+          "address": ""
+        },
+        "instantiate_default_permission": "Everybody"
+      },
+      "codes": [],
+      "contracts": [],
+      "sequences": [],
+      "gen_msgs": []
+    }
+  }
+}

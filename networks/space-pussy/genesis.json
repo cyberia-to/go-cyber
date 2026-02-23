@@ -1,0 +1,2284 @@
+{
+  "genesis_time": "2022-10-03T19:55:00Z",
+  "chain_id": "space-pussy",
+  "initial_height": "1",
+  "consensus_params": {
+    "block": {
+      "max_bytes": "4194304",
+      "max_gas": "25000000",
+      "time_iota_ms": "1000"
+    },
+    "evidence": {
+      "max_age_num_blocks": "100000",
+      "max_age_duration": "172800000000000",
+      "max_bytes": "1048576"
+    },
+    "validator": {
+      "pub_key_types": [
+        "ed25519"
+      ]
+    },
+    "version": {}
+  },
+  "app_hash": "",
+  "app_state": {
+    "auth": {
+      "params": {
+        "max_memo_characters": "1024",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "20",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      },
+      "accounts": [
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1d8754xqa9245pctlfcyv8eah468neqznm33fvz",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1gxhs5wzam5rlgf6cs0lkme400ut64d4njdhaf7",
+          "pub_key": null,
+          "account_number": "1",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1j3w0aa7s6665puyls9lwx9ej6cz2afysuy0v80",
+          "pub_key": null,
+          "account_number": "2",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy13hepw93y8mjcew7mfra5z7ju7k658534dpd39u",
+          "pub_key": null,
+          "account_number": "3",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1m5rf5fvhrl76s3xkvh3kde0p4dpwzewurch92s",
+          "pub_key": null,
+          "account_number": "4",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1gdpk4xeyeqzdkdwc0c2zrd8ltrthnze3a42c0n",
+          "pub_key": null,
+          "account_number": "5",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1zaefvwrgk2g45k68a3ngahgq0xky5zged294fr",
+          "pub_key": null,
+          "account_number": "6",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1ke3aflev7cr75gxa54k6qwrajfc53vqh4yfjj0",
+          "pub_key": null,
+          "account_number": "7",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1e8238v24qccht9mqc2w0r4luq462yxttjjv5pq",
+          "pub_key": null,
+          "account_number": "8",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1956s252r7du0jfeskaauep4lm6a9wn2pktntq0",
+          "pub_key": null,
+          "account_number": "9",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1r28nhrkwcvqs4qss2l7zqdvc2qfdl8ar6f4gqe",
+          "pub_key": null,
+          "account_number": "10",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy12kpw3e9ypjal6upmju9smwgjhwefpt7v0smhkt",
+          "pub_key": null,
+          "account_number": "11",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1qkw8dtdansmvayk2jxfkpel9q4d20rvfazxykl",
+          "pub_key": null,
+          "account_number": "12",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1rj7zt2pzuzwhjlr24u0prnqqxm3xexavpd7xp0",
+          "pub_key": null,
+          "account_number": "13",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy17zdyl3gfssc3vzzyxptnr0xl8z0pnte9a8zjjx",
+          "pub_key": null,
+          "account_number": "14",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1vg8lh3dsp7023kz79mlk642dux9vu038pmp4ma",
+          "pub_key": null,
+          "account_number": "15",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy10trdf5eyfcmc9graltx4hmpgznhrm7hdgt5mf6",
+          "pub_key": null,
+          "account_number": "16",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1v46pz6ddetfc3tnvdr28ss0l48jhazgyeqlumh",
+          "pub_key": null,
+          "account_number": "17",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1fnwevu5z89qd5tx6qdpfxh6u3dttc6kc6hfa9y",
+          "pub_key": null,
+          "account_number": "18",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy14hrqklee0tx6asycyfj357keql2jr5rdq9h34a",
+          "pub_key": null,
+          "account_number": "19",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1r8d26xgfxr80v3slu8r6z7wkl4h7f99qa4hhqg",
+          "pub_key": null,
+          "account_number": "20",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1r7q209q5yeh9d37pftdsm2eqtrl45ry8lmrfet",
+          "pub_key": null,
+          "account_number": "21",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy13jnp8uk4xnqcvdejcnq9rphm9actc90pf2r4ka",
+          "pub_key": null,
+          "account_number": "22",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1hyrtrdqnayvvtznddczjymjcj2jagcqugfp2rl",
+          "pub_key": null,
+          "account_number": "23",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1kfqme88c6vq8mt0smw29z67k4zz2ykr6km5rck",
+          "pub_key": null,
+          "account_number": "24",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1u2kvnwxmmpru764l5ht3nxkfwwu6ytw4s3zzsr",
+          "pub_key": null,
+          "account_number": "25",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1d59yxkz9uem873a3nyt5j379hsa7tjpvej0xfh",
+          "pub_key": null,
+          "account_number": "26",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1uynj0jhl059u9t5h4ug9075jrepdz4cwasmeqa",
+          "pub_key": null,
+          "account_number": "27",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy14fwr9m4rf27r3txv5luvph98nrckyu2qkfsn0f",
+          "pub_key": null,
+          "account_number": "28",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1n8hu3cqsn3txf0ltdk3x0sff2s0yt96xyffz3m",
+          "pub_key": null,
+          "account_number": "29",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1p5sudrdkr9r8a84s7fh27tkhdrhujhqatztfqf",
+          "pub_key": null,
+          "account_number": "30",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1p74unan6vpp9frdcz2nhv8z59jx295njwzfmc0",
+          "pub_key": null,
+          "account_number": "31",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1jxzpz4ggqefs5ps7veupd8zfy5a62cgyrm7rr8",
+          "pub_key": null,
+          "account_number": "32",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1ezpth4mp3eeqdt49kgqd5ctr69xev6v2zggvl2",
+          "pub_key": null,
+          "account_number": "33",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1wm4026rxqcrkh09k806m6y4lys942etx75v0xt",
+          "pub_key": null,
+          "account_number": "34",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1gwlqmqc9nrnuu8fanls76exyrzum9xjmdtlgnl",
+          "pub_key": null,
+          "account_number": "35",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1ezqvp6aga74ms7jqrfwhrm7266sn2m50afvapg",
+          "pub_key": null,
+          "account_number": "36",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1cwu6g93hnfm44zyl8cnkn58dsakxh2ac49m8c3",
+          "pub_key": null,
+          "account_number": "37",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1rxdzc0c80u9wympy8sgmx32ra0df5dztx0v7xh",
+          "pub_key": null,
+          "account_number": "38",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy10jmsqhf7mwquv0wa08hegxqaasvue5tnn7wn79",
+          "pub_key": null,
+          "account_number": "39",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1m0tjgkrh4td9fcp8nnssu3rfdahzfgdsaurjuv",
+          "pub_key": null,
+          "account_number": "40",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "pussy1g65rmjkeuy5rywx04s4fvwfylmlz98vq87mdq7",
+          "pub_key": null,
+          "account_number": "41",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.ModuleAccount",
+          "base_account": {
+            "account_number": "42",
+            "address": "pussy1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8wqwz53",
+            "pub_key": null,
+            "sequence": "0"
+          },
+          "name": "distribution",
+          "permissions": []
+        }
+      ]
+    },
+    "authz": {
+      "authorization": []
+    },
+    "bandwidth": {
+      "params": {
+        "recovery_period": "16000",
+        "adjust_price_period": "5",
+        "base_price": "0.250000000000000000",
+        "max_block_bandwidth": "25000",
+        "base_load": "0.100000000000000000"
+      }
+    },
+    "bank": {
+      "params": {
+        "send_enabled": [],
+        "default_send_enabled": true
+      },
+      "balances": [
+        {
+          "address": "pussy1d8754xqa9245pctlfcyv8eah468neqznm33fvz",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1gxhs5wzam5rlgf6cs0lkme400ut64d4njdhaf7",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1j3w0aa7s6665puyls9lwx9ej6cz2afysuy0v80",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy13hepw93y8mjcew7mfra5z7ju7k658534dpd39u",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1m5rf5fvhrl76s3xkvh3kde0p4dpwzewurch92s",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1gdpk4xeyeqzdkdwc0c2zrd8ltrthnze3a42c0n",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1zaefvwrgk2g45k68a3ngahgq0xky5zged294fr",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1ke3aflev7cr75gxa54k6qwrajfc53vqh4yfjj0",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1e8238v24qccht9mqc2w0r4luq462yxttjjv5pq",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1956s252r7du0jfeskaauep4lm6a9wn2pktntq0",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1r28nhrkwcvqs4qss2l7zqdvc2qfdl8ar6f4gqe",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy12kpw3e9ypjal6upmju9smwgjhwefpt7v0smhkt",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1qkw8dtdansmvayk2jxfkpel9q4d20rvfazxykl",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1rj7zt2pzuzwhjlr24u0prnqqxm3xexavpd7xp0",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy17zdyl3gfssc3vzzyxptnr0xl8z0pnte9a8zjjx",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1vg8lh3dsp7023kz79mlk642dux9vu038pmp4ma",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy10trdf5eyfcmc9graltx4hmpgznhrm7hdgt5mf6",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1v46pz6ddetfc3tnvdr28ss0l48jhazgyeqlumh",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1fnwevu5z89qd5tx6qdpfxh6u3dttc6kc6hfa9y",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy14hrqklee0tx6asycyfj357keql2jr5rdq9h34a",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1r8d26xgfxr80v3slu8r6z7wkl4h7f99qa4hhqg",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1r7q209q5yeh9d37pftdsm2eqtrl45ry8lmrfet",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy13jnp8uk4xnqcvdejcnq9rphm9actc90pf2r4ka",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1hyrtrdqnayvvtznddczjymjcj2jagcqugfp2rl",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1kfqme88c6vq8mt0smw29z67k4zz2ykr6km5rck",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1u2kvnwxmmpru764l5ht3nxkfwwu6ytw4s3zzsr",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1d59yxkz9uem873a3nyt5j379hsa7tjpvej0xfh",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1uynj0jhl059u9t5h4ug9075jrepdz4cwasmeqa",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy14fwr9m4rf27r3txv5luvph98nrckyu2qkfsn0f",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1n8hu3cqsn3txf0ltdk3x0sff2s0yt96xyffz3m",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1p5sudrdkr9r8a84s7fh27tkhdrhujhqatztfqf",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1p74unan6vpp9frdcz2nhv8z59jx295njwzfmc0",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1jxzpz4ggqefs5ps7veupd8zfy5a62cgyrm7rr8",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1ezpth4mp3eeqdt49kgqd5ctr69xev6v2zggvl2",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1wm4026rxqcrkh09k806m6y4lys942etx75v0xt",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1gwlqmqc9nrnuu8fanls76exyrzum9xjmdtlgnl",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1ezqvp6aga74ms7jqrfwhrm7266sn2m50afvapg",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1cwu6g93hnfm44zyl8cnkn58dsakxh2ac49m8c3",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1rxdzc0c80u9wympy8sgmx32ra0df5dztx0v7xh",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy10jmsqhf7mwquv0wa08hegxqaasvue5tnn7wn79",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1m0tjgkrh4td9fcp8nnssu3rfdahzfgdsaurjuv",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1g65rmjkeuy5rywx04s4fvwfylmlz98vq87mdq7",
+          "coins": [
+            {
+              "denom": "pussy",
+              "amount": "1000000000000000"
+            }
+          ]
+        },
+        {
+          "address": "pussy1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8wqwz53",
+          "coins": [
+            {
+              "amount": "958000000000000000",
+              "denom": "pussy"
+            }
+          ]
+        }
+      ],
+      "supply": [
+        {
+          "amount": "1000000000000000000",
+          "denom": "pussy"
+        }
+      ],
+      "denom_metadata": [
+        {
+          "description": "The staking token of space-pussy",
+          "base": "pussy",
+          "display": "pussy",
+          "name": "Pussy token",
+          "symbol": "PUSSY",
+          "denom_units": [
+            {
+              "denom": "pussy",
+              "exponent": 0,
+              "aliases": [
+                "PUSSY"
+              ]
+            }
+          ]
+        },
+        {
+          "description": "The liquid staking token of Space-pussy",
+          "base": "liquidpussy",
+          "display": "liquidpussy",
+          "name": "liquidpussy",
+          "symbol": "LIQUIDPUSSY",
+          "denom_units": [
+            {
+              "denom": "liquidpussy",
+              "exponent": 0,
+              "aliases": [
+                "LIQUIDPUSSY"
+              ]
+            }
+          ]
+        },
+        {
+          "description": "The power token of Space-pussy",
+          "base": "milliampere",
+          "display": "ampere",
+          "name": "Space-pussy Ampere",
+          "symbol": "AMPERE",
+          "denom_units": [
+            {
+              "denom": "milliampere",
+              "exponent": 0,
+              "aliases": []
+            },
+            {
+              "denom": "ampere",
+              "exponent": 3,
+              "aliases": [
+                "AMPERE"
+              ]
+            }
+          ]
+        },
+        {
+          "description": "The bandwidth token of Space-pussy",
+          "base": "millivolt",
+          "display": "volt",
+          "name": "Space-pussy Volt",
+          "symbol": "VOLT",
+          "denom_units": [
+            {
+              "denom": "millivolt",
+              "exponent": 0,
+              "aliases": []
+            },
+            {
+              "denom": "volt",
+              "exponent": 3,
+              "aliases": [
+                "VOLT"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "capability": {
+      "index": "1",
+      "owners": []
+    },
+    "crisis": {
+      "constant_fee": {
+        "denom": "pussy",
+        "amount": "10000000"
+      }
+    },
+    "cyberbank": null,
+    "distribution": {
+      "params": {
+        "community_tax": "0.000000000000000000",
+        "base_proposer_reward": "0.010000000000000000",
+        "bonus_proposer_reward": "0.030000000000000000",
+        "withdraw_addr_enabled": true
+      },
+      "fee_pool": {
+        "community_pool": [
+          {
+            "amount": "958000000000000000",
+            "denom": "pussy"
+          }
+        ]
+      },
+      "delegator_withdraw_infos": [],
+      "previous_proposer": "",
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
+    },
+    "dmn": {
+      "params": {
+        "max_slots": 4,
+        "max_gas": 2500000,
+        "fee_ttl": 50
+      }
+    },
+    "evidence": {
+      "evidence": []
+    },
+    "feegrant": {
+      "allowances": []
+    },
+    "genutil": {
+      "gen_txs": [
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Bloqhub",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy1p5sudrdkr9r8a84s7fh27tkhdrhujhqatztfqf",
+                "validator_address": "pussyvaloper1p5sudrdkr9r8a84s7fh27tkhdrhujhqau8du7t",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "dfy2Tjb24fytmLaTIqMRigVfwh7mX4gr2C3prhcBPd0="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "4913a219c47a83f843ec4be9d9440e96ca8eee92@192.167.254.10:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A+k17mb2lLGBARPZ14gHuefCdUxn30ZLlsRrSVSxyzSf"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "OYred5zZU2KnUiVMtzB6Px9dGUTfc993VUay9+0CjlkstllhrRYQtl7NK7KIQB5uqEeqFu6V35LFlKpvkMv9Yg=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Citizen Cosmos",
+                  "identity": "DF0280597A20ACFE",
+                  "website": "www.citizencosmos.space",
+                  "security_contact": "",
+                  "details": "Citizen Cosmos is a web3 brand and podcast"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "10000000000",
+                "delegator_address": "pussy1uynj0jhl059u9t5h4ug9075jrepdz4cwasmeqa",
+                "validator_address": "pussyvaloper1uynj0jhl059u9t5h4ug9075jrepdz4cw24av7l",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "gylED9s/yfWjaPUAsFUAQBVfZoYDTk8X+L0EjREk7l0="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "850000000000000"
+                }
+              }
+            ],
+            "memo": "66eabcb6639163be65bdf88cde11732b9fe0a63c@195.201.81.239:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "ArhPmoTf9ioffBMf0WpkkuBKnv7vg0y7dRB1bbyzIwuL"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "SurtRcNVHVwlDYWaFeylQPA8dQLQD8PrBdSDnvEjW3ss/jEA5mK98NVdN+b353uGlwdOv7RioZaqB5i/0lCIFg=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Developer",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy1hyrtrdqnayvvtznddczjymjcj2jagcqugfp2rl",
+                "validator_address": "pussyvaloper1hyrtrdqnayvvtznddczjymjcj2jagcqulv8laa",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "/unHhQAqM3i1KJ59PT0D5MEBJAmytPv8cutOhrPVQAg="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "6590ffaadab0384de9062bb5fa49ff5fb8d995a7@176.100.3.51:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AtqUTtRprpb9K7bhAg1k24RKmkfab0wpZOiCfnZuOBi7"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "ucRhfid7DINBaCZzYhoZ0sPHAckFys5EPB3OoiQ3X7InkzQQwui77ZEQJsDlMTeHtrFvPm0vhOOzgeP5jh0h3A=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Kerman",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy1u2kvnwxmmpru764l5ht3nxkfwwu6ytw4s3zzsr",
+                "validator_address": "pussyvaloper1u2kvnwxmmpru764l5ht3nxkfwwu6ytw485yhwp",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "k2FA9IN6wJTjF3MHUNy04IUUwhh3ssTHz7eOFM0CLuM="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "890bc056e5f5faaa0efa7fe55a72af09e45b398d@185.230.90.71:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AimwqRc63WjLVIInJMb/X+IQq31ZG08CvqwEGjsTP8iC"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "t3y7E1He8WPNAkHZNMYRBwTKFv7eHFYXjMPlYSZVKg0/nYltESBZlxgemrzcMt7IO8yJiNxEU5Uw9pp2r6E5+w=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "MikeLitoris",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy1rxdzc0c80u9wympy8sgmx32ra0df5dztx0v7xh",
+                "validator_address": "pussyvaloper1rxdzc0c80u9wympy8sgmx32ra0df5dzt322tc4",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "Ed+EBKPAgjZhyG2uhcHDXEFpocSUpPpyJb5qLvhRfr4="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "ba5af23f90706c80230df6db9c2fa42e11678d54@167.235.150.1:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "As00LA0oJPNpisW/RdUboX1kGxN2l93PPyEpTdDu7vIO"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "RRYQJQFkTTwH/KjOBL+SY+hJSsgOpC6sE8F8izwzCoNoAgbPELTi3SoMfFABSB7dTOFdUKJamILl2TOtmfgrVQ=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "POSTHUMAN ꝏ DVS",
+                  "identity": "8A9FC930E1A980D6",
+                  "website": "https://posthuman.digital",
+                  "security_contact": "validator@posthuman.digital",
+                  "details": "100% refund in case of slashing ⚛️ MEꝏWE 🤲 Part of the profits goes to charity"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy1e8238v24qccht9mqc2w0r4luq462yxttjjv5pq",
+                "validator_address": "pussyvaloper1e8238v24qccht9mqc2w0r4luq462yxtt9h2plz",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "zEBYTxQrRDumdM1stwnTay9z52VkGh3iYIUIa+XPObU="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "c349c49922435fc0cfdf02ac51548be989fbd102@142.132.253.246:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A+rHQzOD96xTzMUmBsuOCo7rbm5a4dEMA0bJJdhtXHDT"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "5GQwYr4ZwgSvRzlJ3xdBQ3p40mVShld0opOEjDzwz3hWouYojXUg/0OmN135sbosgNsRSiIpDW5e26H2W5QdHg=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Papsan",
+                  "identity": "C3AAAE53B3BDAC3F",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy1r7q209q5yeh9d37pftdsm2eqtrl45ry8lmrfet",
+                "validator_address": "pussyvaloper1r7q209q5yeh9d37pftdsm2eqtrl45ry8g79u8f",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "cMynSZRzuNCrMFOenCcrkhldpIy3hfC6mOjBgmXmlpA="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "81f9706d4e9357e45bb2bafd4486b66ac6e58451@185.230.90.202:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AvywWdD4SyRXjRvDZovKcEGxIUEJjHTjut0fingxl61X"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "XoTfuQy9+KYtW6FTQ/kGOP4pqNzT//9dlgSD+P6RDENKwFnTMGyDZSEx3WFOuKuYix6YEx/zntz/ENDkwBr3WQ=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Stigga",
+                  "identity": "8A41E5318619A3ED",
+                  "website": "https://stigga.org/",
+                  "security_contact": "",
+                  "details": "Individual PoS validator in Cosmos Hub Ecosystem chains, Discord:alexmed#5188"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy12kpw3e9ypjal6upmju9smwgjhwefpt7v0smhkt",
+                "validator_address": "pussyvaloper12kpw3e9ypjal6upmju9smwgjhwefpt7vc4azgf",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "bNjOAI/PiehyuwYz+lCQDPpcrjlAF2i3Yvb3OSdmYAo="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "e932305e9a36c9423c1a38ebf408e250d0ddb5f7@89.38.97.150:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A+2iJ2ufEo3cALGyEq8humzARIZk/G0WzdvmbEcjwUP0"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "1tY74vvbD7+ewFyrbp8kh1Z2PXzwz8I3zz1pqgh8/QoLMKLvOMvtiqGqFACBMjvOpuKYtYuMUAwrJZ4hVMHkFg=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "ToTheMars",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy1vg8lh3dsp7023kz79mlk642dux9vu038pmp4ma",
+                "validator_address": "pussyvaloper1vg8lh3dsp7023kz79mlk642dux9vu038k78q9l",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "fuRnTyscip2Lp29YngUSqhzqFuUYt//BhVKMdChqQno="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "a012320ef30581df99f505c449a4c42a0490e9a6@192.168.0.248:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "Ar1A0LR8koZLzQhovHBHVQ0XsWMDIL+NuA2VWfuHmYWp"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "ka2M/eQO3f0NpAqiXTei8tFi0O3eI8IIxkePC+CIdj5AzERAxCtRTnLC4H9OEMUkGWWoWE0Ysv3YEGdZVkbU9g=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Bro_n_Bro",
+                  "identity": "A57DAB9B09C7215D",
+                  "website": "bronbro.io",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "100000000000",
+                "delegator_address": "pussy1j3w0aa7s6665puyls9lwx9ej6cz2afysuy0v80",
+                "validator_address": "pussyvaloper1j3w0aa7s6665puyls9lwx9ej6cz2afystpfeed",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "evJq4xH5kUwUa4yy74j7nAd6qFHLTfSm5NwqJlSLYCE="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "850000000000000"
+                }
+              }
+            ],
+            "memo": "2e51205853f88048ac2ccb0b830960bbead14996@93.159.133.250:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AhHVVko1tNyG8GVIjpzBL/E1f1K+1dQ5ItheZLTkNLNz"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "1WKvnWn5iGXKcGxmKU9CEeJHGp8q1lfKcJv9hJvsB8or5OGb/N7acc117yIMIE7kWt6IuNfO2IiPtSIrpxh7nw=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "ChainManiacs | Real Solar\u0026Wind validator",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy14fwr9m4rf27r3txv5luvph98nrckyu2qkfsn0f",
+                "validator_address": "pussyvaloper14fwr9m4rf27r3txv5luvph98nrckyu2qpvkx3t",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "3x+1Cab1diHNXd2yXYRQ/b2hIA/iAqqyWDonG6mg9+o="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "59ab923bee54f5815b591d1d3d312931a3d4e89a@192.167.254.10:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A99rSpuMJoCXa603FCfC8gqffxilbKZwAI30ygly5kwl"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "xtpx8B7rtTzgNGYSlTpCKU+JAdojbOAuA2eOXD+t7odem6l+AbQ67sc6PqKvt98yvwXwyJBgxFM351nYDBxoYw=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "cyberG",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy17zdyl3gfssc3vzzyxptnr0xl8z0pnte9a8zjjx",
+                "validator_address": "pussyvaloper17zdyl3gfssc3vzzyxptnr0xl8z0pnte92zy8vy",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "mH49uKT67SY4ODuXUGkqbKMYjZxzHc+UI6QbNGqWI+Y="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "472e953f82e3993614b93635307ca503b7fad812@192.168.0.188:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A8HHUcU41AdJWAVryBu/fD7SG6s+3My2OPelPlLBHeWe"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "3neewRTs3pwwGtXinK+BMJ/TVMAxR8zf1Hgq5o/5tBgXUQBSBtTaHE73/gmMkmxqEJx2gFomX+zVW512O22yHQ=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Denwer",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy1n8hu3cqsn3txf0ltdk3x0sff2s0yt96xyffz3m",
+                "validator_address": "pussyvaloper1n8hu3cqsn3txf0ltdk3x0sff2s0yt96xnv0h0e",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "HPovYK9BjXDpC/NUTdRufVpfCB23ewveyE7X8vHxUsg="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "a0b15d6721d13a91ce368b56cdad9991c76d4c86@46.211.3.216:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AlsigW11Iogtfe1wf2NPbLR3qWMTVPLA5cOm9hCyW1Ro"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "R1dkYmTnOwAoHF0zABktAXnE4fiBJ7sJ2fUk0jYoaiQwdQ/z1TSWDnX8jk2F5WxtXnd0/9eAIjuCaAmAKnSJhA=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "goto5k",
+                  "identity": "1B0142FC46D30561",
+                  "website": "https://goto5k.com",
+                  "security_contact": "",
+                  "details": "Independent validator. Ambassador."
+                },
+                "commission": {
+                  "rate": "0.100000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy10trdf5eyfcmc9graltx4hmpgznhrm7hdgt5mf6",
+                "validator_address": "pussyvaloper10trdf5eyfcmc9graltx4hmpgznhrm7hdlwjwhc",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "YPe0JNydv1qJDlvvGapbQxaRFp/rFswW0w3PdvKuaBw="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "659189a8e378833332ffd61f3495443359fb52a0@192.168.100.4:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A2y3DqIjyeTqoFiojpJh5eJmLxcROK/zw3fOVj87KvVf"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "+IJUBzJisyJUFfP3kDmldQL85Ols8T2Ri3cOGmm4DSFY00E7XEgykHX3YLFxAPB/wS18NAScqM/07yANQJFzjg=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Joy prophet",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy14hrqklee0tx6asycyfj357keql2jr5rdq9h34a",
+                "validator_address": "pussyvaloper14hrqklee0tx6asycyfj357keql2jr5rdhq3ytl",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "jSKJDVC/AGr6D+nnmdhMe+zmPinqrEMSlSsYja0FB7w="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "178f1f4f430d1052c78ab12a5132f37b5d2c654d@172.19.219.100:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "Aw5AOC6ECe3PnVisdqXhw65gPj8rDL68oyBmkI5a57la"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "KPsZI03UmKY8uovSr3NQ5EEAa+fwjCf4Yys6LOjwXl0/xiBOKFDptqWCK5XqQjClhaj/RVv7zHEU6/iUAJSppA=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "linak",
+                  "identity": "6F961E9B32E722ED",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.100000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy1v46pz6ddetfc3tnvdr28ss0l48jhazgyeqlumh",
+                "validator_address": "pussyvaloper1v46pz6ddetfc3tnvdr28ss0l48jhazgyw9ef94",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "lAPc3XVbfWl+WhIxup6ReXQ90UhQyKYi6yCUnvVv6L4="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "4d8e240bf3a4d3a13f627e1aba2ca0fffa8a1cd7@185.242.112.3:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A6xdxbJ47TzrUdGG8SoVi/jPUH7x+x7jK5nlb3af+ILy"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "N0ll3hrLTFHbLFnriCCtZNcm/k3HJVdVSjpxuSEjFnYpOpaF8+uehIVsQfNTwbobatoAf10Iq+RldVrOpDZsyQ=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "lux8.net",
+                  "identity": "EBBAB54C972A579A",
+                  "website": "https://lux8.net",
+                  "security_contact": "",
+                  "details": "Fiat Lux. Infinite Lux."
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy1m0tjgkrh4td9fcp8nnssu3rfdahzfgdsaurjuv",
+                "validator_address": "pussyvaloper1m0tjgkrh4td9fcp8nnssu3rfdahzfgds2e98zw",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "zaSRRntTmScRxBexrH3Tjfsa23yulZ3iUdN4yHBoJt0="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "3630247f32b5b363825027546cbbaa27b2ee8886@194.190.169.129:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AleLx6VDXm7sVYlwUwXCRpFMYKzIDaWuCVcXH5I0qji1"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "qztwtzDxA+p/4ZXMjBZMgScFsUbb5Q+u+7IE8Sfrj4g3fElhLRwmfatI1pyKOISQtF6MjYZBMDwPEkNMaqk0KQ=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "space",
+                  "identity": "B80D9AB4E8981B6A",
+                  "website": "",
+                  "security_contact": "andfat#4230",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy1kfqme88c6vq8mt0smw29z67k4zz2ykr6km5rck",
+                "validator_address": "pussyvaloper1kfqme88c6vq8mt0smw29z67k4zz2ykr6p7jkx5",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "cElo/7UWLQYVKpqjHuyeDas1DKrS6D87jooPjjB4RSs="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "3d11aee6b074c4293d60fca7dfb1b12172a60fa3@88.218.191.78:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A5cZnI4Nt6B8HGkkYarRt2/SIlETX/urxNHwYscYhwQK"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "I753eO+EW+HL34Unak35+jdPu3Ypv9uAcni5qrLx0NkeKBfThKno51soo2EcI87GARR00XaQqBlmRA/dh5r3fA=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "web34ever",
+                  "identity": "52D7E9C59B92F133",
+                  "website": "https://web3validator.info",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy1r8d26xgfxr80v3slu8r6z7wkl4h7f99qa4hhqg",
+                "validator_address": "pussyvaloper1r8d26xgfxr80v3slu8r6z7wkl4h7f99q2s3z72",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "KDEt7qRMgauk8PosX+iB4l1ZJh4nuSPRFX6jqU16kuo="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "e2c4ea781c86ace81e895ac8a2c60f215138ed0f@88.218.191.79:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "Aoc7SC9kMjYyJCWL9SAvEbaTu9uPTz9hj/7wdDM4nTIl"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "fHLfEzSnf056+l1qKtly3BhNwkYVENgDxro4D8/uRq8DLn2L9glwCXQVzlCXCsSZVImUDu4hzjIRSIjYuYGIig=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Mimino",
+                  "identity": "",
+                  "website": "",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1000000000",
+                "delegator_address": "pussy1p74unan6vpp9frdcz2nhv8z59jx295njwzfmc0",
+                "validator_address": "pussyvaloper1p74unan6vpp9frdcz2nhv8z59jx295nje80wxd",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "BMTtI0sCeGPqmAiKUsm4N7rstiKY6WFA1P2Il9wD5Eo="
+                },
+                "value": {
+                  "denom": "pussy",
+                  "amount": "1000000000000"
+                }
+              }
+            ],
+            "memo": "70e31b1f1f05cb4b262bb7f67119d08a0c3b58d5@46.221.13.16:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A+MSp7ZI8SK9IhpbUydvKExkSwjYkQoYy5Tubp26Jcat"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            }
+          },
+          "signatures": [
+            "Hv596QA/CfniTyB7h1ylgWmq2ki0nsA3h5+EOq9/Tw0+UxPsapZ11W6F4b4qdzvid3oWwQHEi2uTUe8nmnNURg=="
+          ]
+        }
+      ]
+    },
+    "gov": {
+      "starting_proposal_id": "1",
+      "deposits": [],
+      "votes": [],
+      "proposals": [],
+      "deposit_params": {
+        "min_deposit": [
+          {
+            "denom": "pussy",
+            "amount": "100000000000"
+          }
+        ],
+        "max_deposit_period": "23650000s"
+      },
+      "voting_params": {
+        "voting_period": "345600s"
+      },
+      "tally_params": {
+        "quorum": "0.250000000000000000",
+        "threshold": "0.500000000000000000",
+        "veto_threshold": "0.250000000000000000"
+      }
+    },
+    "graph": null,
+    "grid": {
+      "params": {
+        "max_routes": 16
+      },
+      "routes": []
+    },
+    "ibc": {
+      "client_genesis": {
+        "clients": [],
+        "clients_consensus": [],
+        "clients_metadata": [],
+        "params": {
+          "allowed_clients": [
+            "06-solomachine",
+            "07-tendermint"
+          ]
+        },
+        "create_localhost": false,
+        "next_client_sequence": "0"
+      },
+      "connection_genesis": {
+        "connections": [],
+        "client_connection_paths": [],
+        "next_connection_sequence": "0",
+        "params": {
+          "max_expected_time_per_block": "30000000000"
+        }
+      },
+      "channel_genesis": {
+        "channels": [],
+        "acknowledgements": [],
+        "commitments": [],
+        "receipts": [],
+        "send_sequences": [],
+        "recv_sequences": [],
+        "ack_sequences": [],
+        "next_channel_sequence": "0"
+      }
+    },
+    "liquidity": {
+      "params": {
+        "pool_types": [
+          {
+            "id": 1,
+            "name": "StandardLiquidityPool",
+            "min_reserve_coin_num": 2,
+            "max_reserve_coin_num": 2,
+            "description": "Standard liquidity pool with pool price function X/Y, ESPM constraint, and two kinds of reserve coins"
+          }
+        ],
+        "min_init_deposit_amount": "1000000",
+        "init_pool_coin_mint_amount": "1000000000000",
+        "max_reserve_coin_amount": "0",
+        "pool_creation_fee": [
+          {
+            "denom": "pussy",
+            "amount": "1000000000"
+          }
+        ],
+        "swap_fee_rate": "0.003000000000000000",
+        "withdraw_fee_rate": "0.003000000000000000",
+        "max_order_amount_ratio": "0.100000000000000000",
+        "unit_batch_height": 1,
+        "circuit_breaker_enabled": false
+      },
+      "pool_records": []
+    },
+    "mint": {
+      "minter": {
+        "inflation": "0.050000000000000000",
+        "annual_provisions": "0.000000000000000000"
+      },
+      "params": {
+        "mint_denom": "pussy",
+        "inflation_rate_change": "0.030000000000000000",
+        "inflation_max": "0.030000000000000000",
+        "inflation_min": "0.010000000000000000",
+        "goal_bonded": "0.100000000000000000",
+        "blocks_per_year": "6311520"
+      }
+    },
+    "params": null,
+    "rank": {
+      "params": {
+        "calculation_period": "5",
+        "damping_factor": "0.800000000000000000",
+        "tolerance": "0.001000000000000000"
+      }
+    },
+    "resources": {
+      "params": {
+        "max_slots": 8,
+        "halving_period_volt_blocks": 6000000,
+        "halving_period_ampere_blocks": 6000000,
+        "base_investmint_period_volt": 2592000,
+        "base_investmint_period_ampere": 2592000,
+        "min_investmint_period": 86400,
+        "base_investmint_amount_volt": {
+          "denom": "liquidpussy",
+          "amount": "1000000000"
+        },
+        "base_investmint_amount_ampere": {
+          "denom": "liquidpussy",
+          "amount": "100000000"
+        }
+      }
+    },
+    "slashing": {
+      "params": {
+        "signed_blocks_window": "10000",
+        "min_signed_per_window": "0.050000000000000000",
+        "downtime_jail_duration": "600s",
+        "slash_fraction_double_sign": "0.050000000000000000",
+        "slash_fraction_downtime": "0.000100000000000000"
+      },
+      "signing_infos": [],
+      "missed_blocks": []
+    },
+    "staking": {
+      "params": {
+        "unbonding_time": "2419200s",
+        "max_validators": 69,
+        "max_entries": 35,
+        "historical_entries": 10000,
+        "bond_denom": "pussy"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": [],
+      "validators": [],
+      "delegations": [],
+      "unbonding_delegations": [],
+      "redelegations": [],
+      "exported": false
+    },
+    "transfer": {
+      "port_id": "transfer",
+      "denom_traces": [],
+      "params": {
+        "send_enabled": true,
+        "receive_enabled": true
+      }
+    },
+    "upgrade": {},
+    "vesting": {},
+    "wasm": {
+      "params": {
+        "code_upload_access": {
+          "permission": "Everybody",
+          "address": ""
+        },
+        "instantiate_default_permission": "Everybody"
+      },
+      "codes": [],
+      "contracts": [],
+      "sequences": [],
+      "gen_msgs": []
+    }
+  }
+}
