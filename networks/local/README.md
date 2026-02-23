@@ -1,21 +1,21 @@
 <p>&nbsp;</p>
 <p align="center">
-<img src="https://cyb.ai/robot.fc83fb8717.svg" width=100>
+<img src="https://cyb.ai/large-green.28aa247dfc.png" width=100>
 </p>
 
 <p align="center">
-An instant, zero-config bostrom blockchain.
+An instant, zero-config local cyber blockchain.
 </p>
 
 <br/>
 
-## What is localbostrom?
+## What is local network?
 
-Localbostrom is a complete bostrom testnet containerized with Docker and orchestrated with a simple `docker-compose` file. It simplifies the way smart-contract developers test their contracts in a sandbox before they deploy them on a testnet or mainnet.
+Local network is a complete cyber testnet containerized with Docker and orchestrated with a simple `docker-compose` file. It simplifies the way smart-contract developers test their contracts in a sandbox before they deploy them on a testnet or mainnet.
 
-Localbostrom comes preconfigured with opinionated, sensible defaults for standard testing environments.
+It comes preconfigured with opinionated, sensible defaults for standard testing environments. It also comes with pre-configured [cyberindex](https://github.com/cybercongress/cyberindex) to allow fast and easy data manipulation and analysis.
 
-localbostrom has the following advantages over a public testnet:
+Advantages over a public testnet:
 
 - Quick to reset for rapid iterations
 - Simple simulations of different scenarios
@@ -26,112 +26,83 @@ localbostrom has the following advantages over a public testnet:
 - [Docker](https://www.docker.com/)
 - [`docker-compose`](https://github.com/docker/compose)
 - Supported known architecture: x86_64
-- 16+ GB of RAM is recommended
+- 8+ GB of RAM is recommended
 
-## Install localbostrom
+## Start, stop, and reset
 
-1. Run the following commands::
-
-```sh
-$ git clone https://github.com/cybercongress/localbostrom
-$ cd localbostrom
-```
-
-2. Make sure your Docker daemon is running in the background and [`docker-compose`](https://github.com/docker/compose) is installed.
-
-## Start, stop, and reset localbostrom
-
-- Start localbostrom:
+Start with cyberindex:
 
 ```sh
-$ docker-compose up
+docker-compose up --build --detach
 ```
 
 Your environment now contains:
 
-- [cyber](https://github.com/cybercongress/go-cyber) RPC node running on `tcp://localhost:26657`, `http://localhost:26657`
-- LCD running on http://localhost:1317
-- [FCD](http://www.github.com/terra-money/fcd) running on http://localhost:3060
+- [cyber](https://github.com/cybercongress/go-cyber) RPC node running on `http://localhost:26657`
+- GRPC endpoint at `http://localhost:9090`
+- LCD running on `http://localhost:1317` with swagger at `http://localhost:1317/swagger`
+- [GraphQL](https://hasura.io/docs/latest/graphql/core/index/) endpoint on `http://localhost:8090`
 
-
-Stop localbostrom:
+Start only cyber node:
 
 ```sh
-$ docker-compose stop
+docker-compose up -d cyber --build --detach
+```
+
+Stop:
+
+```sh
+docker-compose stop
 ```
 
 Reset the state:
 
 ```sh
-$ docker-compose rm
+docker-compose rm
 ```
 
-### cyber
-
-1. Ensure the same version of `cyber` and localbostrom are installed.
-
-2. Use `cyber` to talk to your localbostrom `cyber` node:
+Hard restart (drop state and start from genesis):
 
 ```sh
-$ cyber status
-```
-
-This command automatically works because `cyber` connects to `localhost:26657` by default
-
-The following command is the explicit form:
-```sh
-$ cyber status --node=tcp://localhost:26657
-```
-
-3. Run any of the `cyber` commands against your localbostrom network, as shown in the following example:
-
-```sh
-$ cyber query account bostrom1phaxpevm5wecex2jyaqty2a4v02qj7qm5n94ug
-```
-
-4. If you want to hard restart the network (drop state and start from the genesis) you can use `hard_restart.sh` script
-
-```sh
-chmod +x ./hard_restart.sh
 ./hard_restart.sh
+```
+
+## Usage
+
+```sh
+cyber status --node=http://localhost:26657
+```
+
+```sh
+cyber query account bostrom1phaxpevm5wecex2jyaqty2a4v02qj7qm5n94ug
 ```
 
 ### Cyber SDK for Python
 
-Connect to the chain through localbostrom's LCD server:
-
 ```python
 from cyber_sdk.client.lcd import LCDClient
-cyber = LCDClient("localbostrom", "http://localhost:1317")
+cyber = LCDClient("local", "http://localhost:1317")
 ```
 
-## Configure localbostrom
+## Configuration
 
-The majority of localbostrom is implemented through a `docker-compose.yml` file, making it easily customizable. You can use localbostrom as a starting template point for setting up your own local Terra testnet with Docker containers.
+### Node configuration
 
-Out of the box, localbostrom comes preconfigured with opinionated settings such as:
+Edit `config/config.toml` and `config/app.toml`.
 
-- ports defined for RPC (26657), LCD (1317) and FCD (3060)
-- standard [accounts](#accounts)
+### Cyberindex configuration
 
-### Modifying node configuration
+Edit `cyberindex/config.yaml`. Postgres params can be altered in `docker-compose.yml`. Changing postgres params requires container and `./cyberindex/postgres` folder removal:
 
-You can modify the node configuration of your validator in the `config/config.toml` and `config/app.toml` files.
-
-#### Pro tip: Speed Up Block Time
-
-localbostrom is often used alongside a script written with the Terra.js SDK or Terra Python SDK as a convenient way to do integration tests. You can greatly improve the experience by speeding up the block time.
-
-To increase block time, edit the `[consensus]` parameters in the `config/config.toml` file, and specify your own values.
-
-
-### Modifying genesis
-
-You can change the `genesis.json` file by altering `config/genesis.json`. To load your changes, restart your localbostrom.
+```sh
+docker-compose down postgres
+rm -rf cyberindex/postgres
+docker-compose up -d postgres --detach
+```
 
 ## Accounts
 
-localbostrom is pre-configured with one validator and 10 accounts with boot balances.
+Pre-configured with one validator and 10 accounts with boot balances.
 
 | Account   | Address                                                                                                  | Mnemonic                                                                                                                                                                   |
 | --------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

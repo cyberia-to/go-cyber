@@ -38,7 +38,7 @@
 - [send transactions](send_txs.md) in your dapp
 - [cyberlink content](cyberlink_content.md) in dapp
 - [deploy contract](deploy_contract.md)
-- [run local bostrom](local_bostrom.md) network for development
+- [run local network](../networks/local/README.md) for development
 
 # How-To (WIP)
 - [run validator](run_validator.md) guide
