@@ -293,6 +293,139 @@ Eliminating the fork removes the highest-risk item in the upgrade plan and drama
 
 ---
 
+## Space-Pussy Network Unification
+
+### Current State of Divergence
+
+Space-pussy was forked from go-cyber circa 2022 and has not been updated since. The codebases have diverged massively:
+
+| | **go-cyber (bostrom)** | **space-pussy** |
+|---|---|---|
+| Cosmos SDK | v0.47.16 | v0.45.5 |
+| Consensus | CometBFT v0.37.18 | Tendermint v0.34.19 |
+| IBC-Go | v7.10.0 | v3.0.0 |
+| CosmWasm/wasmd | v0.46.0 | v0.28.0 |
+| wasmvm | v1.5.9 | v1.0.0 |
+| Go | 1.22.7 | 1.17 |
+| Module path | `github.com/cybercongress/go-cyber/v7` | `github.com/joinresistance/space-pussy` |
+| Custom modules | bandwidth, clock, cyberbank, dmn, graph, grid, **liquidity**, rank, resources, staking, **tokenfactory** | bandwidth, cyberbank, dmn, graph, grid, rank, resources, staking |
+| Bech32 prefix | `bostrom` | `pussy` |
+| Bond denom | `boot` | `pussy` |
+| Staking denom | `hydrogen` | `liquidpussy` |
+
+### The Problem: Hardcoded Chain Identity
+
+The go-cyber binary currently **hardcodes** chain-specific values that prevent it from running space-pussy:
+
+- `app/app.go`: `Bech32Prefix = "bostrom"`, `appName = "BostromHub"`
+- `app/params/const.go`: `DefaultDenom = "boot"`, `BondDenom = "boot"`
+- `types/coins.go`: `CYB = "boot"`, `SCYB = "hydrogen"`, `VOLT = "millivolt"`, `AMPERE = "milliampere"`
+- `app/prefix.go`: bech32 prefix sealed at init with `config.Seal()`
+
+These constants are referenced across 13+ source files in 6+ modules. A single go-cyber binary cannot currently serve both networks.
+
+### Solution: Configurable Chain Identity + In-Place Upgrade
+
+The approach is two-phase: first make go-cyber multi-chain capable, then upgrade space-pussy to use the unified binary.
+
+#### Phase A: Make go-cyber Multi-Chain (prerequisite, do during Step 1)
+
+Refactor hardcoded chain identity into runtime configuration driven by genesis.json or app config:
+
+1. **Replace hardcoded denoms with genesis-derived values.** Read `bond_denom` from staking params at init. Replace all references to `"boot"`, `"hydrogen"` etc. with configuration read from genesis or module params.
+
+2. **Make bech32 prefix configurable.** Read prefix from app config or derive from chain-id. Set before `config.Seal()`. Osmosis and other chains already do this — the prefix is set based on configuration, not hardcoded.
+
+3. **Use `ctx.ChainID()` in upgrade handlers** for chain-specific migration logic (Osmosis v25 pattern):
+   ```go
+   func CreateUpgradeHandler(...) {
+       return func(ctx sdk.Context, ...) {
+           switch ctx.ChainID() {
+           case "bostrom":
+               // bostrom-specific migrations
+           case "space-pussy":
+               // space-pussy-specific migrations
+           }
+       }
+   }
+   ```
+
+4. **All modules (liquidity, tokenfactory, clock) stay included** for both chains. Modules that space-pussy doesn't use are simply empty (no state, no genesis entries). They become available for space-pussy to use in the future.
+
+After this refactor, one `cyber` binary serves any chain with the appropriate genesis.json and config.
+
+#### Phase B: Upgrade Space-Pussy to Unified Binary
+
+This is an **in-place chain upgrade** submitted via governance on space-pussy. The new binary is the multi-chain go-cyber binary with a massive upgrade handler.
+
+The upgrade handler must perform these migrations in order:
+
+1. **Cosmos SDK v0.45 -> v0.47 state migrations**
+   - Migrate all module stores to v0.47 format
+   - Migrate x/params to per-module param storage
+   - Add store keys for new modules (crisis, feegrant, authz changes)
+
+2. **Tendermint v0.34 -> CometBFT v0.37 compatibility**
+   - CometBFT v0.37 can read Tendermint v0.34 state (backward compatible at data level)
+   - ABCI changes are handled by the new binary, not by state migration
+
+3. **IBC-Go v3 -> v7 sequential migrations**
+   - v3 -> v4: ICS-29 fee middleware state
+   - v4 -> v5: ICS-27 interchain accounts controller changes
+   - v5 -> v6: self-managing params migration
+   - v6 -> v7: localhost v2 client migration
+   - Each step has its own SDK migration module that must run in sequence
+
+4. **CosmWasm v0.28 -> v0.46 state migration**
+   - Contract store format changes
+   - Pin/unpin contract code migrations
+
+5. **Add store keys for new modules**
+   - `clock`, `liquidity`, `tokenfactory` (empty initial state)
+   - Module stores must be added via `StoreUpgrades.Added`
+
+**Precedent**: Akash Network successfully jumped from SDK v0.45 directly to v0.53 in their Mainnet 14 upgrade. The approach was a single large upgrade handler that performed all intermediate migrations.
+
+#### Execution Order
+
+The space-pussy upgrade happens **after** Step 1 (bostrom -> SDK v0.50) because:
+1. The multi-chain refactor is done as part of Step 1
+2. Space-pussy can then upgrade directly to the same binary as bostrom
+3. Both chains advance together in Step 2
+
+Timeline:
+```
+Step 1: go-cyber v0.50 + multi-chain refactor
+  │
+  ├── Deploy on bostrom (upgrade proposal)
+  │
+  └── Deploy on space-pussy (upgrade proposal, includes v0.45->v0.50 migration)
+       └── space-pussy now runs same binary as bostrom
+  │
+Step 2: go-cyber v0.53 + CosmWasm 3.0
+  │
+  ├── Deploy on bostrom (upgrade proposal)
+  └── Deploy on space-pussy (upgrade proposal)
+       └── Both chains in sync going forward
+```
+
+### Space-Pussy Upgrade Checklist
+
+- [ ] Refactor `app/app.go`, `app/params/const.go`, `types/coins.go` to read denoms from config/genesis
+- [ ] Make bech32 prefix configurable (read from app config)
+- [ ] Verify all 13+ source files that reference hardcoded denoms are updated
+- [ ] Write space-pussy upgrade handler with chain-id conditional logic
+- [ ] Implement SDK v0.45 -> v0.50 state migrations for space-pussy's state
+- [ ] Implement IBC v3 -> v8 sequential state migrations
+- [ ] Implement CosmWasm v0.28 -> v0.54 state migrations
+- [ ] Add store upgrades for new modules (clock, liquidity, tokenfactory, circuit, feeibc)
+- [ ] Test upgrade against space-pussy mainnet state export (in-place testnet)
+- [ ] Submit upgrade proposal on space-pussy governance
+- [ ] Coordinate validator binary swap
+- [ ] Archive `cyberia-to/space-pussy` repo (replaced by go-cyber)
+
+---
+
 ## Execution Checklist
 
 ### Pre-work
@@ -357,6 +490,9 @@ Eliminating the fork removes the highest-risk item in the upgrade plan and drama
 | Gas parameter recalibration (wasmvm 1000x change) | **Medium** | Benchmark contract gas usage on testnet before mainnet |
 | Breaking changes in custom modules | **Medium** | Systematic migration of each module with unit tests |
 | Database backend incompatibility | **Low** | go-cyber uses goleveldb/rocksdb which remain supported |
+| Space-pussy v0.45->v0.50 state migration | **High** | Largest version jump (3 SDK majors, 4 IBC majors). Test extensively with mainnet state. Akash successfully did v0.45->v0.53 as precedent |
+| Hardcoded denom/prefix refactor | **Medium** | Systematic search-and-replace across 13+ files. Must not break bostrom compatibility. Test both chains |
+| Space-pussy validator coordination | **Medium** | Space-pussy has its own validator set that must coordinate the binary swap. Adequate notice and testing required |
 
 ## Reference Chains
 
