@@ -30,6 +30,89 @@ This document describes the upgrade path for go-cyber's core dependencies from t
 | ibc-hooks | **v8.0.0** | No v10 release yet |
 | Go | 1.23.2+ | Required by SDK v0.53 |
 
+---
+
+## Roadmap: Priorities and Execution Order
+
+Everything we want to do, sorted by dependency chain and impact. Three phases: what we can ship **now** on SDK v0.47, what requires the **SDK v0.50 upgrade**, and what comes **after v0.53**.
+
+### Phase 0 — Now (SDK v0.47, no consensus change)
+
+These items can ship as point releases or soft-fork patches. No chain upgrade required.
+
+| # | Item | Scope | Depends On |
+|---|------|-------|------------|
+| 0.1 | **Graph Streaming gRPC** — `GraphSnapshot`, `CyberlinksAfter`, `CyberlinksByParticle` endpoints | `x/graph` new queries | — |
+| 0.2 | **Native Graph Query Endpoints** — `CyberlinksByNeuron`, `ParticlesByNeuron` (replace cyberindex for basic queries) | `x/graph` new queries | — |
+| 0.3 | **cyb (go-cyb) Tray App** — orchestrator managing `cyber` + `ipfs`, tray icon, health polling, Start/Stop | new repo `go-cyb` | — |
+| 0.4 | **Embedded Dashboard** — single HTML page on `:26660`, node/IPFS/graph/rank stats | `cyber` binary, `//go:embed` | — |
+| 0.5 | **IPFS Sidecar: Kubo Lifecycle** — `cyber init` creates IPFS repo, `cyber start` manages Kubo subprocess | `app/` startup code | — |
+| 0.6 | **`cyber service` command** — systemd/launchd install/start/stop for headless servers | `cmd/cyber/` | — |
+| 0.7 | **CPU Rank Optimization** — SIMD, goroutine parallelism, memoize per-CID stake | `x/rank/keeper/calculate_cpu.go` | — |
+| 0.8 | **Installer & Packaging** — `get.cyber.page` script, GoReleaser update, Homebrew formula | build/release infra | 0.3, 0.5 |
+| 0.9 | **Graph Inference: Embeddings + Retrieval** — cid2vec from topology (TransE/RotatE), HNSW index, Similar/Predict gRPC | `scripts/`, `x/inference` | 0.1 |
+| 0.10 | **Graph Inference: LLM Training + Native Inference** — resolve content via IPFS, fine-tune Llama 3B (LoRA), llama-server sidecar, Ask/AskStream gRPC, RAG pipeline | `scripts/`, `x/inference`, sidecar | 0.5, 0.9 |
+| 0.11 | **Query-time Negentropy** *(done)* — `J(π) = log₂(n) − H(π)` from rank distribution | `x/rank` gRPC | ✅ committed |
+| 0.12 | **Dead Code Removal** *(done)* — karma/entropy/luminosity kernels removed | `x/rank/cuda/rank.cu` | ✅ committed |
+
+**Priority order:** 0.1 → 0.3 → 0.5 → 0.4 → 0.2 → 0.9 → 0.10 → 0.6 → 0.7 → 0.8
+
+Rationale: Graph streaming (0.1) is the foundation for light clients, inference training, and any external tool. The tray app (0.3) and IPFS sidecar (0.5) together make "download → run → it works" possible. Dashboard (0.4) gives visual feedback. Native queries (0.2) start replacing cyberindex. Inference training (0.9) needs graph streaming, then native inference (0.10) makes it available on the node. Service management (0.6) and CPU optimization (0.7) are independent polish items. Packaging (0.8) wraps everything for distribution.
+
+### Phase 1 — SDK v0.50 Chain Upgrade
+
+All of these require the consensus-breaking upgrade to Cosmos SDK v0.50 + CometBFT v0.38.
+
+| # | Item | Scope | Depends On |
+|---|------|-------|------------|
+| 1.1 | **SDK v0.47 → v0.50 migration** — ABCI 2.0, FinalizeBlock, context.Context keepers, x/params removal | all modules, `app/` | — |
+| 1.2 | **Eliminate Cosmos SDK fork** — remove `cybercongress/cosmos-sdk` replace directive | `go.mod` | 1.1 |
+| 1.3 | **Snapshot Extensions** — graph + rank data in state-sync snapshots (instant sync without GPU) | `x/graph`, `x/rank` snapshotters | 1.1 |
+| 1.4 | **Height Index for Incremental Sync** — `[0x07][Height][Seq]` secondary index for O(k) `CyberlinksAfter` | `x/graph` store | 1.1 |
+| 1.5 | **Rank Computation Fixes** — div-by-zero guard (CPU), overflow protection, dangling node decision | `x/rank` | 1.1 |
+| 1.6 | **Multi-chain Binary (Phase A)** — configurable bech32, denoms from genesis, chain-id switch in upgrade handlers | `app/`, `types/` | 1.1 |
+| 1.7 | **ABCIListener Indexing Plugin** — embedded SQLite/DuckDB via ADR-038, replace cyberindex | `app/`, new plugin | 1.1 |
+| 1.8 | **Space-Pussy Upgrade (Phase B)** — in-place upgrade v0.45→v0.50 using unified binary | upgrade handler | 1.1, 1.6 |
+| 1.9 | **IBC-Go v7 → v8, wasmd v0.46 → v0.54, wasmvm v1.5 → v2.2** | deps | 1.1 |
+| 1.10 | **Graph Inference: On-Chain Commitment** — `MsgCommitModel`, validator verification, embedding merkle tree | `x/inference` | 0.10, 1.1 |
+
+**Priority order:** 1.1 → 1.2 → 1.9 → 1.5 → 1.3 → 1.4 → 1.6 → 1.7 → 1.8 → 1.10
+
+Rationale: The SDK migration (1.1) unlocks everything else. Fork elimination (1.2) and dep updates (1.9) are part of the same push. Rank fixes (1.5) are consensus-breaking so bundle with the upgrade. Snapshots (1.3) and height index (1.4) make light client experience good. Multi-chain (1.6) precedes space-pussy upgrade (1.8). ABCIListener indexing (1.7) replaces cyberindex once SDK v0.50 fixes the bug. Inference on-chain commitment (1.10) makes the model verifiable.
+
+### Phase 2 — SDK v0.53 + CosmWasm 3.0
+
+| # | Item | Scope | Depends On |
+|---|------|-------|------------|
+| 2.1 | **SDK v0.50 → v0.53 migration** — IBC Eureka, unordered TXs, x/epochs, auth PreBlocker | all modules | 1.1 |
+| 2.2 | **IBC-Go v8 → v10 (IBC Eureka)** — Ethereum connectivity, remove capabilities module | IBC wiring | 2.1 |
+| 2.3 | **CosmWasm 3.0** — IBCv2 entrypoints, Uint256 balances, wasmd v0.61, wasmvm v3.0 | deps | 2.1 |
+| 2.4 | **Schema/Indexer Framework** — `HasModuleCodec` for auto-generated SQL tables | custom modules | 2.1, 1.7 |
+| 2.5 | **wgpu Prototype (f32)** — port 4 CUDA kernels to WGSL compute shaders, test precision | `x/rank` | 0.7 |
+| 2.6 | **Light Client with Rank Proofs** — `QueryRankWithProof`, `--rank-proofs` flag, full merkle tree | `x/rank` | 1.3 |
+| 2.7 | **Graph Inference: Incremental Training + 7B Model** — daily LoRA adapters, weekly full retrain, 7B option for validators | `x/inference` | 0.10 |
+
+### Phase 3 — Long-term / Research
+
+| # | Item | Notes |
+|---|------|-------|
+| 3.1 | **Rust Migration Path** — CosmWasm-first (move logic to contracts), then pure Rust ABCI | Research done: Penumbra, Namada, Nomic as references |
+| 3.2 | **wgpu f64** — native on Vulkan/DX12, emulated double-single on Metal | Depends on 2.5 precision results |
+| 3.3 | **Graph Store Separation** — flat append-only store for cyberlinks, only merkle root in IAVL | SDK v0.53 pluggable storage |
+| 3.4 | **SDK v0.54 + CometBFT v0.39** — BlockSTM, BLS signing, concurrent ABCI | Planned Q2 2026 |
+| 3.5 | **macOS .dmg / Linux .deb** — native OS packages for cyb | Depends on 0.3, 0.8 |
+
+### Summary Table
+
+| Phase | Items | Consensus Change | Key Deliverable |
+|-------|-------|:----------------:|-----------------|
+| **0** | 12 items (2 done) | No | Graph sync + Desktop app + IPFS sidecar + **LLM inference from graph** |
+| **1** | 10 items | Yes (SDK v0.50) | Full SDK upgrade + snapshot sync + rank fixes + **inference on-chain** |
+| **2** | 7 items | Yes (SDK v0.53) | IBC Eureka + CosmWasm 3.0 + wgpu + **incremental LLM training** |
+| **3** | 5 items | TBD | Rust migration + advanced GPU + native packages |
+
+---
+
 ## Compatibility Matrix
 
 All versions in a row must be used together. Mixing across rows is not supported.
@@ -426,139 +509,1522 @@ Step 2: go-cyber v0.53 + CosmWasm 3.0
 
 ---
 
-## Graph State Sync and Light Client
+## Graph Sync, Topology Export, and Dynamic Rank
 
-### Current Architecture
+### Goal
+
+A client can sync the **full graph topology** (all particles + all cyberlinks) quickly and cheaply, then **pull rank dynamically** only for the subgraph it cares about. Everything through go-cyber natively, no external indexer required.
+
+### Current Architecture and Its Limitations
 
 The knowledge graph has three layers of state:
 
-1. **Graph store (IAVL):** CID registry, cyberlinks stored as `CompactLink` (24 bytes: `from_cid uint64 + to_cid uint64 + account uint64`), and neuron degree counters. All stored in IAVL trees under `x/graph` module store keys.
+1. **Graph store (IAVL):** CID registry, cyberlinks stored as `CompactLink` (24 bytes: `from_cid uint64 + to_cid uint64 + account uint64`), neuron degree counters. IAVL keys: `[0x03][From 8B][Account 8B][To 8B]`, value: `[BlockHeight 8B]`.
 
-2. **In-memory index (`IndexKeeper`):** On node startup, the full graph is loaded from IAVL into RAM as adjacency lists (`outLinks`, `inLinks` maps). This is the structure that the rank algorithm reads.
+2. **In-memory index (`IndexKeeper`):** On startup, full graph loaded from IAVL into RAM as adjacency lists (`outLinks`, `inLinks` maps of `map[CidNumber]map[CidNumber]map[AccNumber]struct{}`). This is what the rank algorithm reads.
 
-3. **Rank values (in-memory):** `float64[]` array holding the PageRank for every CID. Computed by GPU (CUDA) or CPU every `CalculationPeriod` blocks (default: 5). Only the merkle tree root hashes of rank values are stored on-chain — the actual rank values are **never persisted to disk**.
+3. **Rank values (in-memory only):** `uint64[]` array holding PageRank for every CID. Computed by GPU/CPU every `CalculationPeriod` blocks (default: 5). Only the merkle tree root is stored on-chain — **rank values are never persisted to disk**.
 
-### Current Bottleneck: Rank Recalculation on Sync
+**Current bottlenecks:**
 
-The snapshot extensions (`x/rank/keeper/snapshotter.go`, `x/graph/keeper/snapshotter.go`) currently work as follows:
+| Problem | Details |
+|---|---|
+| **No graph streaming** | No gRPC endpoint to get all links or particles in bulk. Only `GraphStats()` (counts) and per-particle `Search`/`Backlinks` exist. |
+| **No incremental sync** | Block height stored in IAVL value, not key — cannot efficiently query "links after height X" without full scan. |
+| **Snapshot is empty** | Both `GraphSnapshotter.SnapshotExtension()` and `RankSnapshotter.SnapshotExtension()` return `nil` — state-sync snapshots contain no graph or rank data. |
+| **No index by neuron** | IAVL key is `[From][Account][To]` — can prefix-scan by From, but finding all links by a specific Account requires full scan. |
+| **No index by particle (To)** | Finding all backlinks to a particle in IAVL requires full scan — the in-memory index does this, but there's no query endpoint for it from IAVL. |
+| **Rank requires full recalc** | After state-sync restore, node must load entire graph + run full PageRank before serving queries. Requires GPU or hours of CPU time. |
 
-- **`SnapshotExtension()`** — writes **nothing** (empty payload for both graph and rank).
-- **`RestoreExtension()`** — reloads the full graph into memory from IAVL, then **triggers a full rank calculation from scratch**.
-
-This means every node that restores from a state-sync snapshot must:
-1. Load the entire graph into RAM (iterating all IAVL leaves)
-2. Run a full PageRank computation (GPU or CPU)
-3. Wait for convergence before the node can serve queries
-
-For a graph with millions of cyberlinks, this takes significant time and requires GPU hardware just to sync.
-
-### Proposed Improvements
-
-#### A. Serialize Rank Values in Snapshot Extension (Step 1)
-
-The highest-impact change: write actual rank values into the snapshot payload.
+### Target Architecture: Graph Topology Sync + Lazy Rank
 
 ```
-SnapshotExtension():
-  1. Write cidCount (uint64)
-  2. Write rankValues[] (cidCount × 8 bytes, uint64 encoded)
-
-RestoreExtension():
-  1. Read rank values from payload
-  2. Build merkle tree from values
-  3. Verify merkle root matches on-chain LatestMerkleTree
-  4. Load into networkCidRank — node is immediately ready
+Light client / indexer / UI:
+  1. Initial sync: call GraphSnapshot stream → receive full topology (particles + links)
+  2. Incremental sync: call CyberlinksAfter(height) → receive new links since last sync
+  3. Rank on demand: call Rank(particle), Search(particle), Backlinks(particle)
+     → node returns pre-computed rank for requested particles
+  4. Bulk rank: call TopParticles(limit) → top N ranked particles with scores
 ```
 
-Note: karma/entropy/luminosity have been removed from consensus state. Negentropy is now computed at query time from rank values (no storage needed).
+The client builds a local graph representation, and lazily fetches rank values for the subgraph it's exploring. No need to sync all rank values — only what the user is looking at.
 
-Benefits:
-- **No GPU required for sync.** Nodes without CUDA can still sync and serve rank queries.
-- **Sync time drops from minutes/hours to seconds.** Reading a flat array is O(n), versus PageRank iteration which is O(n × k × iterations).
-- **Merkle verification ensures correctness.** The on-chain `LatestMerkleTree` (stored every block) acts as the commitment — restored rank values are verified against it.
+### Implementation: Three Levels
 
-Estimated payload size: for 10M CIDs, rank values ≈ 80 MB (uncompressed). Snapshot compression (zstd) typically achieves 3-5x on numeric data.
+#### Level 1: Graph Streaming gRPC (Now, No Consensus Change)
 
-#### B. Incremental Graph Export Endpoint (Step 1)
-
-Add a gRPC query endpoint for incremental graph sync:
+New gRPC endpoints in `x/graph`, using existing IAVL data:
 
 ```protobuf
 service Query {
-  rpc CyberlinksAfter(CyberlinksAfterRequest) returns (CyberlinksAfterResponse);
-}
+  // Existing
+  rpc GraphStats(QueryGraphStatsRequest) returns (QueryGraphStatsResponse);
 
-message CyberlinksAfterRequest {
-  uint64 after_height = 1;
-  uint64 limit = 2;
+  // NEW: Stream full graph topology in chunks
+  // Server-side streaming: sends batches of 1000 links until complete.
+  // Under the hood: IterateLinks() prefix scan on 0x03.
+  rpc GraphSnapshot(QueryGraphSnapshotRequest)
+      returns (stream QueryGraphSnapshotResponse);
+
+  // NEW: Incremental sync — links created after a given height.
+  // Implementation: full IAVL scan + filter by height value.
+  // Slow (O(n)) but correct. Secondary index added in Level 2.
+  rpc CyberlinksAfter(QueryCyberlinksAfterRequest)
+      returns (QueryCyberlinksAfterResponse);
+
+  // NEW: All links from/to a specific particle (paginated).
+  // Uses in-memory index (inLinks/outLinks) — fast, O(degree).
+  rpc CyberlinksByParticle(QueryCyberlinksByParticleRequest)
+      returns (QueryCyberlinksByParticleResponse);
 }
 ```
 
-This allows indexers (cyberindex) and light clients to fetch only new cyberlinks since a given height, rather than scanning the full IAVL tree. The graph module already tracks links per block (`GetCurrentBlockNewLinks`), so the data is available — it just needs a query endpoint.
+Size estimate for full graph sync (1M links):
+- Particles: ~34 MB (CID strings + numbers)
+- Links: ~24 MB (24 bytes × 1M)
+- Total: ~58 MB uncompressed, ~15 MB with gRPC compression
 
-#### C. Graph Store Separation (Step 2, with SDK v0.53)
+This is the **minimum viable product** for graph sync — can be implemented immediately on SDK v0.47.
 
-SDK v0.53 introduces pluggable storage backends and IAVL v2. This opens the possibility of storing the graph in a more efficient structure:
+#### Level 2: Snapshot Extensions + Height Index (Consensus Change, with SDK Upgrade)
 
-- **Current:** Cyberlinks stored as individual IAVL key-value pairs. Each link read/write goes through the full IAVL tree path (O(log n) with proof generation overhead).
-- **Future option:** Store cyberlinks in a flat append-only store (no proof needed for individual links) while keeping only the graph merkle root in IAVL for consensus. This would dramatically reduce storage overhead and speedup full graph iteration.
+**A. Fill the empty snapshotters:**
 
-This is a larger architectural change that becomes feasible with the storage flexibility in SDK v0.53+.
+```go
+// x/graph/keeper/snapshotter.go
+func (gs *GraphSnapshotter) SnapshotExtension(height uint64, pw snapshot.ExtensionPayloadWriter) error {
+    // Binary format already exists: WriteCids() + WriteLinks()
+    // 1. Write all CIDs (variable-length binary)
+    // 2. Write all CompactLinks (24 bytes each)
+    return gs.graphKeeper.WriteGenesis(pw)
+}
 
-### Light Client Architecture
+// x/rank/keeper/snapshotter.go
+func (rs *RankSnapshotter) SnapshotExtension(height uint64, pw snapshot.ExtensionPayloadWriter) error {
+    // 1. Write cidCount (uint64)
+    // 2. Write rankValues[] (cidCount × 8 bytes)
+    return rs.WriteRankValues(pw)
+}
 
-#### D. Rank Inclusion Proofs (Step 1)
+func (rs *RankSnapshotter) RestoreExtension(...) error {
+    // 1. Read rank values from payload
+    // 2. Build merkle tree from values
+    // 3. Verify merkle root matches on-chain LatestMerkleTree
+    // 4. Load into networkCidRank — node is immediately ready, NO GPU needed
+    return rs.LoadRankValues(pr)
+}
+```
 
-The codebase already has the foundation: `merkle/tree.go` implements an RFC-6962 merkle tree with `GetIndexProofs()` and `ValidateIndexByProofs()` methods. The tree supports two modes:
+Snapshot payload sizes (estimated):
+- 1M links: ~58 MB graph + ~8 MB rank = ~66 MB (→ ~15-20 MB compressed)
+- 10M links: ~580 MB graph + ~80 MB rank = ~660 MB (→ ~150-200 MB compressed)
 
-- `full=false` — stores only subtree roots (used for consensus, 40 hashes for 1 trillion links)
+**B. Secondary index by height** (for efficient `CyberlinksAfter`):
+
+New IAVL key prefix: `[0x07][Height 8B][LinkSeq 8B]` → enables O(k) incremental sync where k = new links only.
+
+This is a consensus change (new store key) and must ship with a chain upgrade.
+
+#### Level 3: Light Client with Rank Proofs
+
+The codebase already has the foundation: `merkle/tree.go` implements RFC-6962 merkle tree with `GetIndexProofs()` and `ValidateIndexByProofs()`.
+
+**A. Rank Inclusion Proofs:**
+
+Two merkle tree modes:
+- `full=false` — stores only subtree roots (used for consensus, 40 hashes for 1T links)
 - `full=true` — stores all nodes (enables proof generation for any leaf)
 
-To enable rank proofs for light clients:
+New node flag `--rank-proofs=true` enables full mode on nodes that serve light clients.
 
-1. **Run rank merkle tree in `full=true` mode** on nodes that serve light clients (configurable flag, e.g. `--rank-proofs=true`).
-2. **Add `QueryRankWithProof` gRPC endpoint:**
-   ```
-   Request:  { particle: "QmHash..." }
-   Response: { rank: uint64, cid_number: uint64, proofs: []Proof, merkle_root: bytes }
-   ```
-3. **Client verification:** The light client fetches the latest block header (which contains app_hash), extracts the rank module's store commitment, and verifies the merkle proof chain: `rank_value → rank_merkle_root → module_store_hash → app_hash`.
-
-#### E. Graph Inclusion Proofs (Already Available)
-
-Cyberlinks stored in IAVL already support merkle proofs natively — this is a built-in IAVL feature. Any gRPC query with `prove=true` returns an IAVL merkle proof that can be verified against the app hash.
-
-A light client can verify that a specific cyberlink exists by:
-1. Querying the cyberlink with proof
-2. Verifying the IAVL proof against the graph module's store hash in the block header
-
-#### F. CometBFT Light Client Integration (Step 1)
-
-CometBFT v0.38 includes a production-ready light client that verifies block headers using validator signatures without downloading full blocks. Combined with the above:
-
+New gRPC endpoint:
 ```
-Full verification path:
-  CometBFT light client → verified block header → app_hash
-    → IAVL proof for graph queries (cyberlink existence)
-    → RFC-6962 proof for rank queries (rank value for a CID)
+QueryRankWithProof(particle) → { rank, cid_number, proofs[], merkle_root }
 ```
 
-This enables a fully trustless light client that can:
-- Verify any cyberlink exists in the knowledge graph
-- Verify the rank of any particle (CID)
-- All without downloading the full chain state or running PageRank
+**B. Graph Inclusion Proofs (already available):**
 
-### Graph Sync and Light Client Checklist
+IAVL natively supports merkle proofs. Any gRPC query with `prove=true` returns an IAVL proof verifiable against app_hash.
 
-- [ ] Implement rank values serialization in `RankSnapshotter.SnapshotExtension()`
-- [ ] Implement rank values deserialization and merkle verification in `RankSnapshotter.RestoreExtension()`
+**C. Full verification path:**
+```
+CometBFT light client → verified block header → app_hash
+  → IAVL proof for graph queries (cyberlink existence)
+  → RFC-6962 proof for rank queries (rank value for a CID)
+```
+
+A trustless light client can verify any cyberlink exists and verify the rank of any particle — without downloading full chain state or running PageRank.
+
+### Dynamic Rank: How It Works for Clients
+
+The client does NOT need all rank values. The workflow:
+
+```
+Client:
+  1. Sync full graph topology via GraphSnapshot (one-time, ~15-60 MB compressed)
+  2. Keep up via CyberlinksAfter(lastHeight) every N blocks
+  3. User navigates to particle "QmFoo":
+     a. Client knows local topology: QmFoo has 47 outlinks, 312 backlinks
+     b. Client calls Search("QmFoo", page=0, limit=10) → top 10 outlinks with rank
+     c. Client calls Backlinks("QmFoo", page=0, limit=10) → top 10 backlinks with rank
+     d. Client calls Rank("QmFoo") → rank value of QmFoo itself
+  4. User drills into "QmBar" (linked from QmFoo):
+     a. Repeat step 3 for QmBar — lazy load rank for this subgraph
+  5. Client caches rank values locally, invalidates every CalculationPeriod blocks
+```
+
+This is already possible with existing `Rank`, `Search`, `Backlinks`, `Top` gRPC endpoints. The missing piece is only Level 1 (graph topology streaming).
+
+### Graph Store Separation (Future, SDK v0.53)
+
+SDK v0.53 introduces pluggable storage backends and IAVL v2. This opens the possibility of:
+
+- **Current:** Cyberlinks stored as individual IAVL KV pairs. Each write goes through full IAVL tree path (O(log n) with proof generation).
+- **Future:** Flat append-only store for cyberlinks (no per-link proof needed), with only the graph merkle root in IAVL for consensus. Dramatically reduces storage overhead and speeds up full graph iteration.
+
+### Checklist
+
+**Level 1 (Now, no consensus change):**
+- [ ] Add `GraphSnapshot` server-side streaming gRPC endpoint (prefix scan on `0x03`)
+- [ ] Add `CyberlinksAfter` gRPC endpoint (full scan + height filter, O(n))
+- [ ] Add `CyberlinksByParticle` gRPC endpoint (from in-memory index, O(degree))
+- [ ] Benchmark: full graph stream time for production graph size
+- [ ] Test: client syncs full topology, then lazy-loads rank via existing Search/Backlinks
+
+**Level 2 (Consensus change, with SDK upgrade):**
+- [ ] Implement graph data in `GraphSnapshotter.SnapshotExtension()` using existing `WriteGenesis()` format
+- [ ] Implement rank values in `RankSnapshotter.SnapshotExtension()`
+- [ ] Implement rank values restore + merkle verification in `RankSnapshotter.RestoreExtension()`
+- [ ] Add secondary index `[0x07][Height][Seq]` for efficient incremental sync
+- [ ] Benchmark snapshot size with rank values for production graph
+- [ ] Test state-sync restore without GPU (rank loaded from snapshot)
+
+**Level 3 (Light client):**
 - [ ] Add `--rank-proofs` node flag to control `full=true` merkle tree mode
 - [ ] Add `QueryRankWithProof` gRPC endpoint to `x/rank` module
-- [ ] Add `CyberlinksAfter` gRPC endpoint to `x/graph` module for incremental sync
-- [ ] Benchmark snapshot size with rank values for production graph size
-- [ ] Test state-sync restore without GPU (verify rank values loaded from snapshot)
 - [ ] Document light client verification protocol
 - [ ] Evaluate graph store separation feasibility after SDK v0.53 migration
+
+---
+
+## Native Graph Indexing (Replace Cyberindex)
+
+### Problem
+
+The current indexing architecture requires three external services (cyberindex, PostgreSQL, Hasura) running alongside the node. This adds operational complexity, deployment overhead, and introduces latency (block polling). For the knowledge graph use case, the node itself should be the primary data source.
+
+### Current State
+
+- **cyberindex** (separate Go service) polls RPC, parses blocks/events, writes to PostgreSQL
+- **Hasura** auto-generates GraphQL API over PostgreSQL
+- **go-cyber already loads** `streaming.LoadStreamingServices()` in `app/keepers/keepers.go` — the ADR-038 infrastructure is wired but unused
+- CometBFT `tx_index = "kv"` with `index-events = []` already indexes ALL events natively
+- Transaction queries by address work out of the box: `query txs --events 'message.sender=<addr>'`
+
+### What Cyberindex Captures (SQL Schema)
+
+| Table | Source | Can Node Do This Natively? |
+|---|---|---|
+| `block`, `transaction`, `message` | Block/TX parsing | Yes — CometBFT tx_index already provides this |
+| `cyberlinks`, `particles` | `EventTypeCyberlink` events | Yes — events indexed, but no structured query API |
+| `account_balance` | Bank module state | Yes — gRPC query already exists |
+| `routes` | Grid module events | Yes — events indexed |
+| `investmints` | Resources module events | Yes — events indexed |
+| `contracts` | Wasm module state | Yes — gRPC query already exists |
+| `validator`, `pre_commit` | CometBFT consensus | Yes — CometBFT RPC provides this |
+
+### Architecture: Embedded ABCIListener Plugin
+
+Replace cyberindex with a native streaming plugin that writes to an embedded database (SQLite or embedded PostgreSQL):
+
+```
+go-cyber node
+   BaseApp
+     ├── FinalizeBlock → ABCIListener
+     │     ├── cyberlink events → embedded DB (cyberlinks, particles)
+     │     ├── investmint events → embedded DB
+     │     ├── grid events → embedded DB
+     │     └── wasm events → embedded DB
+     └── Commit → flush batch
+                    ↓
+              Embedded SQLite/DuckDB
+                    ↓
+              Native gRPC query endpoints (graph by address, history, analytics)
+                    ↓
+              Optional: Hasura over embedded DB (for GraphQL compatibility)
+```
+
+### Implementation Plan
+
+#### Step 0: Native Graph Query Endpoints (No Consensus Change)
+
+Add gRPC query endpoints to the graph module for data that currently requires cyberindex:
+
+```protobuf
+service Query {
+  // Existing
+  rpc GraphStats(QueryGraphStatsRequest) returns (QueryGraphStatsResponse);
+
+  // New: paginated cyberlinks by neuron address
+  rpc CyberlinksByNeuron(QueryCyberlinksByNeuronRequest)
+      returns (QueryCyberlinksByNeuronResponse);
+
+  // New: paginated cyberlinks by particle (all links from/to a CID)
+  rpc CyberlinksByParticle(QueryCyberlinksByParticleRequest)
+      returns (QueryCyberlinksByParticleResponse);
+
+  // New: all particles created by a neuron
+  rpc ParticlesByNeuron(QueryParticlesByNeuronRequest)
+      returns (QueryParticlesByNeuronResponse);
+
+  // New: incremental graph export (for external indexers and light clients)
+  rpc CyberlinksAfter(CyberlinksAfterRequest)
+      returns (CyberlinksAfterResponse);
+}
+```
+
+These queries can be implemented by iterating the existing IAVL store with prefix scans — no new state needed.
+
+#### Step 1: ABCIListener Streaming Plugin (With SDK v0.50)
+
+SDK v0.50 fixes the `ListenFinalizeBlock` bug and provides proper event grouping. Implement a streaming plugin that:
+
+1. Receives all state changes and events via `ABCIListener`
+2. Writes structured data to an embedded database (SQLite for simplicity, DuckDB for analytics)
+3. Exposes additional gRPC endpoints for historical queries (link history, balance history)
+4. Configuration via `app.toml`:
+   ```toml
+   [indexer]
+   enabled = true
+   backend = "sqlite"    # or "duckdb", "postgres"
+   path = "data/index.db"
+   ```
+
+#### Step 2: Schema/Indexer Framework (With SDK v0.53)
+
+SDK v0.53 introduces `cosmossdk.io/schema/indexer` with automatic table generation from module schemas. Implement `HasModuleCodec` for custom modules (graph, rank, resources, grid) so the native indexer framework can auto-generate SQL tables.
+
+### What This Eliminates
+
+| Component | Status |
+|---|---|
+| cyberindex Docker service | **Eliminated** — node indexes natively |
+| PostgreSQL for indexing | **Replaced** by embedded DB (or optional external Postgres) |
+| Hasura | **Optional** — can still point at embedded DB for GraphQL, or use native gRPC |
+| Block polling latency | **Eliminated** — data available at commit time |
+| Separate deployment/monitoring | **Eliminated** — single binary |
+
+### Checklist
+
+- [ ] Add `CyberlinksByNeuron` gRPC endpoint (IAVL prefix scan, no new state)
+- [ ] Add `CyberlinksByParticle` gRPC endpoint (IAVL prefix scan)
+- [ ] Add `ParticlesByNeuron` gRPC endpoint (IAVL prefix scan)
+- [ ] Add `CyberlinksAfter` gRPC endpoint (incremental export by height)
+- [ ] Implement ABCIListener plugin with SQLite backend (SDK v0.50)
+- [ ] Implement `HasModuleCodec` for graph, rank, resources, grid modules (SDK v0.53)
+- [ ] Add `[indexer]` configuration section to `app.toml`
+- [ ] Benchmark embedded DB vs external PostgreSQL for query performance
+- [ ] Migration guide: cyberindex users → native indexing
+
+---
+
+## IPFS Sidecar: Kubo as Managed Subprocess
+
+### Problem
+
+go-cyber stores CID references but cannot resolve them to content. Users must install, configure, and maintain a separate Kubo (IPFS) node — a process that has historically been painful and error-prone (port conflicts, CORS configuration, bootstrap peers, garbage collection tuning).
+
+Without a working IPFS node, the knowledge graph is just a graph of opaque hashes. Content resolution is essential for search, discovery, and any meaningful interaction with the graph.
+
+### Why Not Embed IPFS in the Binary
+
+Three approaches were evaluated:
+
+| Approach | Verdict | Why |
+|---|---|---|
+| **Embed full Kubo** | Rejected | +50MB binary, 68 direct deps, go-cid v0.0.7→v0.5.0 breaking upgrade, monthly Kubo releases break integration. Textile tried this, deprecated it. |
+| **Embed libp2p + Bitswap** | Rejected | Bitswap without DHT is useless (can't find content providers). Adding DHT = 80% of Kubo without the useful 20% (gateway, pinning, GC). Still massive dep conflicts. |
+| **Kubo as managed sidecar** | **Selected** | Zero dep conflicts, full IPFS functionality, process isolation, independent updates, battle-tested. IPFS Cluster uses this pattern. |
+
+### Architecture: Managed Kubo Sidecar
+
+```
+cyber init
+  ├── Initialize blockchain node (as before)
+  └── Initialize IPFS repo with pre-configured config
+        ├── Ports: API 5001, Gateway 8080, Swarm 4001 (no conflicts with CometBFT)
+        ├── Bootstrap: cyber network peers + default IPFS bootstrap
+        ├── CORS: configured for cyber.page and localhost
+        ├── Gateway: writable=false, localhost only
+        ├── Peering: known cyber full nodes pre-configured
+        └── GC: automatic, watermark-based
+
+cyber start
+  ├── Start CometBFT + go-cyber (blockchain)
+  └── Start Kubo daemon (managed subprocess)
+        ├── Lifecycle tied to cyber process (start/stop together)
+        ├── Health monitoring (restart on crash)
+        └── HTTP API on localhost:5001 (not exposed externally)
+
+go-cyber ←→ Kubo communication: HTTP API (localhost:5001)
+```
+
+### What This Gives
+
+- **"Install once, everything works"** — `cyber init` sets up IPFS with sane defaults, no manual configuration
+- **Full IPFS** — DHT, Bitswap, DAG resolution, gateway, pinning, GC — everything works because it's real Kubo
+- **Process isolation** — Kubo crash doesn't affect consensus; blockchain crash doesn't lose pinned content
+- **Independent updates** — upgrade Kubo without touching the blockchain binary, and vice versa
+- **Zero dependency conflicts** — go-cyber binary unchanged, Kubo runs as separate process
+
+### go-cyber Integration (Minimal Code)
+
+The blockchain side needs only an HTTP client to Kubo's RPC API:
+
+```go
+// x/content/keeper/ipfs.go
+type IPFSClient struct {
+    apiURL string  // default: http://localhost:5001
+}
+
+func (c *IPFSClient) Resolve(cid string) ([]byte, error) {
+    resp, err := http.Post(c.apiURL+"/api/v0/cat?arg="+cid, "", nil)
+    // ...
+}
+
+func (c *IPFSClient) Pin(cid string) error {
+    resp, err := http.Post(c.apiURL+"/api/v0/pin/add?arg="+cid, "", nil)
+    // ...
+}
+
+func (c *IPFSClient) Add(data []byte) (string, error) {
+    // multipart upload to /api/v0/add
+    // returns CID
+}
+```
+
+New gRPC endpoints exposed by go-cyber (proxying to Kubo):
+
+```protobuf
+service Query {
+  // Resolve particle CID to content bytes (proxied to Kubo)
+  rpc ResolveParticle(QueryResolveParticleRequest)
+      returns (QueryResolveParticleResponse);
+}
+```
+
+### Pre-configured Kubo Config
+
+The `cyber init` command generates `~/.cyber/ipfs/config` with:
+
+```json
+{
+  "Addresses": {
+    "API": "/ip4/127.0.0.1/tcp/5001",
+    "Gateway": "/ip4/127.0.0.1/tcp/8080",
+    "Swarm": ["/ip4/0.0.0.0/tcp/4001", "/ip6/::/tcp/4001"]
+  },
+  "Bootstrap": [
+    "/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7...",
+    "/dns4/hub.bostrom.cybernode.ai/tcp/4001/p2p/..."
+  ],
+  "Peering": {
+    "Peers": [
+      {"ID": "...", "Addrs": ["/dns4/earth.bostrom.cybernode.ai/tcp/4001"]}
+    ]
+  },
+  "Datastore": {
+    "StorageMax": "50GB",
+    "GCPeriod": "1h"
+  },
+  "Gateway": {
+    "HTTPHeaders": {
+      "Access-Control-Allow-Origin": ["http://localhost:3000", "https://cyber.page"]
+    }
+  },
+  "API": {
+    "HTTPHeaders": {
+      "Access-Control-Allow-Origin": ["http://localhost:3000", "https://cyber.page"]
+    }
+  },
+  "Swarm": {
+    "ConnMgr": {"LowWater": 50, "HighWater": 200, "GracePeriod": "60s"}
+  }
+}
+```
+
+### Implementation Plan
+
+#### Phase 1: Managed Lifecycle
+- `cyber init` generates IPFS repo with pre-configured config
+- `cyber start` launches Kubo as subprocess, manages lifecycle (restart on crash)
+- `cyber stop` cleanly shuts down both processes
+- `[ipfs]` section in `app.toml` for enabling/disabling and config path
+- Kubo binary location: bundled in release tarball or auto-downloaded on first init
+
+#### Phase 2: Content Integration
+- `ResolveParticle` gRPC endpoint (proxy to Kubo API)
+- Auto-pin particles from new cyberlinks (configurable)
+- Pin top-ranked particles from search index (configurable)
+
+#### Phase 3: Cyber-Aware IPFS
+- Custom Kubo plugin or peering config that preferentially connects to other cyber nodes
+- Content availability metrics per particle (how many cyber nodes pin it)
+- Integration with rank: content availability as a signal
+
+### Configuration
+
+```toml
+[ipfs]
+enabled = true
+binary = "/usr/local/bin/ipfs"   # or bundled path
+repo_path = "ipfs"               # relative to cyber home
+auto_pin = true                  # pin particles from new cyberlinks
+pin_top = 1000                   # pin top N ranked particles
+```
+
+### Checklist
+
+- [ ] Add IPFS repo initialization to `cyber init` with pre-configured config
+- [ ] Implement Kubo subprocess management in `cyber start` (launch, health check, restart)
+- [ ] Add `[ipfs]` configuration section to `app.toml`
+- [ ] Implement `IPFSClient` HTTP wrapper for Kubo API
+- [ ] Add `ResolveParticle` gRPC endpoint
+- [ ] Bundle Kubo binary in release artifacts (or auto-download script)
+- [ ] Pre-configure bootstrap peers and peering for cyber network
+- [ ] Pre-configure CORS for cyber.page and localhost
+- [ ] Implement auto-pin for new cyberlinks (Phase 2)
+- [ ] Implement top-ranked particle pinning (Phase 2)
+- [ ] Test: `cyber init && cyber start` on clean machine gives working IPFS + blockchain
+- [ ] Document: how to use existing Kubo installation instead of managed sidecar
+
+---
+
+## Cross-Platform GPU Compute (wgpu, Replace CUDA)
+
+### Problem
+
+CybeRank computation currently requires NVIDIA CUDA — only Linux + NVIDIA GPU can run rank calculation on GPU. macOS, AMD, Intel Arc, and any non-NVIDIA setup falls back to CPU, which is orders of magnitude slower for large graphs. This limits who can run a full node with fast rank computation.
+
+### Current CUDA Architecture
+
+After removing karma/entropy/luminosity, **4 CUDA kernels remain** in `x/rank/cuda/rank.cu`:
+
+| Kernel | Purpose | Complexity |
+|---|---|---|
+| `get_particle_stake_by_links` | Weighted stake per neuron's links | Simple: divide stake by neudeg |
+| `get_compressed_in_links_count` | Count incoming links per particle | Simple: parallel count |
+| `get_compressed_in_links` | Build compressed in-links array with weights | Medium: prefix sum + scatter |
+| `run_rank_iteration` | One PageRank iteration (core algorithm) | Medium: weighted sum + normalize |
+
+Supporting operations:
+- `find_max_ranks_diff` — Thrust-based reduction (convergence check)
+- `get_links_start_index` — CPU prefix sum (link offsets)
+
+Build: `//go:build cuda` tag, `-fmad=false` flag for **consensus determinism** (disables fused multiply-add to ensure all nodes compute identical float64 results).
+
+Data types: **float64 (double precision)** throughout — `CompressedInLink` = `{uint64_t fromIndex, double weight}` (16 bytes).
+
+### wgpu/WebGPU as Cross-Platform Alternative
+
+WebGPU (via wgpu-native, written in Rust) provides a cross-platform GPU compute API over:
+- **Vulkan** (Linux, Windows, Android)
+- **Metal** (macOS, iOS)
+- **DX12** (Windows)
+
+Best Go binding: **`go-webgpu/webgpu`** (v0.3.1, zero-CGO, active project). Uses wgpu-native under the hood.
+
+Performance: **85-100% of CUDA** for optimized compute shaders on Vulkan.
+
+### Critical Blockers
+
+#### 1. f64 Not Supported on Apple Silicon / Metal
+
+**This is the biggest blocker for the Mac use case.** Metal (and therefore wgpu on macOS) does **not support 64-bit floating point** in compute shaders. WGSL's `f64` type requires the `shader-f64` extension, which is only available on:
+- Vulkan devices with `shaderFloat64` feature (most discrete NVIDIA/AMD GPUs)
+- DX12 devices (most desktop GPUs)
+- **NOT Metal** — Apple has never shipped f64 in Metal shaders
+
+This means the exact same algorithm (using float64) **cannot run on Mac GPU**.
+
+Workarounds:
+- **f32 (single precision):** Works on all GPUs including Apple Silicon. But reduces precision from ~15 decimal digits to ~7. Must prove that PageRank convergence and final values are identical (or acceptably close) to the f64 version for consensus.
+- **Emulated f64:** Use double-single (ds) arithmetic — represent each f64 as a pair of f32. ~4x slower than native f64, but still much faster than CPU. Determinism is hard to guarantee.
+
+#### 2. Consensus Determinism (no `-fmad=false` equivalent)
+
+CUDA's `-fmad=false` disables fused multiply-add to ensure `a*b+c` is computed as two separate operations, producing identical results across all NVIDIA GPUs. WGSL has **no equivalent flag**:
+- Metal: no FMA control
+- Vulkan/SPIR-V: can annotate `NoContraction` on individual operations
+- WGSL: no standard annotation yet (proposal exists but not adopted)
+
+This means: ensuring bit-exact results across different GPU vendors (NVIDIA vs AMD vs Intel vs Apple) requires manual effort — either hand-written SPIR-V with `NoContraction`, or proving that FMA differences don't affect final convergence.
+
+### Recommended Approach: Three Phases
+
+#### Phase 1: Optimize CPU Path (Now, No Risk)
+
+The CPU fallback (`calculate_cpu.go`) is unoptimized. Before adding wgpu complexity, make CPU viable for medium-sized graphs:
+
+- [ ] SIMD (AVX2/NEON) for the rank iteration inner loop
+- [ ] `sync.Pool` + goroutine parallelism for multi-core utilization
+- [ ] Precompute `getOverallOutLinksStake` per CID (currently recomputed O(|V| × avg_degree²))
+- [ ] Cache-friendly memory layout for compressed links (struct-of-arrays vs array-of-structs)
+
+Target: **10x CPU speedup** — viable for graphs up to ~1M links without GPU.
+
+#### Phase 2: wgpu Prototype with f32 (Medium Term)
+
+Build a wgpu compute shader implementation of the 4 kernels using f32:
+
+- [ ] Port `run_rank_iteration` to WGSL compute shader (f32)
+- [ ] Port `get_compressed_in_links` to WGSL
+- [ ] Port `get_particle_stake_by_links` to WGSL
+- [ ] Implement max_diff reduction in WGSL
+- [ ] Benchmark: compare f32 wgpu vs f64 CUDA rank values on mainnet graph
+- [ ] Quantify precision loss: max absolute and relative error in rank values
+- [ ] Test consensus: run f32 and f64 on same graph, verify convergence to same ordering (top-N agreement)
+
+If f32 precision is **sufficient for consensus** (same merkle root), this becomes the cross-platform default:
+- Works on Mac (Apple Silicon Metal)
+- Works on Linux (Vulkan, any GPU vendor)
+- Works on Windows (DX12/Vulkan)
+- Build tag: `//go:build wgpu`
+
+If f32 precision is **not sufficient**, fall back to Phase 3.
+
+#### Phase 3: Full f64 wgpu (Long Term)
+
+For validators and full nodes that need consensus-grade f64:
+
+- [ ] wgpu with f64 on Vulkan/DX12 (NVIDIA, AMD, Intel Arc on Linux/Windows)
+- [ ] Emulated f64 (double-single) on Metal for Mac — slower but correct
+- [ ] Cross-vendor determinism testing: NVIDIA vs AMD vs Intel GPU producing identical rank values
+- [ ] `NoContraction` annotation in SPIR-V backend for Vulkan determinism
+- [ ] Build tag: `//go:build wgpu_f64`
+
+### Decision Matrix
+
+| Platform | CUDA (current) | wgpu f32 (Phase 2) | wgpu f64 (Phase 3) | CPU optimized (Phase 1) |
+|---|---|---|---|---|
+| Linux + NVIDIA | **Yes** | Yes | Yes (Vulkan) | Yes |
+| Linux + AMD | No | Yes (Vulkan) | Yes (Vulkan) | Yes |
+| macOS + Apple Silicon | No | **Yes (Metal)** | Emulated only | Yes |
+| Windows + any GPU | No | Yes (DX12/Vulkan) | Yes (DX12/Vulkan) | Yes |
+| ARM server (no GPU) | No | No | No | **Yes** |
+
+### Migration Path
+
+```
+Current:  [CUDA (NVIDIA only)] ←OR→ [CPU (slow, unoptimized)]
+                                        ↓
+Phase 1:  [CUDA (NVIDIA only)] ←OR→ [CPU optimized (10x faster)]
+                                        ↓
+Phase 2:  [CUDA] ←OR→ [wgpu f32 (cross-platform)] ←OR→ [CPU optimized]
+                                        ↓
+Phase 3:  [wgpu f64 (Vulkan/DX12)] ←OR→ [wgpu f32 (Metal)] ←OR→ [CPU]
+          └── CUDA becomes optional/deprecated
+```
+
+### Checklist
+
+**Phase 1 (CPU optimization, now):**
+- [ ] Profile CPU rank calculation on mainnet-sized graph, identify hotspots
+- [ ] Parallelize rank iteration across goroutines
+- [ ] Add SIMD intrinsics for inner loop (AVX2 on x86, NEON on ARM)
+- [ ] Precompute per-CID outgoing stake totals
+- [ ] Benchmark: CPU optimized vs CUDA on same hardware
+
+**Phase 2 (wgpu f32 prototype):**
+- [ ] Evaluate `go-webgpu/webgpu` v0.3.1: build, run compute shader example
+- [ ] Port 4 CUDA kernels to WGSL compute shaders (f32)
+- [ ] Integrate with go-cyber via `//go:build wgpu` tag
+- [ ] Precision analysis: f32 vs f64 rank values on mainnet state export
+- [ ] Consensus test: can f32 produce identical merkle roots as f64?
+- [ ] Cross-platform test: same rank output on Mac Metal vs Linux Vulkan
+
+**Phase 3 (wgpu f64, long term):**
+- [ ] f64 WGSL shaders with `shader-f64` extension
+- [ ] Emulated f64 on Metal (double-single arithmetic)
+- [ ] Cross-vendor determinism test (NVIDIA Vulkan vs AMD Vulkan vs Intel Vulkan)
+- [ ] `NoContraction` SPIR-V annotation for FMA determinism
+- [ ] Deprecation path for CUDA: runtime detection of best available backend
+
+---
+
+## Node Distribution: cyb Desktop App (Tray + Dashboard)
+
+### Problem
+
+go-cyber is currently distributed as a bare CLI binary. Running a node requires manual configuration (config.toml, app.toml, genesis), separate IPFS installation, no visual status feedback, no auto-start, no OS integration. This is a barrier for anyone who isn't a devops specialist.
+
+Goal: **"Download → double-click → it works."** Like Docker Desktop — a daemon with a tray icon and a web dashboard.
+
+### Current State
+
+| What | Status |
+|---|---|
+| Binary build | `make build` → `build/cyber` CLI |
+| Installation | Manual or `scripts/install_cyber.sh` (outdated, references v0.2.0) |
+| OS service | None (no systemd/launchd files) |
+| Dashboard/UI | None (only Swagger at `:1317/swagger`) |
+| IPFS | Separate manual install |
+| Desktop app | None |
+| GoReleaser | Outdated (references `cyberdcli`) |
+
+### Target Architecture: Three Binaries, One App
+
+The distribution consists of three binaries. The user interacts only with **cyb** (`go-cyb`) — the desktop app that orchestrates the other two.
+
+```
+Binaries:
+  cyber  (~50MB)  ← blockchain node (Cosmos SDK + CosmWasm + rank)
+  ipfs   (~50MB)  ← Kubo IPFS node (separate project, cannot embed due to dep conflicts)
+  cyb    (~5MB)   ← desktop app: tray, orchestrator, the only thing user launches
+                     (separate repo: go-cyb)
+
+Why three binaries:
+  - cyber + ipfs cannot be one binary: massive Go dependency conflicts
+    (go-cid v0.0.7 vs v0.5.0, libp2p versions, etc.)
+  - cyb is lightweight: no blockchain deps, no IPFS deps, just HTTP + systray
+  - Each has its own release cycle: update IPFS or node without touching the others
+
+Process tree (when running):
+  cyb (always running, started at login)
+    ├── manages → cyber start --home ~/.cyber
+    │               ├── CometBFT consensus
+    │               ├── Cosmos SDK app
+    │               ├── gRPC/REST/RPC servers
+    │               └── embedded dashboard (port 26660)
+    └── manages → ipfs daemon --repo-dir ~/.cyber/ipfs
+                    ├── DHT
+                    ├── Bitswap
+                    ├── Gateway (port 8080)
+                    └── API (port 5001)
+```
+
+**cyb is the orchestrator:**
+- Launches `cyber` and `ipfs` as child processes
+- Monitors health of both (restart on crash)
+- Shows combined status in tray icon
+- Provides Start/Stop for the whole stack
+- On quit: gracefully stops both daemons
+
+**CLI still works independently:**
+- `cyber start` works without cyb (for servers, Docker, CI)
+- `ipfs daemon` works without cyb (for advanced users)
+- cyb is the desktop UX layer, not a requirement
+
+### Port Map (all services from one install)
+
+| Port | Service | Binding |
+|---|---|---|
+| 26656 | P2P (CometBFT peers) | 0.0.0.0 |
+| 26657 | CometBFT RPC | 0.0.0.0 |
+| 9090 | gRPC | 0.0.0.0 |
+| 9091 | gRPC-Web (browser) | 0.0.0.0 |
+| 1317 | REST API + Swagger | 0.0.0.0 |
+| **26660** | **Dashboard (web UI)** | localhost |
+| 5001 | IPFS API (Kubo) | localhost |
+| 4001 | IPFS Swarm (Kubo) | 0.0.0.0 |
+| 8080 | IPFS Gateway (Kubo) | localhost |
+
+### Component 1: cyb (go-cyb) — Desktop App & Orchestrator
+
+The **only thing the user launches**. Manages both `cyber` and `ipfs` processes. Separate repository: `go-cyb`.
+
+**Technology:** Go + `getlantern/systray` (cross-platform: macOS, Linux, Windows). No blockchain or IPFS dependencies — only `net/http`, `os/exec`, and `systray`.
+
+**Process Management:**
+```
+cyb start sequence:
+  1. Check if cyber and ipfs are already running (poll health endpoints)
+  2. If not: find binaries (PATH or configured location)
+  3. Launch ipfs daemon --repo-dir ~/.cyber/ipfs (background)
+  4. Wait for IPFS API ready (poll localhost:5001/api/v0/id)
+  5. Launch cyber start --home ~/.cyber (background)
+  6. Wait for node ready (poll localhost:26657/health)
+  7. Show tray icon: 🟡 syncing
+
+cyb health loop (every 5s):
+  - GET localhost:26657/status → height, catching_up, voting_power
+  - GET localhost:5001/api/v0/id → IPFS peer ID, connected peers
+  - If cyber crashed → restart (up to 3 retries, then show error)
+  - If ipfs crashed → restart
+  - Update icon: 🟢 both synced, 🟡 syncing, 🟠 IPFS down, 🔴 node down
+
+cyb stop sequence:
+  1. Send SIGTERM to cyber process → wait for graceful shutdown
+  2. Send SIGTERM to ipfs process → wait for graceful shutdown
+  3. Icon → 🔴 stopped
+```
+
+**Tray Menu:**
+```
+  ┌─────────────────────────────────┐
+  │ 🟢 Cyber Node                   │
+  │    Height: 22,451,003           │
+  │    Peers: 47  |  Block: 5.2s   │
+  │ 🟢 IPFS                         │
+  │    Peers: 156  |  Repo: 12 GB  │
+  ├─────────────────────────────────┤
+  │ Open Dashboard                  │  → open http://localhost:26660
+  │ Open IPFS Gateway               │  → open http://localhost:8080
+  │ Open IPFS WebUI                 │  → open http://localhost:5001/webui
+  ├─────────────────────────────────┤
+  │ Start All                       │  → start ipfs + cyber
+  │ Stop All                        │  → stop cyber + ipfs
+  │ Restart All                     │  → stop all, start all
+  ├─────────────────────────────────┤
+  │ View Logs                       │  → open ~/.cyber/logs/
+  │ Open Config                     │  → open ~/.cyber/
+  ├─────────────────────────────────┤
+  │ Quit                            │  → stop all + exit tray
+  └─────────────────────────────────┘
+```
+
+**macOS specifics:**
+- Tray lives in menu bar (standard macOS pattern)
+- `Cyb.app` bundle in `/Applications/` (contains cyb binary + references to cyber and ipfs binaries)
+- Login item via launchd plist or `SMAppService`
+- First launch: if binaries not found, offer to download
+
+**Linux specifics:**
+- Tray via AppIndicator (GNOME) or SNI (KDE)
+- `.desktop` file for autostart: `~/.config/autostart/cyb.desktop`
+
+**Key design:** cyb never touches chain state. Communication is purely HTTP polling. Start/stop is `os/exec.Command`. cyb is a thin orchestrator + status display.
+
+### Component 2: Embedded Dashboard (port 26660)
+
+Single HTML page embedded in the `cyber` binary via Go `embed`. Served by a goroutine alongside the node.
+
+**Content:**
+```
+┌──────────────────────────────────────────────────────────┐
+│  CYBER NODE DASHBOARD                    chain: bostrom  │
+├──────────────────────────────────────────────────────────┤
+│                                                          │
+│  STATUS         NETWORK           GRAPH                  │
+│  ● Synced       Peers: 47/50      Particles: 8.2M       │
+│  Height: 22.4M  In: 32  Out: 15   Cyberlinks: 12.1M     │
+│  Block time: 5s Bandwidth: 42%    Neurons: 340K          │
+│                                                          │
+│  RANK                    IPFS                            │
+│  Method: GPU (CUDA)      ● Connected                     │
+│  Last calc: block 22.4M  Peers: 156                      │
+│  Iterations: 23          Pinned: 45.2K objects           │
+│  Tolerance: 0.001        Repo size: 12.3 GB              │
+│                                                          │
+│  RESOURCES                                               │
+│  CPU: 34%  RAM: 8.2 GB  Disk: 124 GB  GPU: 67%         │
+│                                                          │
+│  LOGS (last 50 lines, auto-scroll)                       │
+│  ┌────────────────────────────────────────────────────┐  │
+│  │ 14:23:01 INF committed state height=22451003 ...   │  │
+│  │ 14:23:06 INF committed state height=22451004 ...   │  │
+│  │ ...                                                │  │
+│  └────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────┘
+```
+
+**Implementation:**
+- One `index.html` + vanilla JS (~500 lines total)
+- Polls every 3-5 seconds:
+  - `localhost:26657/status` — height, sync, validator info
+  - `localhost:26657/net_info` — peers
+  - `localhost:1317/cyber/graph/v1beta1/graph_stats` — graph metrics
+  - `localhost:5001/api/v0/id` — IPFS status
+  - `localhost:5001/api/v0/repo/stat` — IPFS storage
+- Embedded via `//go:embed dashboard/*`
+- Served on `localhost:26660` by `net/http` goroutine in the node process
+- No frameworks, no npm, no build step — just static files
+- Dark theme, monospace, minimal
+
+### Component 3: OS Service Management (`cyber service`)
+
+```bash
+cyber service install     # Create systemd unit / launchd plist
+cyber service uninstall   # Remove service
+cyber service start       # Start via OS service manager
+cyber service stop        # Stop via OS service manager
+cyber service restart     # Restart
+cyber service status      # Show service status
+cyber service logs        # Tail service logs (journalctl / log show)
+```
+
+**Linux (systemd):**
+```ini
+[Unit]
+Description=Cyber Node — Knowledge Graph Computer
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=%u
+ExecStart=/usr/local/bin/cyber start --home %h/.cyber
+ExecStop=/usr/local/bin/cyber stop
+Restart=always
+RestartSec=5
+LimitNOFILE=65535
+Environment=DAEMON_HOME=%h/.cyber
+
+[Install]
+WantedBy=default.target
+```
+
+**macOS (launchd):**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "...">
+<plist version="1.0">
+<dict>
+    <key>Label</key><string>ai.cyber.node</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/cyber</string>
+        <string>start</string>
+        <string>--home</string>
+        <string>~/.cyber</string>
+    </array>
+    <key>KeepAlive</key><true/>
+    <key>RunAtLoad</key><true/>
+    <key>StandardOutPath</key><string>~/.cyber/logs/node.log</string>
+    <key>StandardErrorPath</key><string>~/.cyber/logs/node.err</string>
+    <key>SoftResourceLimits</key>
+    <dict>
+        <key>NumberOfFiles</key><integer>65535</integer>
+    </dict>
+</dict>
+</plist>
+```
+
+### Component 4: Installer
+
+**One-liner (Linux/macOS):**
+```bash
+curl -sL https://get.cyber.page | bash
+```
+
+Script does:
+1. Detect OS/arch (darwin-arm64, linux-amd64, linux-arm64)
+2. Download `cyber` + `cyb` binaries from GitHub Releases (go-cyber + go-cyb)
+3. Download Kubo binary (or detect existing installation)
+4. Install to `/usr/local/bin/`
+5. Install `libwasmvm` shared library
+6. Run `cyber init` (if first install)
+7. Register `cyb` as login item
+8. Launch `cyb` (which starts everything)
+9. Print: "Dashboard: http://localhost:26660"
+
+**Homebrew (macOS):**
+```bash
+brew install cybercongress/tap/cyb
+# Installs: cyb, cyber, kubo (dependencies)
+# Post-install: cyber init, register cyb as login item
+```
+
+**Desktop packages:**
+- macOS: `Cyb.dmg` containing `Cyb.app` + `cyber` + `ipfs` + `libwasmvm.dylib`
+- Linux: `.deb` / `.rpm` / AppImage — all three binaries + libwasmvm.so
+- Snap/Flatpak: future option
+
+### User Experience Flow
+
+```
+First time (macOS):
+  1. User downloads Cyb.dmg
+  2. Drags Cyb.app to Applications
+  3. Launches Cyb.app → tray icon appears (red — nothing running)
+  4. cyb detects first run → runs cyber init + ipfs init
+  5. cyb starts ipfs daemon + cyber start
+  6. Icon turns yellow (syncing), dashboard opens in browser
+  7. User watches sync progress on dashboard
+  8. Icon turns green when both synced
+  9. On reboot: cyb auto-launches → starts both daemons
+
+First time (Linux, curl):
+  1. curl -sL https://get.cyber.page | bash
+  2. Script installs cyber + ipfs + cyb + libwasmvm
+  3. Runs cyber init + ipfs init
+  4. Registers cyb as login item
+  5. Starts everything
+  6. Prints: "Dashboard: http://localhost:26660"
+
+Daily use:
+  - Tray icon always visible — one glance: green = all running
+  - Click "Open Dashboard" for details
+  - Click "Stop All" before closing laptop
+  - cyb auto-restarts crashed processes
+  - Updates: cyb checks GitHub Releases for all components, shows notification
+```
+
+### Implementation Priority
+
+| Step | Component | Effort | Impact |
+|---|---|---|---|
+| **1** | **cyb** (go-cyb tray app) | 3-5 days | Critical — primary UX touchpoint |
+| **2** | **Dashboard** (embedded web page) | 2-3 days | High — visual status |
+| **3** | **`cyber service`** (systemd + launchd) | 1-2 days | High — auto-start/restart |
+| **4** | **Kubo sidecar** in `cyber start` | 3-5 days | High — IPFS out of box |
+| **5** | **Installer script** (`get.cyber.page`) | 1 day | Medium — easy onboarding |
+| **6** | **GoReleaser** update + multi-platform | 1 day | Medium — automated releases |
+| **7** | **macOS .dmg / Linux .deb** packages | 2-3 days | Medium — native install |
+
+### Checklist
+
+**cyb (go-cyb — orchestrator + tray UI):**
+- [ ] Create `go-cyb` repository, implement with `getlantern/systray` (macOS + Linux)
+- [ ] Process management: launch/monitor/restart `cyber` and `ipfs` as child processes
+- [ ] Health polling loop: node status + IPFS status → tray icon update
+- [ ] Tray menu: Start All / Stop All / Restart / Dashboard / IPFS WebUI / Logs / Config / Quit
+- [ ] First-run detection: run `cyber init` + `ipfs init` with preconfigured settings
+- [ ] macOS: `Cyb.app` bundle, login item registration (launchd plist or SMAppService)
+- [ ] Linux: `.desktop` file for autostart
+- [ ] Graceful shutdown: SIGTERM to both processes on Quit
+
+**Dashboard (embedded in cyber):**
+- [ ] Embed dashboard HTML/JS in `cyber` binary via `//go:embed`
+- [ ] Dashboard: node status, peers, graph stats, rank info, IPFS stats, logs
+- [ ] Serve dashboard on `localhost:26660` from node process
+
+**OS service (headless/server use without tray):**
+- [ ] `cyber service install/uninstall/start/stop` for systemd
+- [ ] `cyber service install/uninstall/start/stop` for launchd
+
+**Packaging:**
+- [ ] Update `.goreleaser.yml` in go-cyber: build `cyber` for darwin-arm64, linux-amd64, linux-arm64
+- [ ] GoReleaser in go-cyb: build `cyb` for darwin-arm64, linux-amd64, linux-arm64
+- [ ] Release tarball: `cyber` + `cyb` + `ipfs` (Kubo) + `libwasmvm` per platform
+- [ ] macOS `.dmg`: `Cyb.app` bundle containing cyb + bundled `cyber` + `ipfs` binaries
+- [ ] Linux `.deb` / `.rpm`: all three binaries + libwasmvm + systemd unit + .desktop file
+- [ ] Installer script (`get.cyber.page`): detect OS, download all binaries, init, launch cyb
+- [ ] Homebrew formula: `brew install cybercongress/tap/cyb` (cyb + cyber + ipfs as deps)
+- [ ] Auto-update notification in cyb (check GitHub Releases for all three components)
+- [ ] Documentation: first-time setup guide with screenshots
+
+---
+
+## Graph Inference: LLM Trained on Knowledge Graph
+
+### Problem
+
+CybeRank gives each particle a single number (PageRank). You can find "what's important" but you can't ask a question and get a human-readable answer. The knowledge graph has 3M particles linked to real content on IPFS — text, markdown, documents. With an IPFS sidecar resolving content, we can train an actual LLM on the graph's content and make it answer questions.
+
+Goal: **periodically train a small LLM from the knowledge graph content, distribute the model as a downloadable binary, enable generative text inference on the node and on clients. Ask a question → get a coherent text answer grounded in the graph's knowledge.**
+
+### Two-Layer Architecture
+
+The inference system has two complementary layers:
+
+| Layer | What | Size | Speed | Purpose |
+|-------|------|------|-------|---------|
+| **Embeddings** (cid2vec) | Vector per particle from graph topology | ~200 MB | microseconds | Retrieval: find relevant particles |
+| **LLM** (cyber-LLM) | Fine-tuned language model on resolved content | ~2 GB | seconds | Generation: answer questions in text |
+
+Both are needed. Embeddings find what's relevant. LLM generates the answer. Together: **RAG (Retrieval-Augmented Generation) grounded in the knowledge graph.**
+
+### Inference Costs a Cyberlink — The Full Loop
+
+**Every inference request requires a cyberlink transaction.** This is the core design: asking the LLM is not free — it costs a link, and that link feeds the graph, and the graph feeds the next model.
+
+```
+User wants to ask: "What is the relationship between entropy and consensus?"
+
+  1. PREPARE (client-side)
+     - User's question text → ipfs add → question_CID
+     - question_CID is now a particle in IPFS
+
+  2. CYBERLINK (on-chain transaction)
+     - User submits: MsgCyberlink { from: question_CID, to: INFERENCE_PARTICLE }
+       (INFERENCE_PARTICLE is a well-known CID, e.g. "QmInference...")
+     - This costs bandwidth (anti-spam), requires stake (Sybil resistance)
+     - The cyberlink is now ON-CHAIN — question is part of the graph
+
+  3. INFERENCE (triggered by the link, node-side)
+     - Node sees cyberlink to INFERENCE_PARTICLE → triggers inference pipeline
+     - RETRIEVE: embed question → HNSW search → top-K relevant particles
+     - RESOLVE: top-K CIDs → text content via IPFS
+     - GENERATE: llama-server produces answer text
+     - answer text → ipfs add → answer_CID
+
+  4. RESPONSE LINK (node creates the return link)
+     - Node (or user's client) creates: MsgCyberlink { from: question_CID, to: answer_CID }
+     - Answer is now a particle, linked to the question, IN THE GRAPH
+
+  5. THE GRAPH GROWS
+     - question_CID and answer_CID are new particles
+     - Both are linked (question → inference, question → answer)
+     - Next rank recalculation includes these new particles
+     - Next model training includes this new content
+     - Model gets better → more people ask → more links → better model
+
+         ┌──────────────────────────────────────────┐
+         │           THE FULL LOOP                   │
+         │                                           │
+         │  Ask question ──→ cyberlink (pays)        │
+         │       │                                   │
+         │       ▼                                   │
+         │  LLM generates answer                     │
+         │       │                                   │
+         │       ▼                                   │
+         │  Answer → graph (new particle + link)     │
+         │       │                                   │
+         │       ▼                                   │
+         │  Graph grows → rank recalculates          │
+         │       │                                   │
+         │       ▼                                   │
+         │  Model retrains on bigger graph           │
+         │       │                                   │
+         │       ▼                                   │
+         │  Better model → more questions → ───┐     │
+         │       ▲                             │     │
+         │       └─────────────────────────────┘     │
+         └──────────────────────────────────────────┘
+```
+
+**Why this matters:**
+
+| Property | Mechanism |
+|----------|-----------|
+| **Spam control** | Cyberlink costs bandwidth + requires stake. No stake = no questions. |
+| **Demand signal** | Each question is a real on-chain signal of what users want to know. This feeds PageRank — popular questions/answers rank higher. |
+| **Self-improving** | Every Q&A pair enriches the graph. The model trains on the graph. More questions → richer graph → better model. |
+| **Censorship resistance** | Questions and answers are CIDs on IPFS, linked on-chain. No one can delete them. |
+| **Economic alignment** | Neurons who ask good questions (that get linked to by others) earn rank. Neurons who create cyberlinks to inference create demand. |
+
+### Inference Request Flow (Technical)
+
+```
+Client:
+  1. ipfs add "What is entropy?" → QmQuestion123
+  2. sign & broadcast MsgCyberlink(from=QmQuestion123, to=QmInference)
+     └── requires: bandwidth, stake (existing anti-spam)
+  3. wait for block inclusion
+
+Node (inference trigger):
+  4. EndBlocker or event listener sees link to QmInference
+  5. Resolve QmQuestion123 via IPFS → "What is entropy?"
+  6. RAG pipeline:
+     a. Embed question → HNSW → top-5 relevant particles
+     b. Resolve top-5 CIDs → context text
+     c. llama-server: generate answer with context
+  7. ipfs add answer_text → QmAnswer456
+  8. Create link: QmQuestion123 → QmAnswer456
+     (node signs with module account or user pre-authorizes)
+
+Client:
+  9. Query: Search(QmQuestion123) → finds QmAnswer456
+  10. Resolve QmAnswer456 → read answer text
+
+Alternative (client-side inference):
+  4. Client has local cyber-llm.gguf + embedding.bin
+  5. Client runs RAG locally (no node needed for inference)
+  6. Client creates answer link: MsgCyberlink(from=QmQuestion123, to=QmAnswer456)
+  7. Both question and answer are in the graph either way
+```
+
+**Two modes:**
+
+| Mode | Where inference runs | Cyberlink | Graph grows |
+|------|---------------------|-----------|-------------|
+| **Node-side** | Node runs llama-server, generates answer | User pays link to trigger | Yes — node creates answer link |
+| **Client-side** | Client has local model, generates locally | User pays link to record Q&A | Yes — client creates answer link |
+
+Both modes require a cyberlink. Both modes grow the graph. The model itself doesn't care who runs it — the graph is the source of truth.
+
+### Base Model Selection
+
+Target: small enough for consumer hardware (Mac M1 8GB, Linux no GPU), good enough for domain Q&A after fine-tuning.
+
+| Model | Params | Q4_K_M Size | RAM for Inference | Mac M1 Speed | Quality |
+|-------|--------|-------------|-------------------|-------------|---------|
+| Qwen2.5-1.5B | 1.5B | ~1.0 GB | ~2 GB | ~70 tok/s | Good for simple Q&A |
+| **Llama 3.2 3B** | 3.2B | **~1.8 GB** | **~3.5 GB** | **~35 tok/s** | **Best quality/size** |
+| Phi-3.5 mini | 3.8B | ~2.2 GB | ~4 GB | ~30 tok/s | Strong reasoning |
+| Mistral 7B | 7.2B | ~4.1 GB | ~6.5 GB | ~20 tok/s | Best quality |
+
+**Recommendation: Llama 3.2 3B at Q4_K_M quantization.** 1.8 GB on disk, runs on any Mac M1+, 35 tokens/sec. A fine-tuned 3B matches general-purpose 7B on domain-specific questions.
+
+### Training Pipeline
+
+```
+                    PERIODIC TRAINING (daily or per-epoch)
+                    ══════════════════════════════════════
+
+  ┌──────────────────────────────────────────────────────────────┐
+  │ Step 1: CONTENT RESOLUTION                                   │
+  │                                                               │
+  │   GraphSnapshot gRPC → all particles (CID list)              │
+  │   Rank values → sort by PageRank                             │
+  │   For top-N particles (by rank):                             │
+  │     IPFS resolve CID → raw content (text, markdown)          │
+  │     Filter: keep text, skip binary/images                    │
+  │     Cache locally: ~/.cyber/data/content_cache/              │
+  │                                                               │
+  │   Result: corpus of resolved text documents                   │
+  │   Size estimate: 3M particles, ~50% text, ~1KB avg           │
+  │          = ~1.5M documents, ~1.5 GB text                     │
+  └──────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+  ┌──────────────────────────────────────────────────────────────┐
+  │ Step 2: TRAINING DATA CONSTRUCTION                           │
+  │                                                               │
+  │  A) Continued Pre-Training (CPT) corpus:                     │
+  │     - All resolved text, PageRank-weighted sampling           │
+  │     - High-rank particles repeated more often                 │
+  │     - Graph walks: follow cyberlinks to create                │
+  │       "document sequences" (linked content concatenated)      │
+  │                                                               │
+  │  B) Instruction Fine-Tuning (IFT) pairs:                     │
+  │     - Graph-structure Q&A: "What links from X?" "What is Y?" │
+  │     - Synthetic Q&A: use larger model to generate             │
+  │       question-answer pairs from content                      │
+  │     - Link-based pairs: "How does [content A] relate          │
+  │       to [content B]?" for linked particles                   │
+  │     - Target: ~50K-100K Q&A pairs                            │
+  │                                                               │
+  │  C) Graph walk sequences (teaches link structure):            │
+  │     - Random walks following cyberlinks, weighted by stake    │
+  │     - Concatenate resolved content along the walk             │
+  │     - Model learns that linked content is related             │
+  └──────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+  ┌──────────────────────────────────────────────────────────────┐
+  │ Step 3: FINE-TUNING                                          │
+  │                                                               │
+  │   Base model: Llama 3.2 3B (frozen)                          │
+  │   Method: LoRA (r=32, alpha=64)                              │
+  │                                                               │
+  │   Phase 1 (weekly): CPT on full corpus                       │
+  │     - 1 epoch over all resolved content                      │
+  │     - GPU: 12-24 hours on RTX 4090 / 8-15 hours on A100     │
+  │     - CPU: feasible but slow (~2-3 days)                     │
+  │                                                               │
+  │   Phase 2 (daily): IFT on Q&A pairs                          │
+  │     - LoRA fine-tune on 50K-100K Q&A pairs                   │
+  │     - GPU: 30-60 min on RTX 4090                             │
+  │     - CPU: 3-6 hours                                         │
+  │                                                               │
+  │   Determinism: fixed seeds, pinned library versions           │
+  │   CPU training is bit-exact on x86_64                        │
+  │                                                               │
+  │   Output: LoRA adapter (~30-80 MB)                           │
+  └──────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+  ┌──────────────────────────────────────────────────────────────┐
+  │ Step 4: MERGE, QUANTIZE, PUBLISH                             │
+  │                                                               │
+  │   Merge LoRA adapter into base weights                       │
+  │   Quantize to GGUF Q4_K_M → cyber-llm.gguf (~1.8 GB)       │
+  │   ipfs add cyber-llm.gguf → model CID                       │
+  │   On-chain: commit {epoch, height, model_cid, hash}         │
+  └──────────────────────────────────────────────────────────────┘
+```
+
+### Inference Architecture
+
+```
+cyber node or client
+  │
+  ├── llama-server (subprocess, bundled binary)
+  │     └── loads cyber-llm.gguf (~1.8 GB)
+  │     └── serves OpenAI-compatible HTTP API on localhost:8091
+  │
+  ├── embedding index (in-process, Go)
+  │     └── loads embedding.bin (~200 MB) + HNSW index
+  │     └── retrieval: query → top-K relevant particles
+  │
+  └── IPFS sidecar (subprocess)
+        └── resolves CIDs to content for RAG context
+
+Query flow:
+  1. User sends question via gRPC/REST
+  2. Node embeds query → HNSW retrieval → top-K particles
+  3. Node resolves top-K CIDs via IPFS cache → text chunks
+  4. Node builds prompt: system + retrieved context + question
+  5. Node sends prompt to llama-server → streaming text response
+  6. Return generated answer to user
+```
+
+### Four Managed Processes
+
+With LLM inference, cyb now orchestrates four processes:
+
+```
+cyb (tray app)
+  ├── cyber    (blockchain node, ~50 MB)
+  ├── ipfs     (Kubo IPFS node, ~50 MB)
+  └── llama-server (LLM inference, ~5 MB binary + ~2 GB model)
+```
+
+Port map:
+
+| Port | Service |
+|------|---------|
+| 26656 | P2P (CometBFT) |
+| 26657 | CometBFT RPC |
+| 9090 | gRPC |
+| 1317 | REST API |
+| 26660 | Dashboard |
+| 5001 | IPFS API |
+| 8080 | IPFS Gateway |
+| **8091** | **llama-server (LLM inference)** |
+
+### Embeddings Layer (cid2vec) — Retrieval
+
+Same as before but serves as the retrieval component for RAG:
+
+**Training:** TransE/RotatE from graph topology (minutes on CPU, 3M edges).
+
+**Model:** `embedding.bin` — flat `[3M × 64] float32` + HNSW index. ~200 MB after quantization.
+
+**gRPC endpoints (pure Go, no Python):**
+
+```protobuf
+service Query {
+  // Find particles with similar embeddings (retrieval for RAG)
+  rpc Similar(QuerySimilarRequest) returns (QuerySimilarResponse);
+
+  // Predict likely outgoing links
+  rpc Predict(QueryPredictRequest) returns (QueryPredictResponse);
+
+  // Raw embedding vector for a particle
+  rpc Embedding(QueryEmbeddingRequest) returns (QueryEmbeddingResponse);
+
+  // Current embedding model info
+  rpc EmbeddingModel(QueryEmbeddingModelRequest) returns (QueryEmbeddingModelResponse);
+}
+```
+
+### LLM Layer (cyber-LLM) — Generation
+
+**Runtime:** `llama-server` (from llama.cpp project) as subprocess. Bundled binary, ~5 MB. Supports:
+- Apple Silicon (Metal acceleration, native)
+- Linux (CUDA for NVIDIA, Vulkan for AMD/Intel)
+- CPU fallback everywhere
+
+**Integration from Go:**
+
+```go
+// x/inference/keeper/llm.go
+type LLMClient struct {
+    serverURL string  // default: http://localhost:8091
+}
+
+func (c *LLMClient) Generate(ctx context.Context, question string, context []string) (string, error) {
+    // Build prompt with retrieved context
+    systemPrompt := "You are a knowledge assistant. Answer based on the provided context from the cyber knowledge graph."
+    contextText := strings.Join(context, "\n\n---\n\n")
+
+    prompt := fmt.Sprintf("Context:\n%s\n\nQuestion: %s", contextText, question)
+
+    resp, err := http.Post(c.serverURL+"/v1/chat/completions", "application/json",
+        // OpenAI-compatible request
+    )
+    return parseResponse(resp)
+}
+```
+
+**gRPC endpoints:**
+
+```protobuf
+service Query {
+  // Inference triggered by cyberlink: resolve question, generate answer, return answer CID
+  // Caller must have already submitted MsgCyberlink(question_cid → INFERENCE_PARTICLE)
+  rpc Infer(QueryInferRequest) returns (QueryInferResponse);
+  // Request: { question_particle: string }  (the CID that was linked to INFERENCE_PARTICLE)
+  // Response: { answer_particle: string, answer_text: string,
+  //             sources: [{ particle: string, rank: uint64 }], model_epoch: uint64 }
+
+  // Stream the answer token by token (same requirement: cyberlink must exist)
+  rpc InferStream(QueryInferRequest) returns (stream QueryInferStreamResponse);
+
+  // Current LLM model info (no link required)
+  rpc LLMModel(QueryLLMModelRequest) returns (QueryLLMModelResponse);
+  // Response: { epoch, height, model_cid, base_model, params_count, quantization }
+}
+```
+
+**Link validation:** The `Infer` endpoint checks that a cyberlink `(question_particle → INFERENCE_PARTICLE)` exists on-chain before running inference. No link = no inference. This is enforced at the gRPC handler level — not consensus, but node-side policy.
+
+**INFERENCE_PARTICLE:** A well-known CID registered at genesis (e.g. content "inference" → `QmInference...`). Linking to it signals "I want inference for this question". Different inference types could use different target particles (e.g. `QmSummary...` for summarization, `QmTranslate...` for translation).
+
+### Model Distribution
+
+Two distributable artifacts per epoch:
+
+| Artifact | Size | Format | Purpose |
+|----------|------|--------|---------|
+| `embedding.bin` | ~200 MB | flat binary + HNSW | Retrieval (cid2vec) |
+| `cyber-llm.gguf` | ~1.8 GB | GGUF Q4_K_M | Generation (LLM) |
+| **Total** | **~2 GB** | | |
+
+Distribution via IPFS (content-addressed, verifiable):
+```
+On-chain commitment per epoch:
+  {
+    epoch: 42,
+    height: 22451000,
+    embedding_cid: "QmEmb...",     // ~200 MB
+    llm_cid: "QmLLM...",           // ~1.8 GB
+    embedding_hash: "sha256:...",
+    llm_hash: "sha256:...",
+    base_model: "llama-3.2-3b",
+    lora_rank: 32,
+    training_seed: 42
+  }
+```
+
+**Update strategy:**
+- Full model: download `cyber-llm.gguf` (~1.8 GB) — for first sync
+- LoRA adapter only: download `adapter.safetensors` (~30-80 MB) — for daily updates (clients already have base model)
+- llama.cpp supports runtime `--lora` adapter loading
+
+### Determinism and Verification
+
+**LoRA adapter** (the trainable part) is deterministic on CPU with fixed seeds:
+
+```python
+torch.manual_seed(42)
+torch.use_deterministic_algorithms(True)
+# CPU: bit-for-bit reproducible on x86_64 with pinned PyTorch version
+```
+
+**Verification protocol:**
+1. Training config published on-chain: `{base_model_hash, training_data_cid, seed, hyperparams}`
+2. Anyone can reproduce: download same base model + same training data + same config → same adapter hash
+3. Merged GGUF hash committed on-chain
+4. Validators with GPU can verify daily; light clients trust the commitment
+
+**Caveat:** Full determinism requires pinning: PyTorch version, Python version, OS (x86_64 Linux). Provide a Docker image or Nix flake as canonical training environment.
+
+### Training Data from Graph Structure
+
+The knowledge graph provides unique training signals that generic LLMs don't have:
+
+**1. PageRank-weighted corpus (most important content seen more)**
+```python
+for particle in sorted(particles, key=lambda p: p.rank, reverse=True):
+    content = ipfs_resolve(particle.cid)
+    repetitions = max(1, int(log(particle.rank * 1000)))  # 1-7x
+    for _ in range(repetitions):
+        corpus.append(content)
+```
+
+**2. Graph walk sequences (linked content concatenated)**
+```python
+def walk_sequence(start_cid, graph, max_tokens=2048):
+    """Follow cyberlinks, concatenate resolved content"""
+    seq = ipfs_resolve(start_cid)
+    current = start_cid
+    while len(tokenize(seq)) < max_tokens:
+        neighbors = graph.outlinks(current)  # weighted by stake
+        next_cid = weighted_sample(neighbors)
+        seq += "\n\n---\n\n" + ipfs_resolve(next_cid)
+        current = next_cid
+    return seq
+```
+
+**3. Link-based Q&A pairs**
+```
+Q: "How does [summary of content A] relate to [summary of content B]?"
+A: "These are linked in the knowledge graph: [content A] connects to [content B] through..."
+```
+
+**4. Graph structure Q&A**
+```
+Q: "What are the most important topics about X?"
+A: "Based on the knowledge graph, the top-ranked particles about X are: ..."
+  (generated from Search(X) results + resolved content)
+```
+
+### Configuration
+
+```toml
+[inference]
+enabled = true
+
+[inference.embeddings]
+model_path = "data/embedding.bin"
+auto_update = true
+
+[inference.llm]
+enabled = true
+binary = "llama-server"                  # bundled or PATH
+model_path = "data/cyber-llm.gguf"       # ~1.8 GB
+port = 8091
+context_size = 4096
+gpu_layers = 99                          # auto: use GPU if available
+auto_update = true                       # download new model each epoch
+
+[inference.rag]
+top_k = 5                               # retrieve top-K particles for context
+resolve_content = true                   # resolve CIDs via IPFS for context
+```
+
+### Implementation Plan
+
+#### Phase A: Embeddings + Retrieval (Now, no consensus change)
+
+The retrieval layer can ship immediately with graph streaming (item 0.1).
+
+- [ ] Python script `scripts/train_embeddings.py`: TransE/RotatE on graph topology
+- [ ] Go embedding index in `x/inference`: load flat binary, HNSW search
+- [ ] gRPC: `Similar`, `Predict`, `Embedding`, `EmbeddingModel`
+- [ ] Benchmark: training time, retrieval quality (MRR, hits@10)
+
+#### Phase B: Content Resolution + Training Data (With IPFS sidecar)
+
+- [ ] Content resolver: bulk IPFS resolution of top-ranked particles
+- [ ] Content cache: `~/.cyber/data/content_cache/` with CID→text mapping
+- [ ] Corpus builder: PageRank-weighted + graph walk sequences
+- [ ] Synthetic Q&A generator: script using existing LLM to create training pairs
+- [ ] Training script `scripts/train_llm.py`: LoRA fine-tuning with deterministic config
+- [ ] Merge + quantize script: output GGUF Q4_K_M
+
+#### Phase C: Native LLM Inference in Node (Inference-via-Link)
+
+- [ ] Register `INFERENCE_PARTICLE` at genesis (well-known CID for inference requests)
+- [ ] Bundle `llama-server` binary in release artifacts
+- [ ] Process management: launch/monitor/restart llama-server from cyber node
+- [ ] LLM HTTP client in Go: query llama-server for generation
+- [ ] RAG pipeline: embed query → retrieve → resolve → generate
+- [ ] **Link validation:** `Infer` gRPC checks that cyberlink `(question → INFERENCE_PARTICLE)` exists on-chain before running
+- [ ] **Answer publishing:** node creates answer CID via IPFS, creates answer link `(question → answer)`
+- [ ] gRPC: `Infer`, `InferStream`, `LLMModel`
+- [ ] `[inference.llm]` section in `app.toml`
+- [ ] Dashboard integration: show LLM model info, inference stats, recent Q&A pairs
+- [ ] Support multiple inference types via different target particles (e.g. `QmSummary`, `QmTranslate`)
+
+#### Phase D: On-Chain Model Commitment (Consensus integration)
+
+- [ ] `MsgCommitModel` message type: `{epoch, embedding_cid, llm_cid, training_config_cid}`
+- [ ] Validator verification: re-run training from same data, compare hashes
+- [ ] Auto-download: node fetches new model from IPFS when new epoch committed
+- [ ] Governance: `inference_epoch_period` param (blocks between retraining)
+- [ ] Q&A feedback loop: track which answer particles get linked to by other neurons (quality signal)
+
+#### Phase E: Incremental Training + Optimization
+
+- [ ] Incremental LoRA: daily fine-tune on new content only (~30 min GPU)
+- [ ] **Include inference Q&A pairs in training data:** previous epoch's questions + answers feed next model
+- [ ] Weekly full retrain to prevent drift
+- [ ] LoRA adapter distribution (base model + small daily adapter, ~30-80 MB updates)
+- [ ] Evaluate 7B model for validators with more resources
+- [ ] Explore Rust training (burn/candle) to eliminate Python dependency
+
+### Checklist Summary
+
+- [ ] **Phase A:** Embeddings pipeline + retrieval gRPC (pure Go)
+- [ ] **Phase B:** Content resolution, corpus building, LLM fine-tuning scripts
+- [ ] **Phase C:** llama-server sidecar, inference-via-link, RAG pipeline, Infer/InferStream gRPC
+- [ ] **Phase D:** On-chain model commitment, validator verification
+- [ ] **Phase E:** Incremental training with feedback loop, LoRA adapters
 
 ---
 
@@ -715,6 +2181,15 @@ These fixes must ship as part of a chain upgrade (Step 1 or a dedicated rank-fix
 | Space-pussy v0.45->v0.50 state migration | **High** | Largest version jump (3 SDK majors, 4 IBC majors). Test extensively with mainnet state. Akash successfully did v0.45->v0.53 as precedent |
 | Hardcoded denom/prefix refactor | **Medium** | Systematic search-and-replace across 13+ files. Must not break bostrom compatibility. Test both chains |
 | Space-pussy validator coordination | **Medium** | Space-pussy has its own validator set that must coordinate the binary swap. Adequate notice and testing required |
+| wgpu f32 precision for consensus | **High** | f32 may not produce identical merkle roots as f64. Requires empirical testing on mainnet state. Fallback: CPU or emulated f64 |
+| wgpu cross-vendor determinism | **Medium** | Different GPU vendors may produce different float results. Requires NoContraction annotations and extensive testing |
+| Apple Silicon f64 absence | **Low** (design constraint) | Accept f32 on Metal or use CPU. Not a risk — a known platform limitation to design around |
+| LLM training determinism | **Medium** | LoRA fine-tuning on CPU with fixed seeds is bit-exact on x86_64. Different architectures (ARM) may differ. Mitigation: canonical Docker/Nix training environment on x86_64 Linux |
+| LLM quality on graph corpus (~1.5 GB text) | **Low** | 1.5 GB of domain text is sufficient for LoRA fine-tuning. Fine-tuned 3B matches general 7B on domain tasks. Synthetic Q&A pairs critical for instruction-following quality |
+| Python dependency for training | **Medium** | Training requires PyTorch — acceptable as offline process (cron/script), never in consensus path. Inference uses llama-server (C++ binary). Future: Rust training (burn/candle) to eliminate Python |
+| LLM + embeddings distribution size | **Medium** | ~2 GB total (1.8 GB GGUF + 200 MB embeddings). Comparable to state-sync snapshot. Distribute via IPFS. Daily updates via LoRA adapter only (~30-80 MB) |
+| Content resolution for training | **Medium** | Requires IPFS sidecar + time to resolve 3M CIDs. Many CIDs may be unavailable. Mitigation: train on available content, weighted by PageRank (high-rank content more likely pinned) |
+| llama-server as fourth managed process | **Low** | Same pattern as IPFS sidecar — subprocess managed by cyb. Separate lifecycle, crash doesn't affect consensus. ~5 MB binary + ~2 GB model |
 
 ## Reference Chains
 
