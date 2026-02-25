@@ -75,10 +75,12 @@ All of these require the consensus-breaking upgrade to Cosmos SDK v0.50 + CometB
 | 1.8 | **Space-Pussy Upgrade (Phase B)** — in-place upgrade v0.45→v0.50 using unified binary | upgrade handler | 1.1, 1.6 |
 | 1.9 | **IBC-Go v7 → v8, wasmd v0.46 → v0.54, wasmvm v1.5 → v2.2** | deps | 1.1 |
 | 1.10 | **Graph Inference: On-Chain Commitment** — `MsgCommitModel`, validator verification, embedding merkle tree | `x/inference` | 0.10, 1.1 |
+| 1.11 | **Personal Networks (`cyber network`)** — one-command launch of a private chain, peer join, graph sync between machines | `cmd/cyber/`, `app/` | 1.6 |
+| 1.12 | **Inter-Knowledge Protocol (IKP): Basic Link Sync** — `x/ikp` IBC module, SyncCyberlinks packet, derived neurons, push links between chains | `x/ikp`, new module | 1.1, 1.9 |
 
-**Priority order:** 1.1 → 1.2 → 1.9 → 1.5 → 1.3 → 1.4 → 1.6 → 1.7 → 1.8 → 1.10
+**Priority order:** 1.1 → 1.2 → 1.9 → 1.5 → 1.3 → 1.4 → 1.6 → 1.11 → 1.12 → 1.7 → 1.8 → 1.10
 
-Rationale: The SDK migration (1.1) unlocks everything else. Fork elimination (1.2) and dep updates (1.9) are part of the same push. Rank fixes (1.5) are consensus-breaking so bundle with the upgrade. Snapshots (1.3) and height index (1.4) make light client experience good. Multi-chain (1.6) precedes space-pussy upgrade (1.8). ABCIListener indexing (1.7) replaces cyberindex once SDK v0.50 fixes the bug. Inference on-chain commitment (1.10) makes the model verifiable.
+Rationale: The SDK migration (1.1) unlocks everything else. Fork elimination (1.2) and dep updates (1.9) are part of the same push. Rank fixes (1.5) are consensus-breaking so bundle with the upgrade. Snapshots (1.3) and height index (1.4) make light client experience good. Multi-chain binary (1.6) is prerequisite for personal networks (1.11). IKP (1.12) enables graph sync between personal networks and bostrom — requires IBC v8 from 1.9. ABCIListener indexing (1.7) replaces cyberindex. Inference on-chain commitment (1.10) makes the model verifiable.
 
 ### Phase 2 — SDK v0.53 + CosmWasm 3.0
 
@@ -91,6 +93,7 @@ Rationale: The SDK migration (1.1) unlocks everything else. Fork elimination (1.
 | 2.5 | **wgpu Prototype (f32)** — port 4 CUDA kernels to WGSL compute shaders, test precision | `x/rank` | 0.7 |
 | 2.6 | **Light Client with Rank Proofs** — `QueryRankWithProof`, `--rank-proofs` flag, full merkle tree | `x/rank` | 1.3 |
 | 2.7 | **Graph Inference: Incremental Training + 7B Model** — daily LoRA adapters, weekly full retrain, 7B option for validators | `x/inference` | 0.10 |
+| 2.8 | **IKP: Pull Sync + Rank Signals** — RequestSubgraph, selective filters, ShareRankSignal, trust governance | `x/ikp` | 1.12 |
 
 ### Phase 3 — Long-term / Research
 
@@ -107,8 +110,8 @@ Rationale: The SDK migration (1.1) unlocks everything else. Fork elimination (1.
 | Phase | Items | Consensus Change | Key Deliverable |
 |-------|-------|:----------------:|-----------------|
 | **0** | 12 items (2 done) | No | Graph sync + Desktop app + IPFS sidecar + **LLM inference from graph** |
-| **1** | 10 items | Yes (SDK v0.50) | Full SDK upgrade + snapshot sync + rank fixes + **inference on-chain** |
-| **2** | 7 items | Yes (SDK v0.53) | IBC Eureka + CosmWasm 3.0 + wgpu + **incremental LLM training** |
+| **1** | 12 items | Yes (SDK v0.50) | Full SDK upgrade + snapshot sync + rank fixes + **personal networks** + **IKP basic sync** |
+| **2** | 8 items | Yes (SDK v0.53) | IBC Eureka + CosmWasm 3.0 + wgpu + **IKP pull/rank signals** |
 | **3** | 5 items | TBD | Rust migration + advanced GPU + native packages |
 
 ---
@@ -2028,6 +2031,518 @@ The retrieval layer can ship immediately with graph streaming (item 0.1).
 
 ---
 
+## Personal Networks: Private Knowledge Graphs with Sync
+
+### Problem
+
+Launching a personal knowledge graph on go-cyber today requires understanding Cosmos SDK internals: genesis construction, gentx ceremony, validator setup, bech32 prefixes. The binary is hardcoded to bostrom. There is no path from "I want my own graph" to "it's running and syncing across my machines" without significant manual work.
+
+Goal: **`cyber network create my-graph` on one machine, `cyber network join` on another, graphs sync via consensus.** A personal or team knowledge graph that runs on your own machines with the same rank, inference, and IPFS infrastructure as bostrom.
+
+### Why Not Solo Mode
+
+A single-node graph without consensus is just a database. The value is in **sync** — the same graph state replicated across laptop, server, phone. This requires consensus (even with 1 validator), because consensus gives you:
+
+- **Deterministic state** — every machine has the exact same graph after sync
+- **State-sync / snapshot** — new machine catches up fast
+- **Rank agreement** — all machines compute identical PageRank
+- **Model agreement** — inference model trained from identical graph
+- **IBC bridge** — personal graph can exchange links with bostrom or other personal graphs
+
+Solo mode without consensus is just SQLite. With consensus, it's a distributed knowledge computer.
+
+### Current Blockers
+
+| Blocker | Details |
+|---------|---------|
+| **Hardcoded bostrom** | `Bech32Prefix = "bostrom"`, `appName = "BostromHub"`, denoms `"boot"/"hydrogen"` in 5+ files. Cannot change without recompiling. |
+| **No `--bech32-prefix` flag** | Prefix sealed at init-time from hardcoded constant. |
+| **Hardcoded valoper encoding** | `app.go:589`: `bech32.ConvertAndEncode("bostromvaloper", bz)` — crashes for non-bostrom prefixes. |
+| **Complex genesis ceremony** | Standard Cosmos flow: `init` → edit genesis → `add-genesis-account` → `gentx` → `collect-gentxs` → distribute genesis → `start`. 6+ manual steps for single-validator. |
+| **No peer discovery** | Peers are empty by default. Second machine needs manual `persistent_peers` configuration with node ID + IP + port. |
+| **No quick join** | New machine must get genesis.json + correct config + peer address manually. |
+
+### Target UX
+
+```
+Machine A (creator):
+  $ cyber network create my-graph
+    → generates genesis with single validator (this machine)
+    → picks random denom name or uses default
+    → starts the chain
+    → prints join token: "cyber network join <token>"
+    → token = base64(genesis_hash + peer_addr + chain_id)
+
+Machine B (joiner):
+  $ cyber network join eyJjaGFp...
+    → decodes token → gets genesis + peer address
+    → initializes node with matching genesis
+    → connects to Machine A as persistent peer
+    → state-syncs (with graph + rank snapshots from item 1.3)
+    → running — same graph, same rank, same state
+
+Machine C (another join):
+  $ cyber network join eyJjaGFp...
+    → same flow, now 3 nodes in the network
+    → all three have identical graph state
+```
+
+### Architecture
+
+```
+cyber network create my-graph
+  │
+  ├── 1. Generate keypair (validator key)
+  ├── 2. Build genesis.json:
+  │       chain_id: "my-graph-1"
+  │       bech32_prefix: "cyber" (default, configurable)
+  │       denom: "stake" (default, configurable)
+  │       single validator with all initial tokens
+  │       all cyber modules enabled (graph, rank, bandwidth, etc.)
+  │       sane defaults for personal use:
+  │         - bandwidth: relaxed (high base, low price)
+  │         - rank: CalculationPeriod=5 (keep frequent)
+  │         - block time: 1s (low-latency for personal use)
+  │
+  ├── 3. Write config.toml:
+  │       listen on 0.0.0.0 (accessible from LAN)
+  │       fast block times (timeout_commit = 1s)
+  │
+  ├── 4. Start chain
+  │
+  └── 5. Print join token:
+          cyber network join eyJjaGFpbklkIjoibXktZ3Jh...
+
+cyber network join <token>
+  │
+  ├── 1. Decode token:
+  │       { chain_id, genesis_hash, peer_addrs, rpc_addr }
+  │
+  ├── 2. Fetch genesis from peer:
+  │       GET http://<peer>:26657/genesis → verify hash
+  │
+  ├── 3. Initialize node:
+  │       cyber init <chain_id> --home ~/.cyber-<chain_id>
+  │       replace genesis.json with fetched one
+  │       set persistent_peers in config.toml
+  │
+  ├── 4. State-sync or full sync:
+  │       if snapshots available (item 1.3): fast state-sync
+  │       includes graph + rank data → instant graph access
+  │
+  └── 5. Start chain
+          connected to creator's node, syncing
+```
+
+### Join Token
+
+The join token encodes everything a new node needs to connect:
+
+```json
+{
+  "chain_id": "my-graph-1",
+  "genesis_hash": "sha256:abc123...",
+  "peers": ["node_id@192.168.1.10:26656"],
+  "rpc": "http://192.168.1.10:26657"
+}
+```
+
+Base64-encoded → single copyable string. Similar to how WireGuard or Tailscale share connection configs.
+
+For LAN discovery: optionally, nodes could broadcast mDNS/Bonjour so `cyber network join` auto-discovers peers on the same network without a token.
+
+### Validator Topology for Personal Networks
+
+Single-validator is the common case (your laptop = the validator). But the system supports adding more:
+
+```
+Scenario A: One person, multiple machines
+  - Laptop creates network, is the validator
+  - Server joins as full node (syncs graph, not a validator)
+  - Phone joins as light client (graph streaming from item 0.1)
+
+Scenario B: Team / small group
+  - Machine A creates network, is validator
+  - Machine B joins, becomes validator via staking TX
+  - Now 2 validators — network survives if one goes offline
+  - Machine C joins as full node
+```
+
+For single-validator personal use: if the validator goes offline, the chain pauses. When it comes back — resumes. This is fine for personal graphs.
+
+### Multi-Network Support
+
+A single cyb (tray app) can manage multiple networks:
+
+```
+cyb tray menu:
+  ┌─────────────────────────────┐
+  │ 🟢 bostrom (main network)   │
+  │    Height: 22.4M            │
+  │ 🟢 my-graph (personal)      │
+  │    Height: 1,234            │
+  │ 🟡 team-wiki (team)         │
+  │    Height: 567, syncing     │
+  ├─────────────────────────────┤
+  │ Create New Network...       │
+  │ Join Network...             │
+  └─────────────────────────────┘
+```
+
+Each network runs in its own home directory (`~/.cyber-<chain_id>/`) with its own data, config, and ports. Port allocation is automatic (26656, 26756, 26856, ...).
+
+### IBC Between Personal Graphs and Bostrom
+
+Once both personal network and bostrom run IBC (already available in go-cyber v7), personal graphs can bridge to the global network:
+
+```
+Personal graph ←──IBC──→ Bostrom
+
+Use cases:
+  - Publish selected links from personal graph to bostrom (selective sharing)
+  - Pull high-rank content from bostrom into personal graph
+  - Cross-reference: personal notes linked to public knowledge
+  - Team graph publishes research to bostrom when ready
+```
+
+This is standard IBC relaying — no new code needed, just configuration. The personal chain and bostrom are both Cosmos SDK chains with IBC modules.
+
+### Relation to Multi-Chain Binary (Item 1.6)
+
+The multi-chain binary work (planned for space-pussy unification) is the **prerequisite** for personal networks:
+
+| Multi-chain binary gives | Personal networks use it for |
+|--------------------------|------------------------------|
+| Configurable bech32 prefix | Each network has its own prefix (or shares "cyber") |
+| Denoms from genesis | Each network names its own tokens |
+| Chain-id switch in upgrade handlers | Not needed for personal (no upgrades from mainnet state) |
+| Single binary serves any genesis | `cyber network create` just generates a new genesis |
+
+Once the binary is chain-agnostic, `cyber network create` is mostly genesis generation + config templating + a join token printer. The hard part (making the binary multi-chain) is already scoped in item 1.6.
+
+### Personal Network Defaults (Tuned for Personal Use)
+
+| Parameter | Bostrom Default | Personal Default | Why |
+|-----------|----------------|-----------------|-----|
+| Block time | ~5s | **1s** | Low latency, single validator |
+| Bandwidth BasePrice | 0.25 | **0.01** | Relaxed — it's your own network |
+| Bandwidth RecoveryPeriod | 100 | **10** | Fast recovery |
+| Rank CalculationPeriod | 5 | **5** | Keep same — rank is fast on small graphs |
+| Max validators | 150 | **10** | Personal networks are small |
+| Min gas price | varies | **0** | No fees on personal network |
+| Staking unbonding | 21 days | **1 hour** | Personal use, no adversarial setting |
+
+### Checklist
+
+**Prerequisites (from other items):**
+- [ ] Multi-chain binary (item 1.6): configurable bech32, denoms from genesis
+- [ ] Snapshot extensions (item 1.3): graph + rank in state-sync for fast join
+
+**`cyber network create`:**
+- [ ] Subcommand: generates genesis, validator key, starts chain — all in one step
+- [ ] Genesis template with personal-network defaults (relaxed bandwidth, fast blocks, zero gas)
+- [ ] Configurable: `--denom`, `--bech32-prefix`, `--chain-id` flags
+- [ ] Join token generation: base64 encoded `{chain_id, genesis_hash, peers, rpc}`
+- [ ] Print join command to stdout after start
+
+**`cyber network join`:**
+- [ ] Decode join token → fetch genesis from RPC → verify hash
+- [ ] Auto-configure: persistent_peers, chain-id, home directory
+- [ ] State-sync by default (if snapshots available)
+- [ ] Fallback to full sync from genesis
+
+**`cyber network list`:**
+- [ ] List all local networks (scan `~/.cyber-*/config/genesis.json`)
+- [ ] Show: chain_id, height, peers, running status
+
+**Multi-network support:**
+- [ ] Separate home directories per chain-id (`~/.cyber-<chain_id>/`)
+- [ ] Automatic port allocation (avoid conflicts between networks)
+- [ ] cyb tray: manage multiple networks from one menu
+
+**Optional / Future:**
+- [ ] LAN auto-discovery (mDNS/Bonjour): `cyber network join --auto` finds peers on local network
+- [ ] IBC relayer setup between personal graph and bostrom
+- [ ] `cyber network invite` — generate a new join token for an existing network
+- [ ] `cyber network export` — export graph as flat file for offline sharing
+
+---
+
+## Inter-Knowledge Protocol (IKP): Graph Sync Over IBC
+
+### Problem
+
+IBC moves tokens and messages between chains. But knowledge graphs need to sync **particles, cyberlinks, and rank** — not tokens. When a personal graph wants to publish selected links to bostrom, or pull high-rank content from bostrom into a team graph, raw IBC transfer doesn't help. There is no protocol that understands the semantic structure of a knowledge graph.
+
+Goal: **a protocol layer over IBC that enables selective, bidirectional sync of knowledge graph data between any two go-cyber chains.** Personal ↔ bostrom, team ↔ bostrom, personal ↔ personal.
+
+### What IBC Gives Us (Transport Layer)
+
+go-cyber already has a full IBC stack:
+- IBC Transfer (token moves)
+- IBC Hooks (wasm contract triggers on packet receive)
+- Packet Forward Middleware (multi-hop routing)
+- ICA (interchain accounts)
+- ICQ (interchain queries)
+- Wasm IBC handler (contracts can send/receive IBC packets)
+
+IBC provides: reliable packet delivery, channel management, timeout handling, light client verification. IKP builds on top.
+
+### What IKP Adds (Knowledge Layer)
+
+| IBC (transport) | IKP (knowledge) |
+|-----------------|------------------|
+| Sends bytes between chains | Sends particles + cyberlinks + rank signals |
+| Channels between ports | Knowledge channels between graphs |
+| Token denomination tracking | Particle origin tracking (which chain created this CID) |
+| Fungible transfer | Non-fungible graph structure sync |
+
+### Protocol Design
+
+#### Packet Types
+
+IKP defines 3 packet types carried over an IBC channel:
+
+```
+1. SyncCyberlinks   — create cyberlinks on the receiving chain
+2. ShareRankSignal  — share rank values as advisory weights
+3. RequestSubgraph  — pull a subgraph from the remote chain
+```
+
+No separate "SyncParticles" — particles in go-cyber auto-register on first use via `GetOrPutCidNumber()`. Sending cyberlinks is sufficient; CIDs register themselves on arrival.
+
+#### Packet 1: SyncCyberlinks (Core)
+
+```protobuf
+message IKPSyncCyberlinksPacket {
+  repeated IKPCyberlink links = 1;
+  string source_chain_id = 2;
+  uint64 source_height = 3;
+}
+
+message IKPCyberlink {
+  string from_cid = 1;               // CID string (not number — portable)
+  string to_cid = 2;                 // CID string
+  string source_neuron = 3;          // original author address on source chain
+  uint64 source_weight = 4;          // normalized stake on source chain (advisory)
+}
+```
+
+**Key design decisions:**
+
+**Who is the neuron on the receiving chain?**
+
+Links on the receiving chain need an `Account` (neuron). Three options:
+
+| Approach | How | Pros | Cons |
+|----------|-----|------|------|
+| **Bridge neuron** (module account) | All IBC links attributed to `ikp-bridge` module account | Simple, no auth complexity | Loses original authorship. One account = all imported links have equal weight |
+| **Derived address** | `neuron = hash(source_chain_id + source_neuron)` → deterministic address per-source-author | Preserves per-author distinction | Derived accounts have no stake → zero weight in rank. Need "virtual stake" |
+| **Mapped address** | Source neuron registers a local account on dest chain, links mapped to it | Full authorship preservation | Requires pre-registration, complex UX |
+
+**Recommended: Derived address + virtual stake.**
+
+Each source chain gets a "trust weight" set by governance or channel config. Links from that chain's neurons get virtual stake proportional to:
+```
+virtual_stake(link) = channel_trust_weight × source_weight(link)
+```
+
+This means: bostrom can assign high trust to links from a known team's graph, and low trust to random unknown personal graphs. The receiving chain controls how much influence imported links have on its rank.
+
+**Bandwidth cost:**
+
+Imported links should cost bandwidth on the receiving chain — otherwise they're a spam vector. Two options:
+- Relayer pays bandwidth (like IBC relayer pays gas)
+- Channel has a "bandwidth budget" per epoch (governance-set)
+
+**Deduplication:**
+
+Same `(from_cid, to_cid, derived_neuron)` on the receiving chain = link already exists → no-op. IAVL key structure already handles this naturally.
+
+#### Packet 2: ShareRankSignal (Advisory)
+
+```protobuf
+message IKPShareRankSignalPacket {
+  repeated IKPRankEntry ranks = 1;
+  string source_chain_id = 2;
+  uint64 source_height = 3;
+  uint64 source_cid_count = 4;       // total particles on source for normalization
+}
+
+message IKPRankEntry {
+  string cid = 1;
+  uint64 rank_value = 2;             // PageRank × 10^15 on source chain
+}
+```
+
+**This is NOT consensus-binding.** Rank signals from other chains are advisory data. The receiving chain can:
+- Store them in a separate index (not in consensus state)
+- Use them as **boost signals** in local rank display (UI re-ranking, not PageRank modification)
+- Use them as **training signals** for the inference model (external rank as node feature)
+- Ignore them entirely
+
+Rank cannot be directly "imported" because PageRank depends on the entire topology. But knowing that a particle is highly ranked on bostrom is useful information for a personal graph's UI and inference.
+
+#### Packet 3: RequestSubgraph (Pull)
+
+```protobuf
+message IKPRequestSubgraphPacket {
+  oneof request {
+    string particle_cid = 1;          // "give me all links to/from this CID"
+    string neuron_address = 2;        // "give me all links by this neuron"
+    uint64 min_rank = 3;              // "give me all particles with rank > X"
+    uint64 since_height = 4;          // "give me all links since height H"
+  }
+  uint32 max_links = 5;              // pagination
+}
+```
+
+Response comes as a `SyncCyberlinks` packet. This enables **pull-based sync**: personal graph asks bostrom "what are the top 1000 particles about topic X?" and bostrom responds with the relevant subgraph.
+
+### Sync Modes
+
+| Mode | Direction | Trigger | Use Case |
+|------|-----------|---------|----------|
+| **Push** | Source → Dest | Source decides what to export | Publish personal notes to bostrom |
+| **Pull** | Dest ← Source | Dest requests specific subgraph | Import bostrom knowledge into personal graph |
+| **Mirror** | Bidirectional, continuous | Auto-sync all new links | Two machines syncing the same personal graph (but this is already handled by consensus within the same chain) |
+| **Selective push** | Source → Dest, filtered | Source filters by neuron, topic, or rank | Team publishes only their reviewed research |
+
+### Channel Configuration
+
+Each IKP channel has parameters set at channel opening:
+
+```protobuf
+message IKPChannelConfig {
+  uint64 trust_weight = 1;           // how much rank influence imported links get (0-10000 basis points)
+  uint64 bandwidth_budget = 2;       // max links per epoch via this channel
+  bool   allow_pull = 3;             // whether remote can request subgraphs
+  bool   auto_sync = 4;             // continuously forward new links
+  repeated string neuron_filter = 5; // only sync links from these neurons (empty = all)
+  uint64 min_rank_filter = 6;        // only sync particles with rank above this
+}
+```
+
+### Architecture
+
+```
+Chain A (e.g., personal graph)          Chain B (e.g., bostrom)
+┌──────────────────────────┐           ┌──────────────────────────┐
+│  x/graph (local graph)   │           │  x/graph (local graph)   │
+│  x/rank  (local rank)    │           │  x/rank  (local rank)    │
+│                          │           │                          │
+│  x/ikp                   │           │  x/ikp                   │
+│   ├── IKP Keeper         │           │   ├── IKP Keeper         │
+│   ├── Link Filter        │           │   ├── Link Filter        │
+│   ├── Trust Weight Mgr   │           │   ├── Trust Weight Mgr   │
+│   └── IBC Module impl    │           │   └── IBC Module impl    │
+│         │                │           │         │                │
+│         └──── IBC ───────┼───────────┼─────────┘                │
+│              Channel     │           │              Channel     │
+└──────────────────────────┘           └──────────────────────────┘
+
+Data flow (push):
+  1. Neuron on Chain A creates cyberlinks normally
+  2. IKP module sees new links (EndBlocker hook or event listener)
+  3. If auto_sync on channel: build SyncCyberlinks packet
+  4. Apply neuron_filter + min_rank_filter
+  5. Send packet over IBC
+  6. Chain B receives packet
+  7. Chain B creates links with derived neuron address + virtual stake
+  8. Chain B's graph grows, rank recalculates
+  9. Chain B acknowledges packet
+
+Data flow (pull):
+  1. Chain A sends RequestSubgraph(particle_cid="QmFoo")
+  2. Chain B receives, queries local graph for QmFoo subgraph
+  3. Chain B responds with SyncCyberlinks packet
+  4. Chain A receives, creates links locally
+```
+
+### Trust and Rank Interaction
+
+This is the most subtle part. How do imported links affect the receiving chain's PageRank?
+
+```
+Local PageRank computation:
+  - Local links:    neuron has real stake → real weight in rank
+  - Imported links: derived neuron has virtual_stake = channel_trust × source_weight
+
+  virtual_stake is NOT real staking tokens. It's a parameter set per-channel.
+
+  Example:
+    Channel bostrom↔personal has trust_weight = 5000 (50%)
+    Link from bostrom neuron with source_weight 1000
+    → virtual_stake on personal chain = 500
+
+    This means: imported links from bostrom have 50% the influence
+    of equivalent local links. Tunable per-channel.
+```
+
+**Why not import rank directly?**
+
+PageRank is a global property of the entire graph topology. You can't meaningfully "add" rank from one graph to another — the matrices are different sizes, the damping factors mix differently, the topology is different. What you CAN do:
+1. Import links → they participate in local rank computation naturally
+2. Use remote rank as a UI boost (display, not consensus)
+3. Use remote rank as inference model feature
+
+### Relation to Existing Modules
+
+| Existing | IKP Uses |
+|----------|----------|
+| `x/graph` GraphKeeper | `GetOrPutCidNumber()`, `SaveLink()` — creating particles and links on receive |
+| `x/graph` IndexKeeper | `PutLink()` — update in-memory index after import |
+| `x/bandwidth` | Cost accounting for imported links |
+| `x/cyberbank` | Virtual stake accounting for derived neurons |
+| `x/rank` | Imported links participate in rank computation via virtual stake |
+| IBC Keeper | Channel management, packet routing |
+| Capability Keeper | Scoped capability for IKP port |
+
+### Implementation Plan
+
+#### Phase A: Basic Link Sync (With SDK v0.50 + IBC v8)
+
+Minimum viable IKP: push cyberlinks from one chain to another.
+
+- [ ] New module `x/ikp` implementing `porttypes.IBCModule`
+- [ ] `SyncCyberlinks` packet type: send links, receive and create on dest
+- [ ] Derived neuron address: `hash(source_chain + source_neuron)` → deterministic account
+- [ ] Fixed trust weight per channel (set at channel open)
+- [ ] Bandwidth cost: relayer pays, or fixed budget per channel
+- [ ] CLI: `cyber ikp push --channel <ch> --neuron <addr>` (push all links from a neuron)
+- [ ] CLI: `cyber ikp push --channel <ch> --particle <cid>` (push all links to/from a CID)
+
+#### Phase B: Pull + Selective Sync
+
+- [ ] `RequestSubgraph` packet: request links by particle, neuron, rank threshold, or height
+- [ ] Channel configuration: neuron filter, rank filter, bandwidth budget
+- [ ] Auto-sync mode: EndBlocker hook forwards new links matching filter criteria
+- [ ] CLI: `cyber ikp pull --channel <ch> --particle <cid>` (pull subgraph from remote)
+
+#### Phase C: Rank Signals + Trust Tuning
+
+- [ ] `ShareRankSignal` packet: share rank values as advisory data
+- [ ] Rank signal storage (separate from consensus rank — off-chain index)
+- [ ] Governance: update `trust_weight` per channel via `MsgUpdateChannelTrust`
+- [ ] Dashboard: show imported links, their source chains, trust weights
+- [ ] Use imported rank signals as node features in inference model training
+
+#### Phase D: Multi-Chain Knowledge Network
+
+- [ ] Relayer config templates for IKP channels (Hermes / Go relayer)
+- [ ] Auto-channel setup in `cyber network create` (IKP channel to bostrom by default)
+- [ ] Graph federation: personal graph ↔ team graph ↔ bostrom — multi-hop knowledge routing
+- [ ] Reputation system: channels that import high-quality links (as judged by local rank over time) get trust_weight increased automatically
+
+### Checklist Summary
+
+- [ ] **Phase A:** `x/ikp` module, SyncCyberlinks, derived neurons, basic push
+- [ ] **Phase B:** Pull requests, selective sync, channel filters, auto-sync
+- [ ] **Phase C:** Rank signals, trust governance, inference integration
+- [ ] **Phase D:** Multi-chain federation, auto-channels, reputation
+
+---
+
 ## CybeRank Computation Fixes (Consensus-Breaking)
 
 These issues were found during a code audit of the rank computation (`x/rank/keeper/calculate_cpu.go`, `x/rank/cuda/rank.cu`). They require a coordinated chain upgrade since they affect consensus state (rank values feed into the on-chain merkle tree commitment).
@@ -2190,6 +2705,10 @@ These fixes must ship as part of a chain upgrade (Step 1 or a dedicated rank-fix
 | LLM + embeddings distribution size | **Medium** | ~2 GB total (1.8 GB GGUF + 200 MB embeddings). Comparable to state-sync snapshot. Distribute via IPFS. Daily updates via LoRA adapter only (~30-80 MB) |
 | Content resolution for training | **Medium** | Requires IPFS sidecar + time to resolve 3M CIDs. Many CIDs may be unavailable. Mitigation: train on available content, weighted by PageRank (high-rank content more likely pinned) |
 | llama-server as fourth managed process | **Low** | Same pattern as IPFS sidecar — subprocess managed by cyb. Separate lifecycle, crash doesn't affect consensus. ~5 MB binary + ~2 GB model |
+| Personal networks: port conflicts | **Low** | Automatic port allocation per chain-id. Each network gets its own port range (26656+N*100). cyb manages this |
+| Personal networks: single-validator liveness | **Low** (design constraint) | If validator goes offline — chain pauses, resumes when back. Acceptable for personal use. For teams: add second validator |
+| IKP: spam via imported links | **Medium** | Imported links cost bandwidth (relayer pays or channel budget). Trust weight controls rank influence. Governance can close abusive channels |
+| IKP: derived neuron stake | **Medium** | Derived neurons have no real stake — need virtual stake mechanism. Must be carefully designed to prevent rank manipulation via cheap personal chains |
 
 ## Reference Chains
 
