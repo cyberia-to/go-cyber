@@ -33,7 +33,7 @@ BlockStoreKey(blockNumber) -> uint64 (big-endian encoded)
 
 ## Desirable bandwidth
 
-Total volt supply across all accounts, representing the aggregate bandwidth the network should provision.
+Desirable bandwidth represents amount of cyberlinks that network would like to process.
 
 ```
 TotalBandwidth key -> uint64 (big-endian encoded)
