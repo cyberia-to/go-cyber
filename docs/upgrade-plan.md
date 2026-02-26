@@ -65,7 +65,8 @@ All of these require the consensus-breaking upgrade to Cosmos SDK v0.50 + CometB
 
 | # | Item | Scope | Depends On |
 |---|------|-------|------------|
-| 1.1 | **SDK v0.47 → v0.50 migration** — ABCI 2.0, FinalizeBlock, context.Context keepers, x/params removal | all modules, `app/` | — |
+| 1.0 | **Remove `x/liquidity` module** — delete module code, drop store key via `StoreUpgrades.Deleted`, clean up params and codec registrations | `x/liquidity`, `app/`, upgrade handler | — |
+| 1.1 | **SDK v0.47 → v0.50 migration** — ABCI 2.0, FinalizeBlock, context.Context keepers, x/params removal | all modules, `app/` | 1.0 |
 | 1.2 | **Eliminate Cosmos SDK fork** — remove `cybercongress/cosmos-sdk` replace directive | `go.mod` | 1.1 |
 | 1.3 | **Snapshot Extensions** — graph + rank data in state-sync snapshots (instant sync without GPU) | `x/graph`, `x/rank` snapshotters | 1.1 |
 | 1.4 | **Height Index for Incremental Sync** — `[0x07][Height][Seq]` secondary index for O(k) `CyberlinksAfter` | `x/graph` store | 1.1 |
@@ -78,9 +79,9 @@ All of these require the consensus-breaking upgrade to Cosmos SDK v0.50 + CometB
 | 1.11 | **Personal Networks (`cyber network`)** — one-command launch of a private chain, peer join, graph sync between machines | `cmd/cyber/`, `app/` | 1.6 |
 | 1.12 | **Inter-Knowledge Protocol (IKP): Basic Link Sync** — `x/ikp` IBC module, SyncCyberlinks packet, derived neurons, push links between chains | `x/ikp`, new module | 1.1, 1.9 |
 
-**Priority order:** 1.1 → 1.2 → 1.9 → 1.5 → 1.3 → 1.4 → 1.6 → 1.11 → 1.12 → 1.7 → 1.8 → 1.10
+**Priority order:** 1.0 → 1.1 → 1.2 → 1.9 → 1.5 → 1.3 → 1.4 → 1.6 → 1.11 → 1.12 → 1.7 → 1.8 → 1.10
 
-Rationale: The SDK migration (1.1) unlocks everything else. Fork elimination (1.2) and dep updates (1.9) are part of the same push. Rank fixes (1.5) are consensus-breaking so bundle with the upgrade. Snapshots (1.3) and height index (1.4) make light client experience good. Multi-chain binary (1.6) is prerequisite for personal networks (1.11). IKP (1.12) enables graph sync between personal networks and bostrom — requires IBC v8 from 1.9. ABCIListener indexing (1.7) replaces cyberindex. Inference on-chain commitment (1.10) makes the model verifiable.
+Rationale: Liquidity removal (1.0) comes first — it is a standalone consensus-breaking change that eliminates dead module code, its SDK fork dependency (`RegisterCustomTypeURL`), and simplifies the subsequent SDK migration. The SDK migration (1.1) unlocks everything else. Fork elimination (1.2) and dep updates (1.9) are part of the same push. Rank fixes (1.5) are consensus-breaking so bundle with the upgrade. Snapshots (1.3) and height index (1.4) make light client experience good. Multi-chain binary (1.6) is prerequisite for personal networks (1.11). IKP (1.12) enables graph sync between personal networks and bostrom — requires IBC v8 from 1.9. ABCIListener indexing (1.7) replaces cyberindex. Inference on-chain commitment (1.10) makes the model verifiable.
 
 ### Phase 2 — SDK v0.53 + CosmWasm 3.0
 
@@ -110,7 +111,7 @@ Rationale: The SDK migration (1.1) unlocks everything else. Fork elimination (1.
 | Phase | Items | Consensus Change | Key Deliverable |
 |-------|-------|:----------------:|-----------------|
 | **0** | 12 items (2 done) | No | Graph sync + Desktop app + IPFS sidecar + **LLM inference from graph** |
-| **1** | 12 items | Yes (SDK v0.50) | Full SDK upgrade + snapshot sync + rank fixes + **personal networks** + **IKP basic sync** |
+| **1** | 13 items | Yes (SDK v0.50) | Liquidity removal + full SDK upgrade + snapshot sync + rank fixes + **personal networks** + **IKP basic sync** |
 | **2** | 8 items | Yes (SDK v0.53) | IBC Eureka + CosmWasm 3.0 + wgpu + **IKP pull/rank signals** |
 | **3** | 5 items | TBD | Rust migration + advanced GPU + native packages |
 
@@ -372,7 +373,7 @@ Both fork changes can be eliminated during the Step 1 upgrade, **removing the ne
 
 | Fork Change | Action on SDK v0.50+ |
 |---|---|
-| `RegisterCustomTypeURL` on interface | Use type assertion `registry.(interfaceRegistry).RegisterCustomTypeURL(...)` or check if v0.50 interface already includes it |
+| `RegisterCustomTypeURL` on interface | No longer needed — `x/liquidity` (sole consumer) is removed in Step 0 (item 1.0) |
 | In-place testnet command | Use the native SDK implementation (upstreamed from Osmosis) |
 
 Eliminating the fork removes the highest-risk item in the upgrade plan and dramatically simplifies future maintenance.
@@ -394,7 +395,7 @@ Space-pussy was forked from go-cyber circa 2022 and has not been updated since. 
 | wasmvm | v1.5.9 | v1.0.0 |
 | Go | 1.22.7 | 1.17 |
 | Module path | `github.com/cybercongress/go-cyber/v7` | `github.com/joinresistance/space-pussy` |
-| Custom modules | bandwidth, clock, cyberbank, dmn, graph, grid, **liquidity**, rank, resources, staking, **tokenfactory** | bandwidth, cyberbank, dmn, graph, grid, rank, resources, staking |
+| Custom modules | bandwidth, clock, cyberbank, dmn, graph, grid, ~~liquidity~~ *(removed in 1.0)*, rank, resources, staking, **tokenfactory** | bandwidth, cyberbank, dmn, graph, grid, rank, resources, staking |
 | Bech32 prefix | `bostrom` | `pussy` |
 | Bond denom | `boot` | `pussy` |
 | Staking denom | `hydrogen` | `liquidpussy` |
@@ -436,7 +437,7 @@ Refactor hardcoded chain identity into runtime configuration driven by genesis.j
    }
    ```
 
-4. **All modules (liquidity, tokenfactory, clock) stay included** for both chains. Modules that space-pussy doesn't use are simply empty (no state, no genesis entries). They become available for space-pussy to use in the future.
+4. **Remaining modules (tokenfactory, clock) stay included** for both chains. Modules that space-pussy doesn't use are simply empty (no state, no genesis entries). They become available for space-pussy to use in the future. Note: `x/liquidity` is removed in 1.0 before the SDK migration, so it is not present in the unified binary.
 
 After this refactor, one `cyber` binary serves any chain with the appropriate genesis.json and config.
 
@@ -467,7 +468,7 @@ The upgrade handler must perform these migrations in order:
    - Pin/unpin contract code migrations
 
 5. **Add store keys for new modules**
-   - `clock`, `liquidity`, `tokenfactory` (empty initial state)
+   - `clock`, `tokenfactory` (empty initial state)
    - Module stores must be added via `StoreUpgrades.Added`
 
 **Precedent**: Akash Network successfully jumped from SDK v0.45 directly to v0.53 in their Mainnet 14 upgrade. The approach was a single large upgrade handler that performed all intermediate migrations.
@@ -504,7 +505,7 @@ Step 2: go-cyber v0.53 + CosmWasm 3.0
 - [ ] Implement SDK v0.45 -> v0.50 state migrations for space-pussy's state
 - [ ] Implement IBC v3 -> v8 sequential state migrations
 - [ ] Implement CosmWasm v0.28 -> v0.54 state migrations
-- [ ] Add store upgrades for new modules (clock, liquidity, tokenfactory, circuit, feeibc)
+- [ ] Add store upgrades for new modules (clock, tokenfactory, circuit, feeibc)
 - [ ] Test upgrade against space-pussy mainnet state export (in-place testnet)
 - [ ] Submit upgrade proposal on space-pussy governance
 - [ ] Coordinate validator binary swap
@@ -2633,16 +2634,26 @@ These fixes must ship as part of a chain upgrade (Step 1 or a dedicated rank-fix
 
 ### Pre-work
 
-- [ ] Verify `RegisterCustomTypeURL` is on the `InterfaceRegistry` interface in SDK v0.50, or prepare type assertion workaround for `x/liquidity`
 - [ ] Verify in-place testnet command exists natively in SDK v0.50
 - [ ] Confirm fork can be fully eliminated — switch `go.mod` replace to upstream `github.com/cosmos/cosmos-sdk v0.50.15`
 - [ ] Audit all custom modules for `x/params` usage, `BeginBlock`/`EndBlock` implementations, and `sdk.Context` in keeper methods
 - [ ] Set up a testnet environment for migration testing
 
+### Step 0: Remove x/liquidity (before SDK migration)
+
+- [ ] Add new upgrade version (e.g. `v8`) with `StoreUpgrades.Deleted` for `liquidity` store key
+- [ ] Remove `x/liquidity` module code and all references from `app/app.go`
+- [ ] Remove `liquiditytypes.ParamKeyTable()` case from v4 upgrade handler params migration
+- [ ] Remove liquidity-related `RegisterCustomTypeURL` calls from codec registration
+- [ ] Remove liquidity keeper, message server, and gRPC query server wiring
+- [ ] Clean up any remaining references in genesis, params, and module registrations
+- [ ] Verify the `RegisterCustomTypeURL` SDK fork change is no longer needed (sole consumer was `x/liquidity`)
+- [ ] Test upgrade against bostrom mainnet state export (in-place testnet)
+- [ ] Mainnet upgrade proposal and execution
+
 ### Step 1: SDK v0.50
 
-- [ ] **Eliminate the cosmos-sdk fork** — remove the `go.mod` replace directive and use upstream SDK v0.50.15
-- [ ] Apply type assertion workaround for `RegisterCustomTypeURL` in `x/liquidity` if needed
+- [ ] **Eliminate the cosmos-sdk fork** — remove the `go.mod` replace directive and use upstream SDK v0.50.15 (the `RegisterCustomTypeURL` fork change is no longer needed after liquidity removal in Step 0)
 - [ ] Switch to native in-place testnet command from SDK v0.50
 - [ ] Migrate all custom modules:
   - [ ] Replace `sdk.Context` with `context.Context` in keeper methods
