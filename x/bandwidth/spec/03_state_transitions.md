@@ -1,31 +1,38 @@
-# State Transitions [WIP]
+# State Transitions
 
-Bandwidth module doesn't have own messages that trigger state transition.
-State transition is happen in such cases:
+The bandwidth module has no messages that trigger state transitions directly. State changes occur through the `graph` module's cyberlink handler and the bandwidth EndBlocker.
 
-## Processing of transaction with cyberlinks messages in transaction middleware (ante handler)
-1. calculate total bandwidth amount for all cyberlinks messages in transaction using current price and consume neuron's bandwidth
-2. add consumed bandwidth to block bandwidth (in-memory)
+## Cyberlink creation (graph module handler)
 
-## Processing of cyberlink message created by VM contract (graph module)
-1. calculate bandwidth for message using current price and consume neuron's bandwidth
-2. add consumed bandwidth to block bandwidth (in-memory)
+When a `MsgCyberlink` is processed in the `graph` module:
 
-Note: billing happens in the graph module for contracts because contracts creates messages not grouped into transactions (ante handler are not processing them)
+1. Compute cost: `price * len(links) * 1000` millivolt, truncated to integer.
+2. Check the neuron's volt balance covers the cost (`HasEnoughAccountBandwidthVolt`).
+3. Check the block has remaining capacity: `cost + currentBlockSpent <= MaxBlockBandwidth`.
+4. Burn cost in volt from the neuron's account (`BurnAccountBandwidthVolt`).
+5. Add cost to the current block's transient bandwidth counter (`AddToBlockBandwidth`).
 
-## Transfers of Volts (EndBlocker)
-1. Update account's bandwidth for an account with changed stake collected by ```CollectAddressesWithStakeChange``` hook (e.g transfer of investmint).
+## Commit block bandwidth (EndBlocker)
 
-Note: minting of new volts (using investmint) will trigger the account's bandwidth update with an increased max bandwidth value
+Every block:
 
-## Save consumed bandwidth by block (EndBlocker)
-1. Save the total amount (sum aggregated in-memory before) of consumed bandwidth by all neurons on a given block (to storage & in-memory).
-2. Remove value for a block that is out of ```RecoveryWindow``` block period and not perform in bandwidth load calculation (to storage & in-memory).
+1. Read the transient block bandwidth counter.
+2. Add it to `totalSpentForSlidingWindow`.
+3. Remove the block that falls outside the `RecoveryPeriod` window from both in-memory map and persistent storage.
+4. Persist the current block's bandwidth to storage.
 
 ## Adjust bandwidth price (EndBlocker)
-1. If block height number's remainder of division by ```AdjustPrice``` parameter is equal to zero
-   - calculate and save price based on current load (or apply ```BasePrice``` if load less than ```BasePrice```).
 
-## Genesis
-1. If neuron have volts in genesis 
-   - initialize and save account bandwidth with max value
+Every `AdjustPricePeriod` blocks (default: 5):
+
+1. Compute load as `totalSpentForSlidingWindow / (BaseLoad * desirableBandwidth)`.
+2. Set price to `BasePrice`.
+
+Since the v6 upgrade, the price is always set to `BasePrice` regardless of computed load. The load-based pricing path remains in code for potential reactivation.
+
+## Genesis initialization
+
+For each neuron with volt in genesis state:
+
+1. Set module parameters from genesis.
+2. Initialize the bandwidth price to `BasePrice`.

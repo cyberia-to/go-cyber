@@ -2,16 +2,16 @@
 
 ## Abstract
 
-The cyberbank module is the module that wraps the original Cosmos-SDK's bank module while providing extra functionality:
-1. tracks of neuron's VOLTs balance change for [bandwidth](../../bandwidth/spec/README.md) module to adjust neuron's personal bandwidth
-2. keeps two in-memory indexes of AMPEREs balances for the [rank](../../rank/spec/README.md) module (one index for last calculation and one for the next one)
-3. tracking of routed to neurons resources (VOLTs and AMPEREs) from [energy](../../grid/spec/README.md) module
+The cyberbank module wraps the Cosmos SDK bank keeper with three additions:
 
-Note: cyberbank wrapper keep all his state completely in-memory and not introduce any new modification to application storage  
-  
+1. 2% burn on every transfer of millivolt and milliampere tokens
+2. In-memory index of ampere balances (own + routed) for the [rank](../../rank/spec/README.md) module
+3. Transfer hooks that notify other modules of balance changes
+
+The module introduces no new storage — all indexing state lives in memory and rebuilds on restart.
 
 ## Contents
 
-1. **[Concepts](00_concepts.md)**
-3. **[State](02_state.md)**
-4. **[State Transitions](03_state_transitions.md)**
+1. [Concepts](00_concepts.md)
+2. [State](02_state.md)
+3. [State Transitions](03_state_transitions.md)
