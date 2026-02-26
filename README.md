@@ -39,9 +39,3 @@ Use [localbostrom](networks/local/) for local development.
 ## Documentation
 
 See [docs/](docs/README.md) for validator setup, CLI guides, module specs, and tutorials.
-
-## Community
-
-- Telegram: [fuckgoogle](https://t.me/fuckgoogle) / [Cyber & Bostrom](https://t.me/CyberGlobalHub)
-- Discord: [cyber-bostrom-spacepussy](https://discord.gg/cyber-bostrom-spacepussy)
-- Whitepaper: [Computing the Knowledge of the Great Web](https://github.com/cybercongress/cyber/blob/master/computing-the-knowledge/computing-the-knowledge.md)
