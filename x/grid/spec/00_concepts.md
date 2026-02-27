@@ -1,38 +1,27 @@
 # Concepts
 
-## Routes
-The route is an energy route that routes Volts (changing cyberlinks bandwidth of destination) and Amperes (changing graph power of destination) to the given account.
+## Route
 
-The route is consists of a source, destination, value (volts and amperes), and alias.
+A route is a persistent energy supply line from a source account to a destination account. Each route carries volts and amperes independently and has a name label (1–32 characters).
 
-Account or contract may only have fixed amount routes that adjust with the `MaxRoutes` parameter with network governance.
+A source can create up to `MaxRoutes` (default 8, max 16) outgoing routes. Self-routes are forbidden.
 
-## Routing of Energy
+## Routing amperes
 
-- routing of volts will increase or decrease the bandwidth of the dedicated account
-    - onboard new neurons to a network allowing creating of cyberlinks
-    - adjust maximum cyberlinks rate of given dedicated account
-    - adjust maximum cyberlinks rate of a given business
-    - adjust maximum cyberlinks rate of a given community
-- routing of amperes will increase or decrease graph power of dedicated account
-    - onboard new neurons to a network allowing change ranks of knowledge graph
-    - adjusting ranks of personal knowledge subgraph
-    - adjusting ranks of business knowledge subgraph
-    - adjusting ranks of community knowledge subgraph
-- routing of volts and amperes will change your personal balance
-    - routed volts and amperes will be sent to the `EnergyGrid` account
-    - routed volts and amperes will be sent back to your account from the `EnergyGrid` account
+Routed amperes increase the destination's focus weight in the relevance machine. The cyberbank module counts routed amperes on top of the destination's own balance (`GetAccountStakeAmperPlusRouted`). This enables:
+- Onboarding new neurons by supplying attention weight
+- Adjusting rank influence for a personal, program, or community subgraph
 
-## Graph Circuits
-Graph circuit is a bundle of routes of a given account.
-The circuit allows an agent to dynamically reflect and affect what is going on in the knowledge graph.
-All agent's graph circuits are formed global network circuit.
+## Routing volts
+
+Routed volts are held in the `energy_grid` module account. In the current implementation, bandwidth checks (`HasEnoughAccountBandwidthVolt`) only look at the destination's own volt balance, not routed volts. Routed volts do not currently increase the destination's cyberlink bandwidth.
 
 ## Energy Grid
-Energy flows through the global network's circuit and forms a global energy grid.
+
+Coins routed through the grid are held in the `energy_grid` module account. When a route value is increased, coins move from the source to this pool. When decreased or deleted, coins return to the source.
+
+Routing uses `SendCoinsFromAccountToModule` / `SendCoinsFromModuleToAccount`, which bypass the 2% burn fee applied to peer-to-peer `SendCoins` transfers. Energy routing is fee-free.
 
 ## Accounting
-While editing the route, you choose what value to SET, the target value of the route that you would like to be after messages will be applied. You will send tokens if you increase route value and will receive if decreasing.
 
-
-
+Editing a route sets the target value. The module computes the difference between old and new values and transfers coins accordingly — the source pays if increasing, receives if decreasing.

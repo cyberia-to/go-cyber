@@ -1,10 +1,7 @@
 # Parameters
 
-The energy module contains the following parameters:
+| Parameter | Type | Default | Validation |
+|---|---|---|---|
+| MaxRoutes | uint32 | 8 | 1–16 |
 
-| Key                     | Type           | Example                |
-| ----------------------- | -------------- | ---------------------- |
-| MaxRoutes               | uint32         | 8                      |
-
-## Max Routes
-Maximum total number of outgoing routes that can be stored by account and contract.
+Maximum number of outgoing routes a single source account can create. Updatable via `MsgUpdateParams` (governance).
