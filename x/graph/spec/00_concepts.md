@@ -16,7 +16,7 @@ Properties:
 - Timestamped: each link stores the block height at which it was created
 - Unique per neuron: a neuron can create only one link for a given `from → to` pair
 - Multiple neurons can independently link the same pair
-- Permanent: cyberlinks cannot be deleted
+- Permanent: cyberlinks persist forever
 
 ## Neuron
 

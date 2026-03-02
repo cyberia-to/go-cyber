@@ -1,6 +1,6 @@
 # State
 
-The cyberbank module introduces no persistent storage. All state lives in memory.
+All cyberbank state lives in memory — rebuilt from chain state on each restart.
 
 ## In-memory maps
 

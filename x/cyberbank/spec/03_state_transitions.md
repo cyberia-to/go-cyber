@@ -11,7 +11,7 @@ When `SendCoins` is called with millivolt or milliampere tokens:
 5. Send remaining 98% from sender to recipient.
 6. Fire transfer hooks.
 
-For other denominations, `SendCoins` delegates directly to the bank keeper with no burn.
+For other denominations, `SendCoins` delegates directly to the bank keeper (full amount transferred).
 
 ## Account stake update (EndBlocker)
 

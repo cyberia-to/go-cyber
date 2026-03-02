@@ -19,4 +19,4 @@
 5. Rank array extended for any new CIDs added since last calculation.
 6. Merkle tree hash logged.
 
-Calculation does not block consensus. The goroutine runs in parallel with block processing and delivers the result to a channel picked up by the next cycle.
+Calculation runs asynchronously alongside consensus. The goroutine runs in parallel with block processing and delivers the result to a channel picked up by the next cycle.

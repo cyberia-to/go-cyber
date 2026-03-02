@@ -3,9 +3,9 @@
 ## Route creation
 
 1. Verify source ≠ destination.
-2. Verify route does not already exist.
-3. Verify source has not reached `MaxRoutes`.
-4. Create destination account if it does not exist.
+2. Verify route is unique for this source-destination pair.
+3. Verify source is within `MaxRoutes` limit.
+4. Create destination account if needed.
 5. Store route with empty value.
 6. Call `OnCoinsTransfer` hook for the destination account.
 

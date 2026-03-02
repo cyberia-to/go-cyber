@@ -5,7 +5,7 @@
 | PoolTypes              | []PoolType    | [{id:1, name:"StandardLiquidityPool", min:2, max:2}] |
 | MinInitDepositAmount   | math.Int      | 1,000,000                                            |
 | InitPoolCoinMintAmount | math.Int      | 1,000,000                                            |
-| MaxReserveCoinAmount   | math.Int      | 0 (no limit)                                         |
+| MaxReserveCoinAmount   | math.Int      | 0 (unlimited)                                        |
 | PoolCreationFee        | sdk.Coins     | 40,000,000 bond denom                                |
 | SwapFeeRate            | sdk.Dec       | 0.003 (0.3%)                                         |
 | WithdrawFeeRate        | sdk.Dec       | 0.0 (0%)                                             |
@@ -27,7 +27,7 @@ Pool coins minted on pool creation.
 
 ## MaxReserveCoinAmount
 
-Maximum reserve per coin in a pool. Deposit fails if exceeded. Zero means no limit.
+Maximum reserve per coin in a pool. Deposit fails if exceeded. Zero means unlimited.
 
 ## PoolCreationFee
 

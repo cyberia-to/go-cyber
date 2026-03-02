@@ -8,7 +8,7 @@ Every token created through the module has the format:
 factory/{creator_address}/{subdenom}
 ```
 
-Address-based namespacing prevents name collisions and makes creation permissionless — no governance proposal needed.
+Address-based namespacing prevents name collisions and makes creation fully permissionless.
 
 ## Subdenom Constraints
 
@@ -29,7 +29,7 @@ The creator address is automatically set as admin on denom creation. The admin c
 - Transfer admin privileges to another address
 - Renounce admin by setting it to `""`
 
-Once admin is set to empty, the denom becomes immutable — no account can mint, burn, or force-transfer.
+Once admin is set to empty, the denom becomes permanently immutable.
 
 ## Capabilities
 

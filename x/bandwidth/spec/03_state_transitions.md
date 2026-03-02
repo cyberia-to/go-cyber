@@ -1,6 +1,6 @@
 # State Transitions
 
-The bandwidth module has no messages that trigger state transitions directly. State changes occur through the `graph` module's cyberlink handler and the bandwidth EndBlocker.
+All bandwidth state changes occur through the `graph` module's cyberlink handler and the bandwidth EndBlocker.
 
 ## Cyberlink creation (graph module handler)
 

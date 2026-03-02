@@ -12,7 +12,7 @@ Number of blocks between rank recalculations. Lower values make rank more respon
 
 ## DampingFactor
 
-Probability that a random walker follows a link rather than jumping to a random particle. Standard PageRank value is 0.85. Higher values give more weight to link structure, lower values make rank more uniform.
+Probability that a random walker follows a link. The complement (1 - dampingFactor) is the probability of jumping to a random particle. Standard PageRank value is 0.85. Higher values give more weight to link structure.
 
 ## Tolerance
 

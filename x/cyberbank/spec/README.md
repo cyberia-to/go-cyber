@@ -8,7 +8,7 @@ The cyberbank module wraps the Cosmos SDK bank keeper with three additions:
 2. In-memory index of ampere balances (own + routed) for the [rank](../../rank/spec/README.md) module
 3. Transfer hooks that notify other modules of balance changes
 
-The module introduces no new storage — all indexing state lives in memory and rebuilds on restart.
+All indexing state lives in memory and rebuilds on restart.
 
 ## Contents
 

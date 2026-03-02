@@ -11,7 +11,7 @@ Every block:
    c. Execute the program via `Sudo` with the thought's input.
    d. Calculate fees: `gasFee = gasPrice.Amount * gasUsed / 10` + `ttlFee = (currentBlock - lastBlock) * feeTTL`.
    e. Deduct total fee from the program account → fee collector.
-   f. If the program cannot pay: delete the thought and its stats, skip.
+   f. If the program's balance is insufficient: delete the thought and its stats, skip.
    g. If execution succeeded: apply the cached state.
    h. If execution failed: discard cached state (fees still collected).
    i. Update thought stats (calls, fees, gas, lastBlock).

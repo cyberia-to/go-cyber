@@ -10,7 +10,7 @@ Module parameters: creation fee and gas consumption.
 
 `denoms|{denom}|authoritymetadata` → `DenomAuthorityMetadata` (protobuf)
 
-Stores the admin address for each factory denom. When admin is `""`, the denom has no admin.
+Stores the admin address for each factory denom. Empty admin (`""`) means the denom is permanently immutable.
 
 ## Creator Index
 

@@ -18,7 +18,7 @@ Returns module parameters (DenomCreationFee, DenomCreationGasConsume).
 |---|---|---|
 | denom | string | Full factory denom |
 
-Returns the admin address for the denom. Empty admin means no account has control.
+Returns the admin address for the denom. Empty admin means the denom is permanently immutable.
 
 ## DenomsFromCreator
 

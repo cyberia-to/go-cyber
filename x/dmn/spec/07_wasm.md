@@ -4,7 +4,7 @@ The dmn module exposes both message and query bindings to CosmWasm contracts.
 
 ## Messages
 
-Contracts call dmn operations via custom Sudo messages. The `program` field in each message must match the calling contract address — cross-contract manipulation is not allowed.
+Contracts call dmn operations via custom Sudo messages. The `program` field in each message must match the calling contract address — only self-manipulation is permitted.
 
 | Operation | Fields |
 |---|---|

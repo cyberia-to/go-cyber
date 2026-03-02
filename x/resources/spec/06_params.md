@@ -19,7 +19,7 @@ Block interval for AMPERE halving and period doubling. Min: 6,000,000.
 
 ## BaseInvestmintPeriodVolt
 
-Divisor for VOLT cycle calculation: `cycles = maxPeriod / BaseInvestmintPeriodVolt`. This is a unit of measurement, not a lock period — no tokens are actually locked for this duration. Min: 604,800 (7 days).
+Divisor for VOLT cycle calculation: `cycles = maxPeriod / BaseInvestmintPeriodVolt`. This is a pure arithmetic divisor in the cycle formula. Min: 604,800 (7 days).
 
 ## BaseInvestmintPeriodAmpere
 
@@ -35,7 +35,7 @@ Divisor for AMPERE base calculation. Min: 10,000,000.
 
 ## maxPeriod (computed, not a parameter)
 
-`maxPeriod` is a virtual value derived from block height. It is not a lock period — nothing is locked for this duration. It exists solely as a multiplier in the mint formula, inherited from an earlier model where users chose their own lock period and were rewarded proportionally. The current implementation always substitutes the maximum:
+`maxPeriod` is a virtual value derived from block height. It exists solely as a multiplier in the mint formula, inherited from an earlier model where users chose their own lock period and were rewarded proportionally. The current implementation always substitutes the maximum:
 
 ```
 doubling = 2^(blockHeight / halvingPeriod)

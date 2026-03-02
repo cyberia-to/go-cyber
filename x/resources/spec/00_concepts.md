@@ -39,7 +39,7 @@ Since `cycles = maxPeriod / basePeriod`, doubling the period doubles cycles. Hal
 
 ## Supply Decay — The Real Growth Curve
 
-The actual decrease in mint rate comes from the exponential supply adjustment: `0.5^(totalSupply / halfLife)`. As more volts and amperes are minted across the network, each subsequent mint produces fewer resources. This is a tokenized feedback loop — the resource economy self-regulates through supply rather than through time.
+The actual decrease in mint rate comes from the exponential supply adjustment: `0.5^(totalSupply / halfLife)`. As more volts and amperes are minted across the network, each subsequent mint produces fewer resources. This is a tokenized feedback loop — the resource economy self-regulates through supply dynamics.
 
 Early participants mint more because supply is low. As the network grows and more resources exist, minting becomes progressively harder. This creates organic scarcity proportional to actual usage of the computer.
 
