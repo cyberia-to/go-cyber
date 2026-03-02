@@ -1,26 +1,12 @@
 # State
 
-## Periodic Vesting Account (auth)
-
-A vesting account implementation that vests coins according to a custom vesting schedule.
-
-```
-type PeriodicVestingAccount struct {
-  base_vesting_account BaseVestingAccount 
-  start_time           uint64
-  vesting_periods      []Period
-}
-```
-
-## Period (auth)
-
-```
-type Period struct {
-	length int64                                   
-	amount []sdk.Coin
-}
-```
+The module stores only parameters. Vesting state is managed by the auth module.
 
 ## Keys
 
-- ModuleName, RouterKey: `energy`
+- ModuleName, RouterKey, StoreKey: `resources`
+- ParamsKey: `0x00`
+
+## Vesting (auth module)
+
+On first mint a neuron's `BaseAccount` converts to `PeriodicVestingAccount`. Each subsequent mint overwrites the vesting schedule with a single 1-second period. This is backward compatibility with UI — resources are available immediately.

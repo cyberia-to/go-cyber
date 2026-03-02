@@ -2,27 +2,27 @@
 
 ## Queries
 
-Query the current bandwidth module parameters information:
+Module parameters:
 ```bash
 cyber query bandwidth params
 ```
 
-Query the bandwidth load:
+Current network load:
 ```bash
 cyber query bandwidth load
 ```
 
-Query the bandwidth price:
+Current bandwidth price:
 ```bash
 cyber query bandwidth price
 ```
 
-Query the desirable bandwidth:
+Total desirable bandwidth:
 ```bash
-cyber query bandwidth desirable
+cyber query bandwidth total
 ```
 
-Query the account's bandwidth:
+Neuron bandwidth by address:
 ```bash
-cyber query bandwidth account [address]
+cyber query bandwidth neuron [address]
 ```

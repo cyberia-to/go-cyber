@@ -1,32 +1,35 @@
 # Messages
 
-Messages (Msg) are objects that trigger state transitions. 
-Msgs are wrapped in transactions (Txs) that clients submit to the network. 
-The Cosmos SDK wraps and unwraps resources module messages from transactions.
-
 ## MsgInvestmint
 
-Neuron make investmint operation and lock base resource amount to given length with return of desired advanced resource locked to same length.
+Burns hydrogen and mints volts or amperes.
 
 ```go
 type MsgInvestmint struct {
-    agent    string    // agent's address
-    amount   sdk.Coin  // amount of basic resource to invesmint 
-	resource string    // desirable resource
-	length   uint32    // desirable lock period in seconds
+    Neuron   string   // neuron's address
+    Amount   sdk.Coin // hydrogen amount to burn
+    Resource string   // "millivolt" or "milliampere"
+    Length   uint64   // accepted but ignored (maxPeriod used)
 }
 ```
 
-The message will fail under the following conditions:
+Fails if:
 
-- Stateless
-    - if msg.Agent is not valid address
-    - if msg.Amount is invalid (not positive or wrong denom)
-    - if msg.Resource is invalid (resource not exist)
-    - if msg.Length is equal to 0
-- Stateful 
-    - if Msg.Length is more than available maximum lock period
-    - if Msg.Length is less than available minimum lock period
-    - if account have less spendable balance that Msg.Amount
-    - if there are no empty or expired slots
-    - if amount of resource in return less than 1000 milli{volt,amper}
+- `Neuron` is not a valid address
+- `Amount` is not positive or wrong denom
+- `Resource` is not millivolt or milliampere
+- `Length` is 0
+- `Amount` denom does not match base resource denom for the target resource
+- Spendable hydrogen balance < `Amount`
+- Calculated return < 1000 units
+
+## MsgUpdateParams
+
+Updates module parameters. Restricted to governance authority.
+
+```go
+type MsgUpdateParams struct {
+    Authority string
+    Params    Params
+}
+```

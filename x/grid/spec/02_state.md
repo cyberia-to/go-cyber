@@ -1,33 +1,34 @@
 # State
 
+## Store Layout
+
+| Prefix | Key | Value | Description |
+|---|---|---|---|
+| `0x00` | source + destination | Route | energy route |
+| `0x01` | destination | Value | aggregated energy routed to destination |
+| `0x02` | — | Params | module parameters |
+
+Module store key: `grid`. Pool account: `energy_grid`.
+
 ## Route
 
-Route is used for tracking amount of volts and amperes routed to given account.
-
-Route type has the following structure:
-```
-type Route struct {
-    source         string       // source account address, route from
-    destination    string       // destination account address, route to
-    alias          string       // releated alias or tag
-    value          []sdk.Coin   // amount of volts and amperes in this route
+```protobuf
+message Route {
+    string source      = 1;  // bech32 source address
+    string destination = 2;  // bech32 destination address
+    string name        = 3;  // label (1–32 chars)
+    repeated sdk.Coin value = 4;  // routed volts and amperes
 }
 ```
 
 ## Value
-Value is used to store up-to-date summarized value of all routes routed to given destination.
 
-```
-type Value struct {
-    value          []sdk.Coin   // amount of volts and amperes in this route
+```protobuf
+message Value {
+    repeated sdk.Coin value = 1;  // total energy routed to destination
 }
 ```
 
--------
+## Genesis
 
-## Keys
-
-- Route: `0x00 | Source | Destination -> ProtocolBuffer(Route)`
-- Value: `0x01 | Destination -> ProtocolBuffer(Value)`
-- ModuleName, RouterKey, StoreKey: `energy`
-- EnergyPoolName: `energy_grid`
+`InitGenesis` loads params and routes. `ExportGenesis` returns current params.
