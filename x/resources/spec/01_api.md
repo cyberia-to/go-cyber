@@ -1,15 +1,15 @@
-# API
+# Queries
 
-# REST
+All queries served via gRPC at `/cyber.resources.v1beta1.Query/`.
 
-| Path                                  | Parameters                    | Description                    |
-| --------------------------------------| ----------------------------- | ------------------------------ |
-| /resources/parameters                 |                               | get module params              |
-| /resources/investmint_amount          | amount, resource and length   | get potential return amount    |
+## Params
 
-# GRPC
+Returns current module parameters.
 
-| Path                                                  | Parameters                  | Description                 |
-| ------------------------------------------------------| --------------------------- | --------------------------- |
-| /cyber/resources/v1beta1/resources/params             |                             | get module params           |
-| /cyber/resources/v1beta1/resources/investmint_amount  | amount, resource and length | get potential return amount | 
+## Investmint
+
+Returns the calculated mint amount for a given hydrogen amount, resource type, and length. Useful for previewing the return before submitting a transaction.
+
+## AdjustedPrice
+
+Returns the supply-adjusted amount for a given base coin and resource type. Applies only the exponential supply decay factor.

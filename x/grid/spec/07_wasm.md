@@ -1,19 +1,21 @@
-# WASM LINE
+# WASM Bindings
 
-In addition to the core CosmWasm functionality, the energy module bindings include
+## Messages
 
-## Query support
-- SourceRoutes
-- SourceRoutedEnergy
-- DestinationRoutedEnergy
-- Route
+Contracts call grid operations via custom messages. The `source` field must match the calling contract address.
 
-## Messages Encoding
-- MsgCreateRoute
-- MsgEditRoute
-- MsgEditRouteAlias
-- MsgDeleteRoute
+| Operation | Fields |
+|---|---|
+| CreateEnergyRoute | destination, name |
+| EditEnergyRoute | destination, value |
+| EditEnergyRouteName | destination, name |
+| DeleteEnergyRoute | destination |
 
---------
+## Queries
 
-Hack with [cw-cyber](https://github.com/cybercongress/cw-cyber) library
+| Query | Fields | Returns |
+|---|---|---|
+| SourceRoutes | source | array of Route |
+| SourceRoutedEnergy | source | sdk.Coins |
+| DestinationRoutedEnergy | destination | sdk.Coins |
+| Route | source, destination | Route |

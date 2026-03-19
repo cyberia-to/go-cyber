@@ -1,27 +1,20 @@
-<!-- order: 0 title: Liquidity Overview parent: title: "liquidity" -->
-
- # `liquidity`
+# `x/liquidity`
 
 ## Abstract
 
-This document specifies the liquidity module of the Cosmos SDK that serves AMM (Automated Market Makers) style decentralized liquidity providing and coin swap functions.
-
-The module enables you to create a liquidity pool with a pair of coins, deposit reserve coins into the pool to provide liquidity, request withdrawal from the pool, and trade coins using the liquidity pool.
-
-This module is available in the Cosmos Hub and can be used by other blockchains that are based on the Cosmos SDK.
+The liquidity module implements a batch-based AMM (Automated Market Maker) for decentralized coin swaps. A neuron or contract creates a two-coin liquidity pool, deposits reserve coins to provide liquidity, and requests swaps through the pool. Orders are collected into batches and executed at the end of each batch height, producing a single uniform swap price per batch. This Equivalent Swap Price Model (ESPM) prevents front-running and reduces arbitrage opportunities compared to instant-execution AMMs.
 
 ## Contents
 
-1. **[Concepts](01_concepts.md)**
-2. **[State](02_state.md)**
-3. **[State Transitions](03_state_transitions.md)**
-4. **[Messages](04_messages.md)**
-5. **[Begin-Block](05_begin_block.md)**
-6. **[End-Block](06_end_block.md)**
-7. **[Events](07_events.md)**
-8. **[Parameters](08_params.md)**
-
-## References
-
-- [Liquidity module proposal and milestone](https://github.com/b-harvest/Liquidity-Module-For-the-Hub)
-- [Cosmos SDK modules](https://github.com/cosmos/cosmos-sdk/tree/master/x)
+1. [Concepts](00_concepts.md)
+2. [Queries](01_queries.md)
+3. [State](02_state.md)
+4. [State Transitions](03_state_transitions.md)
+5. [Messages](04_messages.md)
+6. [Begin-Block](05_begin_block.md)
+7. [End-Block](06_end_block.md)
+8. [Events](07_events.md)
+9. [Parameters](08_params.md)
+10. [WASM Bindings](09_wasm.md)
+11. [Errors](10_errors.md)
+12. [CLI](11_cli.md)
