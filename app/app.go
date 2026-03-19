@@ -263,6 +263,8 @@ func NewBostromApp(
 		panic("error while reading wasm config: " + err.Error())
 	}
 
+	proofExemptContracts := cast.ToStringSlice(appOpts.Get("proof-exempt.contracts"))
+
 	anteHandler, err := NewAnteHandler(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
@@ -272,10 +274,11 @@ func NewBostromApp(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			IBCKeeper:         app.IBCKeeper,
-			TXCounterStoreKey: app.GetKey(wasmtypes.StoreKey),
-			WasmConfig:        &wasmConfig,
-			WasmKeeper:        app.WasmKeeper,
+			IBCKeeper:            app.IBCKeeper,
+			TXCounterStoreKey:    app.GetKey(wasmtypes.StoreKey),
+			WasmConfig:           &wasmConfig,
+			WasmKeeper:           app.WasmKeeper,
+			ProofExemptContracts: proofExemptContracts,
 		},
 	)
 	if err != nil {

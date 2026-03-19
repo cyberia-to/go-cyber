@@ -17,13 +17,18 @@ import (
 // channel keeper.
 type HandlerOptions struct {
 	ante.HandlerOptions
-	
+
 	IBCKeeper         *ibckeeper.Keeper
 	WasmConfig        *wasmtypes.WasmConfig
 	WasmKeeper        *wasmkeeper.Keeper
 	TXCounterStoreKey storetypes.StoreKey
 
 	TxEncoder sdk.TxEncoder
+
+	// ProofExemptContracts is a list of CosmWasm contract addresses
+	// whose "submit_proof" execute messages are exempt from gas fees.
+	// This allows miners to submit PoW proofs without holding tokens.
+	ProofExemptContracts []string
 }
 
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
@@ -62,7 +67,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker),
+		NewProofExemptDecorator(options.HandlerOptions, options.ProofExemptContracts),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, sigGasConsumer),

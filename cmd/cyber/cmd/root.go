@@ -123,11 +123,32 @@ func initTendermintConfig() *tmcfg.Config {
 	return cfg
 }
 
+// ProofExemptConfig holds config for gas-exempt PoW proof submissions.
+type ProofExemptConfig struct {
+	// Contracts is a list of CosmWasm contract addresses whose
+	// "submit_proof" messages are exempt from gas fees.
+	Contracts []string `mapstructure:"contracts"`
+}
+
+const proofExemptConfigTemplate = `
+###############################################################################
+###                     Proof-of-Work Gas Exemption                         ###
+###############################################################################
+
+[proof-exempt]
+
+# List of CosmWasm contract addresses whose "submit_proof" execute messages
+# are exempt from gas fees. This allows miners to submit proofs without
+# holding any tokens for gas — the mining contract deducts gas cost from rewards.
+contracts = []
+`
+
 func initAppConfig() (string, interface{}) {
 	type CustomAppConfig struct {
 		serverconfig.Config
 
-		Wasm wasmtypes.WasmConfig `mapstructure:"wasm"`
+		Wasm         wasmtypes.WasmConfig `mapstructure:"wasm"`
+		ProofExempt  ProofExemptConfig    `mapstructure:"proof-exempt"`
 	}
 
 	// Allow overrides to the SDK default server config
@@ -135,12 +156,14 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.MinGasPrices = "0boot"
 
 	customAppConfig := CustomAppConfig{
-		Config: *srvCfg,
-		Wasm:   wasmtypes.DefaultWasmConfig(),
+		Config:      *srvCfg,
+		Wasm:        wasmtypes.DefaultWasmConfig(),
+		ProofExempt: ProofExemptConfig{Contracts: []string{}},
 	}
 
 	customAppTemplate := serverconfig.DefaultConfigTemplate +
-		wasmtypes.DefaultConfigTemplate()
+		wasmtypes.DefaultConfigTemplate() +
+		proofExemptConfigTemplate
 
 	return customAppTemplate, customAppConfig
 }
