@@ -59,3 +59,10 @@ contracts
 *.wasm
 
 cmd/iavltool/*.txt
+
+# Local infrastructure docs (not part of codebase)
+local/
+
+# Claude Code
+.claude/
+CLAUDE.md

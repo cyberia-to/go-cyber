@@ -140,7 +140,7 @@ const proofExemptConfigTemplate = `
 # List of CosmWasm contract addresses whose "submit_proof" execute messages
 # are exempt from gas fees. This allows miners to submit proofs without
 # holding any tokens for gas — the mining contract deducts gas cost from rewards.
-contracts = []
+contracts = ["bostrom123wr6faa62xxrft6t5wmpqmh9g0chvu7ddedggx0lkecmgef7thsls9my2"]
 `
 
 func initAppConfig() (string, interface{}) {
@@ -158,7 +158,7 @@ func initAppConfig() (string, interface{}) {
 	customAppConfig := CustomAppConfig{
 		Config:      *srvCfg,
 		Wasm:        wasmtypes.DefaultWasmConfig(),
-		ProofExempt: ProofExemptConfig{Contracts: []string{}},
+		ProofExempt: ProofExemptConfig{Contracts: []string{"bostrom123wr6faa62xxrft6t5wmpqmh9g0chvu7ddedggx0lkecmgef7thsls9my2"}},
 	}
 
 	customAppTemplate := serverconfig.DefaultConfigTemplate +
