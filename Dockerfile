@@ -79,7 +79,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends \
 && make build CUDA_ENABLED=true \
 && cp ./build/cyber /cyber/cosmovisor/upgrades/v6/bin/ \
 && rm -rf ./build \
- # Compile cyber for v6 version
+ # Compile cyber for v7 version
 ###########################################################################################
 && git checkout v7.0.2 \
 && cd /sources/x/rank/cuda \
