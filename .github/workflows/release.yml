@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+env:
+  GO_VERSION: "1.22"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Set BFT_VERSION env
+        run: echo "BFT_VERSION=$(go list -m github.com/cometbft/cometbft | sed 's:.* ::')" >> "$GITHUB_ENV"
+
+      - uses: goreleaser/goreleaser-action@v6
+        with:
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BFT_VERSION: ${{ env.BFT_VERSION }}
+
+      # Docker only for stable releases (vX.Y.0), not beta patches
+      - name: Check if stable release
+        id: check
+        run: |
+          TAG="${{ github.ref_name }}"
+          if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.0$ ]]; then
+            echo "stable=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: docker/login-action@v3
+        if: steps.check.outputs.stable == 'true'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker
+        if: steps.check.outputs.stable == 'true'
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}:${{ github.ref_name }} .
+          docker push ghcr.io/${{ github.repository }}:${{ github.ref_name }}
