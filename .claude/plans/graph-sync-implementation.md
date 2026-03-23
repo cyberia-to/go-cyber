@@ -34,7 +34,7 @@ Run `make proto-gen` → generates `x/graph/types/snapshot.pb.go`.
 ### Step 2 — Configuration
 
 **New file: `graphsync/config.go`**
-- `GraphSyncConfig` struct with fields: `Enabled`, `SyncPeriod` (1000), `MilestonePeriod` (100000), `Protobuf` (true), `Parquet` (true), `HTTPAddress` ("localhost:8888"), `RankDeltaBps` (100)
+- `GraphSyncConfig` struct with fields: `Enabled`, `SyncPeriod` (1000), `MilestonePeriod` (100000), `Protobuf` (true), `Parquet` (true), `HTTPAddress` ("localhost:9999"), `RankDeltaBps` (100)
 - `DefaultGraphSyncConfig()` — returns defaults with `Enabled: false` (opt-in)
 - `DefaultConfigTemplate` — TOML template string for `[graph-sync]` section
 - `ReadConfig(appOpts)` — reads config from viper/appOpts
@@ -226,5 +226,5 @@ Plus request/response messages and `RankDelta` as defined in `docs/sync.md`.
 2. **Integration test**: Start a test node with `graph-sync.enabled=true`, create some cyberlinks, wait for `sync_period` blocks, verify files appear in `data/snapshots/latest/`
 3. **File validation**: Read generated protobuf file back, verify counts match `GraphStats` gRPC
 4. **Parquet validation**: Open parquet files with DuckDB/pandas, verify schema and row counts
-5. **HTTP test**: `curl http://localhost:8888/snapshot/latest/meta.json` returns valid JSON with correct height
+5. **HTTP test**: `curl http://localhost:9999/snapshot/latest/meta.json` returns valid JSON with correct height
 6. **Milestone test**: Set `milestone_period` to a small value, verify milestone directories are created

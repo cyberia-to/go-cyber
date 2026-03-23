@@ -50,7 +50,7 @@ To get the full graph (3M+ particles, 3M+ links), a client would need millions o
 │        4. Write snapshot files to data/snapshots/         │
 │        5. Notify SubscribeGraph subscribers               │
 │                                                          │
-│  HTTP server (:8888)                                    │
+│  HTTP server (:9999)                                    │
 │    └── GET /snapshot/* — serve snapshot files             │
 │                                                          │
 │  gRPC (existing :9090)                                   │
@@ -450,32 +450,32 @@ Alternative: read links from in-memory index (fast), then batch-lookup heights f
 
 ## Endpoints
 
-### HTTP Endpoints (port 8888)
+### HTTP Endpoints (port 9999)
 
 Embedded HTTP server serves snapshot files directly. Static file serving — nginx/CDN-friendly, cacheable.
 
 **`GET /snapshot/latest/{file}`** — latest rolling snapshot
 
 ```bash
-curl http://localhost:8888/snapshot/latest/meta.json
-curl -O http://localhost:8888/snapshot/latest/graph.pb
-curl -O http://localhost:8888/snapshot/latest/particles.parquet
-curl -O http://localhost:8888/snapshot/latest/links.parquet
-curl -O http://localhost:8888/snapshot/latest/neurons.parquet
+curl http://localhost:9999/snapshot/latest/meta.json
+curl -O http://localhost:9999/snapshot/latest/graph.pb
+curl -O http://localhost:9999/snapshot/latest/particles.parquet
+curl -O http://localhost:9999/snapshot/latest/links.parquet
+curl -O http://localhost:9999/snapshot/latest/neurons.parquet
 ```
 
 **`GET /snapshot/milestones/`** — list all milestone snapshots
 
 ```bash
-curl http://localhost:8888/snapshot/milestones/index.json
+curl http://localhost:9999/snapshot/milestones/index.json
 ```
 
 **`GET /snapshot/milestones/{height}/{file}`** — specific milestone
 
 ```bash
 # Download a specific milestone
-curl -O http://localhost:8888/snapshot/milestones/22400000/particles.parquet
-curl -O http://localhost:8888/snapshot/milestones/22300000/particles.parquet
+curl -O http://localhost:9999/snapshot/milestones/22400000/particles.parquet
+curl -O http://localhost:9999/snapshot/milestones/22300000/particles.parquet
 
 # Compare graph at two points in time — graph dynamics!
 ```
@@ -650,7 +650,7 @@ parquet = true
 
 # HTTP server address for serving snapshot files
 # Set to "" to disable HTTP serving (files still generated on disk)
-http_address = "localhost:8888"
+http_address = "localhost:9999"
 
 # Minimum rank change (basis points, 100 = 1%) to include in diff updates
 rank_delta_bps = 100
@@ -686,18 +686,18 @@ More frequent milestones (~3.5 days). At ~400 MB per milestone, this is ~40 GB/y
 
 ```bash
 # Check what's available
-curl -s http://node:8888/snapshot/latest/meta.json | jq .
+curl -s http://node:9999/snapshot/latest/meta.json | jq .
 
 # Download latest parquet files
-curl -O http://node:8888/snapshot/latest/particles.parquet
-curl -O http://node:8888/snapshot/latest/links.parquet
-curl -O http://node:8888/snapshot/latest/neurons.parquet
+curl -O http://node:9999/snapshot/latest/particles.parquet
+curl -O http://node:9999/snapshot/latest/links.parquet
+curl -O http://node:9999/snapshot/latest/neurons.parquet
 
 # List all milestones
-curl -s http://node:8888/snapshot/milestones/index.json | jq .
+curl -s http://node:9999/snapshot/milestones/index.json | jq .
 
 # Download a historical milestone for comparison
-curl -O http://node:8888/snapshot/milestones/22000000/particles.parquet
+curl -O http://node:9999/snapshot/milestones/22000000/particles.parquet
 ```
 
 ### DuckDB (SQL directly on files)
