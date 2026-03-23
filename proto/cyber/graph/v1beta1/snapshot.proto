@@ -1,0 +1,45 @@
+syntax = "proto3";
+package cyber.graph.v1beta1;
+
+option go_package = "github.com/cybercongress/go-cyber/x/graph/types";
+
+message GraphSnapshot {
+  GraphSnapshotHeader header = 1;
+  repeated Particle particles = 2;
+  repeated Cyberlink links = 3;
+  repeated Neuron neurons = 4;
+}
+
+message GraphSnapshotHeader {
+  string chain_id = 1;
+  uint64 height = 2;
+  int64  timestamp = 3;
+  uint64 particles_count = 4;
+  uint64 links_count = 5;
+  uint64 neurons_count = 6;
+  bytes  rank_merkle_root = 7;
+  string checksum = 8;
+}
+
+message Particle {
+  uint64 number = 1;
+  string cid = 2;
+  uint64 rank = 3;
+}
+
+message Cyberlink {
+  uint64 from = 1;
+  uint64 to = 2;
+  uint64 account = 3;
+  uint64 height = 4;
+}
+
+message Neuron {
+  uint64 number = 1;
+  string address = 2;
+  uint64 links_count = 3;
+  uint64 boot_staked = 4;
+  uint64 hydrogen = 5;
+  uint64 ampere = 6;
+  uint64 volt = 7;
+}

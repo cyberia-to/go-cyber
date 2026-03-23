@@ -1,0 +1,62 @@
+syntax = "proto3";
+package cyber.graph.v1beta1;
+
+import "google/api/annotations.proto";
+import "cyber/graph/v1beta1/snapshot.proto";
+
+option go_package = "github.com/cybercongress/go-cyber/x/graph/types";
+
+service GraphSyncQuery {
+  rpc LatestSnapshot(QueryLatestSnapshotRequest)
+      returns (QueryLatestSnapshotResponse) {
+    option (google.api.http).get = "/cyber/graph/v1beta1/snapshot/latest";
+  }
+
+  rpc SubscribeGraph(SubscribeGraphRequest)
+      returns (stream GraphUpdate) {
+    option (google.api.http).get = "/cyber/graph/v1beta1/snapshot/subscribe";
+  }
+}
+
+message QueryLatestSnapshotRequest {}
+
+message QueryLatestSnapshotResponse {
+  string chain_id = 1;
+  uint64 height = 2;
+  int64  timestamp = 3;
+  uint64 particles_count = 4;
+  uint64 links_count = 5;
+  uint64 neurons_count = 6;
+  bytes  rank_merkle_root = 7;
+  string protobuf_url = 8;
+  string parquet_particles_url = 9;
+  string parquet_links_url = 10;
+  string parquet_neurons_url = 11;
+  uint64 protobuf_size = 12;
+  uint64 parquet_particles_size = 13;
+  uint64 parquet_links_size = 14;
+  uint64 parquet_neurons_size = 15;
+  string protobuf_checksum = 16;
+}
+
+message SubscribeGraphRequest {
+  uint64 since_height = 1;
+}
+
+message GraphUpdate {
+  uint64 from_height = 1;
+  uint64 to_height = 2;
+  int64  timestamp = 3;
+  repeated Particle new_particles = 4;
+  repeated Cyberlink new_links = 5;
+  repeated Neuron new_neurons = 6;
+  repeated RankDelta rank_updates = 7;
+  uint64 total_particles = 8;
+  uint64 total_links = 9;
+  uint64 total_neurons = 10;
+}
+
+message RankDelta {
+  uint64 particle = 1;
+  uint64 rank = 2;
+}
