@@ -27,6 +27,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/cybercongress/go-cyber/v7/app"
+	"github.com/cybercongress/go-cyber/v7/graphsync"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -127,7 +128,8 @@ func initAppConfig() (string, interface{}) {
 	type CustomAppConfig struct {
 		serverconfig.Config
 
-		Wasm wasmtypes.WasmConfig `mapstructure:"wasm"`
+		Wasm      wasmtypes.WasmConfig      `mapstructure:"wasm"`
+		GraphSync graphsync.GraphSyncConfig  `mapstructure:"graph-sync"`
 	}
 
 	// Allow overrides to the SDK default server config
@@ -135,12 +137,14 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.MinGasPrices = "0boot"
 
 	customAppConfig := CustomAppConfig{
-		Config: *srvCfg,
-		Wasm:   wasmtypes.DefaultWasmConfig(),
+		Config:    *srvCfg,
+		Wasm:      wasmtypes.DefaultWasmConfig(),
+		GraphSync: graphsync.DefaultGraphSyncConfig(),
 	}
 
 	customAppTemplate := serverconfig.DefaultConfigTemplate +
-		wasmtypes.DefaultConfigTemplate()
+		wasmtypes.DefaultConfigTemplate() +
+		graphsync.DefaultConfigTemplate
 
 	return customAppTemplate, customAppConfig
 }

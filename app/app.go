@@ -24,6 +24,7 @@ import (
 	bandwidthkeeper "github.com/cybercongress/go-cyber/v7/x/bandwidth/keeper"
 	cyberbankkeeper "github.com/cybercongress/go-cyber/v7/x/cyberbank/keeper"
 	graphkeeper "github.com/cybercongress/go-cyber/v7/x/graph/keeper"
+	graphtypes "github.com/cybercongress/go-cyber/v7/x/graph/types"
 	rankkeeper "github.com/cybercongress/go-cyber/v7/x/rank/keeper"
 	"io"
 	"os"
@@ -81,6 +82,7 @@ import (
 
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 
+	"github.com/cybercongress/go-cyber/v7/graphsync"
 	"github.com/cybercongress/go-cyber/v7/utils"
 
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
@@ -147,6 +149,8 @@ type App struct {
 	sm *module.SimulationManager
 
 	configurator module.Configurator
+
+	graphSync *graphsync.SyncService
 }
 
 // New returns a reference to an initialized Cyber Consensus Computer.
@@ -321,6 +325,32 @@ func NewBostromApp(
 		if err := app.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
 			tmos.Exit(fmt.Sprintf("failed initialize pinned codes %s", err))
 		}
+
+		// Initialize graph sync service
+		graphSyncCfg := graphsync.ReadConfig(appOpts)
+		if graphSyncCfg.Enabled {
+			homePath := cast.ToString(appOpts.Get("home"))
+			if homePath == "" {
+				homePath = DefaultNodeHome
+			}
+			app.graphSync = graphsync.NewSyncService(
+				graphSyncCfg,
+				homePath,
+				logger,
+				db,
+				app.GetKVStoreKey(),
+				app.GraphKeeper,
+				app.IndexKeeper,
+				app.RankKeeper,
+				app.AccountKeeper,
+				app.BankKeeper,
+				app.StakingKeeper,
+			)
+			app.graphSync.Start()
+
+			// Register graph sync gRPC query service
+			graphtypes.RegisterGraphSyncQueryServer(app.GRPCQueryRouter(), app.graphSync)
+		}
 	}
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
@@ -358,7 +388,11 @@ func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.R
 
 // EndBlocker application updates every end block
 func (app *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	return app.ModuleManager.EndBlock(ctx, req)
+	resp := app.ModuleManager.EndBlock(ctx, req)
+	if app.graphSync != nil {
+		app.graphSync.OnEndBlock(ctx, ctx.BlockHeight())
+	}
+	return resp
 }
 
 // InitChainer application update at chain initialization
