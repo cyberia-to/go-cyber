@@ -1,64 +1,115 @@
 builds:
-  -
-    main: ./cyberdcli
-    binary: cyberdcli
+  # cyber — full node binary (CGO + CUDA + Ledger, Linux only)
+  - id: cyber
+    main: ./cmd/cyber
+    binary: cyber
+    goos: [linux]
+    goarch: [amd64, arm64]
+    env:
+      - CGO_ENABLED=1
+    flags:
+      - -tags=netgo,ledger
+      - -trimpath
+    ldflags:
+      - -X github.com/cosmos/cosmos-sdk/version.Name=cyber
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=cyber
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
+      - -X github.com/cometbft/cometbft/version.BFTVer={{ .Env.BFT_VERSION }}
+
+  # cyb — CLI binary (CGO=0, static, 14 targets)
+  - id: cyb
+    main: ./cmd/cyber
+    binary: cyb
+    goos: [linux, darwin, windows, android, freebsd, openbsd]
+    goarch: [amd64, arm64, riscv64, loong64, mips64, ppc64le]
+    goamd64: [v1]
+    ignore:
+      # darwin: only amd64 + arm64
+      - goos: darwin
+        goarch: riscv64
+      - goos: darwin
+        goarch: loong64
+      - goos: darwin
+        goarch: mips64
+      - goos: darwin
+        goarch: ppc64le
+      # windows: only amd64 + arm64
+      - goos: windows
+        goarch: riscv64
+      - goos: windows
+        goarch: loong64
+      - goos: windows
+        goarch: mips64
+      - goos: windows
+        goarch: ppc64le
+      # android: only arm64
+      - goos: android
+        goarch: amd64
+      - goos: android
+        goarch: riscv64
+      - goos: android
+        goarch: loong64
+      - goos: android
+        goarch: mips64
+      - goos: android
+        goarch: ppc64le
+      # freebsd: only amd64 + arm64
+      - goos: freebsd
+        goarch: riscv64
+      - goos: freebsd
+        goarch: loong64
+      - goos: freebsd
+        goarch: mips64
+      - goos: freebsd
+        goarch: ppc64le
+      # openbsd: only amd64
+      - goos: openbsd
+        goarch: arm64
+      - goos: openbsd
+        goarch: riscv64
+      - goos: openbsd
+        goarch: loong64
+      - goos: openbsd
+        goarch: mips64
+      - goos: openbsd
+        goarch: ppc64le
     env:
       - CGO_ENABLED=0
-      - GO111MODULE=on
-    goos:
-      - linux
-      - darwin
-      - windows
-    goarch:
-      - amd64
+    flags:
+      - -tags=netgo
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X github.com/cosmos/cosmos-sdk/version.Name=cyber
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=cyb
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
+      - -X github.com/cometbft/cometbft/version.BFTVer={{ .Env.BFT_VERSION }}
 
+archives:
+  - id: cyber
+    builds: [cyber]
+    format: tar.gz
+    name_template: "cyber_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+  - id: cyb
+    builds: [cyb]
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: "cyb_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 
 checksum:
-  name_template: '{{ .ProjectName }}_checksums.txt'
+  name_template: "checksums.txt"
+  algorithm: sha256
 
+release:
+  prerelease: auto  # vX.Y.Z where Z>0 → marked pre-release on GitHub
 
 changelog:
   sort: asc
   filters:
     exclude:
-    - '^docs:'
-    - '^test:'
-    - '^CI:'
-    - Merge pull request
-
-
-nfpm:
-  name_template: '{{ .Binary }}_{{ .Os }}_{{ .Arch }}_{{ .Version }}'
-  replacements:
-    darwin: macOS
-    386: i386
-    amd64: x86_64
-  homepage:  https://github.com/cybercongress
-  description: Distributed search engine
-  maintainer: Cyber Admin <cybercongress42@gmail.com>
-  license: MIT
-  vendor: cyber.Congress
-  formats:
-    - deb
-    - rpm
-  dependencies:
-    - git
-  recommends:
-    - rpm
-
-
-archive:
-  name_template: '{{ .Binary }}_{{ .Os }}_{{ .Arch }}_{{ .Version }}'
-  replacements:
-    darwin: MacOS
-    linux: Linux
-    windows: Windows
-    386: i386
-    amd64: x86_64
-  format: zip
-  format_overrides:
-    - goos: linux
-      format: tar.gz
-  wrap_in_directory: true
-  files:
-    - none*
+      - "^docs:"
+      - "^test:"

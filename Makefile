@@ -1,6 +1,5 @@
 #!/usr/bin/make -f
-CUDA_ENABLED ?= false
-LEDGER_ENABLED ?= true
+NODE ?= false
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 BFT_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::')
@@ -20,38 +19,31 @@ export GO111MODULE = on
 ###                              Build Flags/Tags                           ###
 ###############################################################################
 
-build_tags = netgo
-ifeq ($(LEDGER_ENABLED),true)
-  ifeq ($(OS),Windows_NT)
-    GCCEXE = $(shell where gcc.exe 2> NUL)
-    ifeq ($(GCCEXE),)
-      $(error gcc.exe not installed for ledger support, please install or set LEDGER_ENABLED=false)
-    else
-      build_tags += ledger
-    endif
-  else
-    UNAME_S = $(shell uname -s)
-    ifeq ($(UNAME_S),OpenBSD)
-      $(warning OpenBSD detected, disabling ledger support (https://github.com/cosmos/cosmos-sdk/issues/1988))
-    else
-      GCC = $(shell command -v gcc 2> /dev/null)
-      ifeq ($(GCC),)
-        $(error gcc not installed for ledger support, please install or set LEDGER_ENABLED=false)
-      else
-        build_tags += ledger
-      endif
-    endif
-  endif
-endif
+ifeq ($(NODE),true)
+  # cyber — full node binary (CGO + CUDA + Ledger)
+  BINARY_NAME := cyber
+  APP_NAME := cyber
+  CGO_FLAG := 1
+  build_tags = netgo ledger cuda
 
-ifeq ($(CUDA_ENABLED),true)
-    NVCC_RESULT := $(shell which nvcc 2> NULL)
-    NVCC_TEST := $(notdir $(NVCC_RESULT))
-    ifeq ($(NVCC_TEST),nvcc)
-        build_tags += cuda
-    else
-        $(error CUDA not installed for GPU support, please install or set CUDA_ENABLED=false)
-    endif
+  # Verify CUDA
+  NVCC_RESULT := $(shell which nvcc 2> /dev/null)
+  ifeq ($(NVCC_RESULT),)
+    $(error CUDA not installed — required for NODE=true)
+  endif
+
+  # Verify gcc
+  GCC_RESULT := $(shell command -v gcc 2> /dev/null)
+  ifeq ($(GCC_RESULT),)
+    $(error gcc not installed — required for NODE=true)
+  endif
+else
+  # cyb — CLI binary (CGO=0, static)
+  BINARY_NAME := cyb
+  APP_NAME := cyb
+  CGO_FLAG := 0
+  build_tags = netgo
+  EXTRA_LDFLAGS := -s -w
 endif
 
 build_tags += $(BUILD_TAGS)
@@ -63,11 +55,12 @@ comma := ,
 build_tags_comma_sep := $(subst $(empty),$(comma),$(build_tags))
 
 ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=cyber \
-		  -X github.com/cosmos/cosmos-sdk/version.AppName=cyber \
+		  -X github.com/cosmos/cosmos-sdk/version.AppName=$(APP_NAME) \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
-		  -X github.com/cometbft/cometbft/version.BFTVer=$(BFT_VERSION)
+		  -X github.com/cometbft/cometbft/version.BFTVer=$(BFT_VERSION) \
+		  $(EXTRA_LDFLAGS)
 
 ldflags += $(LDFLAGS)
 ldflags := $(strip $(ldflags))
@@ -83,10 +76,10 @@ all: build format lint test
 ###############################################################################
 
 build: go.sum
-	go build $(BUILD_FLAGS) -o $(BUILDDIR) ./cmd/cyber
+	CGO_ENABLED=$(CGO_FLAG) go build $(BUILD_FLAGS) -o $(BUILDDIR)$(BINARY_NAME) ./cmd/cyber
 
-install: go.sum
-	go install $(BUILD_FLAGS) ./cmd/cyber
+install: build
+	install -m 755 $(BUILDDIR)$(BINARY_NAME) $(BINDIR)/$(BINARY_NAME)
 
 .PHONY: build install
 
@@ -169,13 +162,3 @@ proto-lint:
 
 proto-check-breaking:
 	@$(DOCKER_BUF) breaking --against $(HTTPS_GIT)#branch=main
-
-###############################################################################
-###                                Docs                                     ###
-###############################################################################
-
-# TODO update statik and swagger flow
-#update-swagger-docs: statik proto-swagger-gen
-#	$(BINDIR)/statik -src=client/docs/swagger-ui -dest=client/docs -f -m
-#
-#.PHONY: update-swagger-docs
