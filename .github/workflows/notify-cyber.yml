@@ -1,0 +1,10 @@
+name: Notify cyber
+
+on:
+  push:
+    branches: [master, main]
+
+jobs:
+  notify:
+    uses: cyberia-to/cyber/.github/workflows/subgraph-notify.yml@master
+    secrets: inherit
