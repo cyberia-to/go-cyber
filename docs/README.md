@@ -24,7 +24,7 @@
 - cw-cyber
 
 ## parallel computation
-- relevance machine
+- convergence VM
 - semcon
 - linkchain
 - motif
