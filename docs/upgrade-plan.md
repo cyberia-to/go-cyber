@@ -52,7 +52,7 @@ These items can ship as point releases or soft-fork patches. No chain upgrade re
 | 0.8 | **Installer & Packaging** — `get.cyber.page` script, GoReleaser update, Homebrew formula | build/release infra | 0.3, 0.5 |
 | 0.9 | **Graph Inference: Embeddings + Retrieval** — cid2vec from topology (TransE/RotatE), HNSW index, Similar/Predict gRPC | `scripts/`, `x/inference` | 0.1 |
 | 0.10 | **Graph Inference: LLM Training + Native Inference** — resolve content via IPFS, fine-tune Llama 3B (LoRA), llama-server sidecar, Ask/AskStream gRPC, RAG pipeline | `scripts/`, `x/inference`, sidecar | 0.5, 0.9 |
-| 0.11 | **Query-time Negentropy** *(done)* — `J(π) = log₂(n) − H(π)` from rank distribution | `x/rank` gRPC | ✅ committed |
+| 0.11 | **Query-time Negentropy** *(done)* — `J(φ*) = log₂(n) − H(φ*)` from rank distribution | `x/rank` gRPC | ✅ committed |
 | 0.12 | **Dead Code Removal** *(done)* — karma/entropy/luminosity kernels removed | `x/rank/cuda/rank.cu` | ✅ committed |
 
 **Priority order:** 0.1 → 0.3 → 0.5 → 0.4 → 0.2 → 0.9 → 0.10 → 0.6 → 0.7 → 0.8
