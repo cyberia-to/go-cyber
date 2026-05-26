@@ -1,0 +1,11 @@
+runtime: typescript
+startCommand:
+  type: stdio
+  configSchema:
+    properties: {}
+    required: []
+  commandFunction: |
+    (config) => ({
+      command: 'npx',
+      args: ['-y', 'bostrom-mcp']
+    })

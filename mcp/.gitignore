@@ -1,0 +1,6 @@
+dist/
+node_modules/
+.env
+.smithery/
+.mcpregistry_*
+rust/target/

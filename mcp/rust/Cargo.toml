@@ -1,0 +1,31 @@
+[package]
+name = "bostrom-mcp"
+version = "0.8.3"
+edition = "2021"
+description = "85-tool MCP server for Bostrom blockchain: read chain state, sign transactions, mine Lithium proofs"
+license = "MIT"
+repository = "https://github.com/cyberia-to/bostrom-mcp"
+
+[dependencies]
+rmcp = { version = "=1.1.0", features = ["server", "transport-io"] }
+reqwest = { version = "0.12", features = ["json", "multipart"] }
+cosmos-sdk-proto = { version = "0.27", features = ["cosmwasm", "grpc-transport"] }
+bip32 = "0.5"
+bip39 = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+base64 = "0.22"
+prost = "0.13"
+tokio = { version = "1", features = ["full"] }
+anyhow = "1"
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+hex = "0.4"
+sha2 = "0.10"
+ripemd = "0.1"
+bech32 = "0.11"
+rand = "0.8"
+uhash-prover = { version = "0.5", default-features = false, features = ["cpu"] }
+uhash-core = "0.5"
+lithium-cli = { version = "0.1.4", default-features = false }
