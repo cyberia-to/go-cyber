@@ -1,104 +1,85 @@
-<!-- order: 4 -->
-
- # Messages
-
-Messages (Msg) are objects that trigger state transitions. Msgs are wrapped in transactions (Txs) that clients submit to the network. The Cosmos SDK wraps and unwraps liquidity module messages from transactions.
+# Messages
 
 ## MsgCreatePool
 
-A liquidity pool is created and initial coins are deposited with the `MsgCreatePool` message.
+Creates a liquidity pool and deposits initial coins.
 
 ```go
 type MsgCreatePool struct {
-    PoolCreatorAddress  string         // account address of the origin of this message
-    PoolTypeId          uint32         // id of the new liquidity pool
-    DepositCoins         sdk.Coins      // deposit initial coins for new liquidity pool
+    PoolCreatorAddress string    // creator address
+    PoolTypeId         uint32    // pool type (only 1 supported)
+    DepositCoins       sdk.Coins // initial reserve coins (exactly 2)
 }
 ```
 
-### Validity Checks
+Fails if:
 
-Validity checks are performed for MsgCreatePool messages. The transaction that is triggered with `MsgCreatePool` fails if:
-
-- if `params.CircuitBreakerEnabled` is true
-- `PoolCreator` address does not exist
+- `CircuitBreakerEnabled` is true
 - `PoolTypeId` does not exist in parameters
-- A duplicate `LiquidityPool` with same `PoolTypeId` and `ReserveCoinDenoms` exists
-- One or more coins in `ReserveCoinDenoms` do not exist in `bank` module
-- The balance of `PoolCreator` does not have enough amount of coins for `DepositCoins`
-- The balance of `PoolCreator` does not have enough coins for `PoolCreationFee`
+- Pool with same type and coin pair already exists
+- Creator balance insufficient for `DepositCoins` + `PoolCreationFee`
+- Deposit coins less than `MinInitDepositAmount`
 
 ## MsgDepositWithinBatch
 
-Coins are deposited in a batch to a liquidity pool with the `MsgDepositWithinBatch` message.
+Deposits coins to an existing pool. Coins are escrowed until batch execution.
 
 ```go
 type MsgDepositWithinBatch struct {
-    DepositorAddress    string         // account address of depositor that originated this message
-    PoolId              uint64         // id of the liquidity pool to receive deposit
-    DepositCoins         sdk.Coins      // deposit coins
+    DepositorAddress string    // depositor address
+    PoolId           uint64    // target pool
+    DepositCoins     sdk.Coins // coins to deposit (exactly 2)
 }
 ```
 
-## Validity Checks
+Fails if:
 
-The MsgDepositWithinBatch message performs validity checks. The transaction that is triggered with the `MsgDepositWithinBatch` message fails if:
-
-- if `params.CircuitBreakerEnabled` is true
-- `Depositor` address does not exist
+- `CircuitBreakerEnabled` is true
 - `PoolId` does not exist
-- The denoms of `DepositCoins` are not composed of existing `ReserveCoinDenoms` of the specified `LiquidityPool`
-- The balance of `Depositor` does not have enough coins for `DepositCoins`
+- `DepositCoins` denoms do not match pool reserve coin denoms
+- Depositor balance insufficient
 
 ## MsgWithdrawWithinBatch
 
-Withdraw coins in batch from liquidity pool with the `MsgWithdrawWithinBatch` message.
+Withdraws reserve coins from a pool by returning pool coins. Pool coins are escrowed until batch execution.
 
 ```go
 type MsgWithdrawWithinBatch struct {
-    WithdrawerAddress string         // account address of the origin of this message
-    PoolId            uint64         // id of the liquidity pool to withdraw the coins from
-    PoolCoin          sdk.Coin       // pool coin sent for reserve coin withdrawal
+    WithdrawerAddress string   // withdrawer address
+    PoolId            uint64   // target pool
+    PoolCoin          sdk.Coin // pool coins to return
 }
 ```
 
-## Validity Checks
+Fails if:
 
-The MsgWithdrawWithinBatch message performs validity checks. The transaction that is triggered with the `MsgWithdrawWithinBatch` message fails if:
-
-- `Withdrawer` address does not exist
 - `PoolId` does not exist
-- The denom of `PoolCoin` are not equal to the `PoolCoinDenom` of the `LiquidityPool`
-- The balance of `Depositor` does not have enough coins for `PoolCoin`
+- `PoolCoin` denom does not match pool coin denom
+- Withdrawer balance insufficient
 
 ## MsgSwapWithinBatch
 
-Swap coins between liquidity pools in batch with the `MsgSwapWithinBatch` message.
-
-Offer coins are swapped with demand coins for the given order price.
+Swaps offer coin for demand coin through a pool. Offer coin and fee are escrowed until batch execution.
 
 ```go
 type MsgSwapWithinBatch struct {
-    SwapRequesterAddress string     // account address of the origin of this message
-    PoolId               uint64     // id of the liquidity pool
-    SwapTypeId           uint32     // swap type id of this swap message, default 1: InstantSwap, requesting instant swap
-    OfferCoin            sdk.Coin   // offer coin of this swap
-    DemandCoinDenom      string     // denom of demand coin of this swap
-    OfferCoinFee         sdk.Coin   // offer coin fee for pay fees in half offer coin
-    OrderPrice           sdk.Dec    // limit order price where the price is the exchange ratio of X/Y where X is the amount of the first coin and Y is the amount of the second coin when their denoms are sorted alphabetically
+    SwapRequesterAddress string   // requester address
+    PoolId               uint64   // target pool
+    SwapTypeId           uint32   // only 1 (instant swap)
+    OfferCoin            sdk.Coin // coin offered
+    DemandCoinDenom      string   // denom wanted
+    OfferCoinFee         sdk.Coin // half of swap fee reserved upfront
+    OrderPrice           sdk.Dec  // limit price (X/Y, denoms sorted alphabetically)
 }
 ```
 
-## Validity checks
+Fails if:
 
-The MsgSwapWithinBatch message performs validity checks. The transaction that is triggered with the `MsgSwapWithinBatch` message fails if:
-
-- if `params.CircuitBreakerEnabled` is true
-- `SwapRequester` address does not exist
+- `CircuitBreakerEnabled` is true
 - `PoolId` does not exist
-- `SwapTypeId` does not exist
-- Denoms of `OfferCoin` or `DemandCoin` do not exist in `bank` module
-- The balance of `SwapRequester` does not have enough coins for `OfferCoin`
-- `OrderPrice` <= zero
-- `OfferCoinFee` equals `OfferCoin` * `params.SwapFeeRate` * `0.5` with ceiling
-- Has sufficient balance `OfferCoinFee` to reserve offer coin fee
+- `OfferCoin` or `DemandCoinDenom` not in pool reserves
+- `OrderPrice` <= 0
+- `OfferCoin` amount < 100 (minimum offer)
+- `OfferCoinFee` != ceil(`OfferCoin` * `SwapFeeRate` * 0.5)
+- Requester balance insufficient for `OfferCoin` + `OfferCoinFee`
+- `OfferCoin` amount exceeds `MaxOrderAmountRatio` of pool reserves

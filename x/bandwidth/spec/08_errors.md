@@ -1,8 +1,6 @@
 # Errors
 
-The bandwidth module may return the following errors:
-
-| Type                         | Code  | Description                    |
-| ---------------------------- | ------| ------------------------------ |
-| ErrNotEnoughBandwidth        | 2     | not enough personal bandwidth  |
-| ErrExceededMaxBlockBandwidth | 3     | exceeded max block bandwidth   |
+| Codespace | Code | Description |
+| --- | --- | --- |
+| bandwidth | 2 | Not enough personal bandwidth |
+| bandwidth | 3 | Exceeded max block bandwidth |

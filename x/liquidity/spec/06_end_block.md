@@ -1,32 +1,19 @@
-<!-- order: 6 -->
-
- # Before-End-Block
-
-These operations occur before the end-block operations for the liquidity module.
-
-## Append messages to LiquidityPoolBatch
-
-After successful message verification and coin `escrow` process, the incoming `MsgDepositWithinBatch`, `MsgWithdrawWithinBatch`, and `MsgSwapWithinBatch` messages are appended to the current `PoolBatch` of the corresponding `Pool`.
-
 # End-Block
 
-End-block operations for the Liquidity Module.
+## Append messages to batch
 
-## Execute LiquidityPoolBatch upon execution heights
+After message validation and coin escrow, incoming `MsgDepositWithinBatch`, `MsgWithdrawWithinBatch`, and `MsgSwapWithinBatch` messages appended to the current `PoolBatch`.
 
-If there are `{*action}MsgState` messages that have not yet executed in the `PoolBatch` for each `Pool`, the `PoolBatch` is executed. This batch contains one or more `DepositLiquidityPool`, `WithdrawLiquidityPool`, and `SwapExecution` processes.
+## Execute batch
 
-### Transact and refund for each message
+When `BlockHeight % UnitBatchHeight == 0` the batch executes for each pool. Execution order:
 
-A liquidity module escrow account holds coins temporarily and releases them when state changes. Refunds from the escrow account are made for cancellations, partial cancellations, expiration, and failed messages.
+1. Swaps — orderbook built, uniform swap price found, matched coins exchanged, fees collected.
+2. Deposits — escrowed coins sent to reserve, pool coins minted.
+3. Withdrawals — pool coins burned, reserve coins sent to withdrawer.
 
-### Set states for each message according to the results
+Each message result is recorded in the corresponding `MsgState`. Successfully processed and failed messages are marked `ToBeDeleted = true` (deleted in the next BeginBlock). Partially filled swap orders remain in the batch for the next cycle.
 
-After transact and refund transactions occur for each message, update the state of each `{*action}MsgState` message according to the results.
+## Refunds
 
-Even if the message is completed or expired:
-
-1. Set the `ToBeDeleted` state value as true instead of deleting the message directly from the `end-block`
-2. Delete the messages that have `ToBeDeleted` state from the begin-block in the next block so that each message with result state in the block can be stored to kvstore.
-
-This process allows searching for the past messages that have this result state. Searching is supported when the kvstore is not pruning.
+Escrowed coins refunded for failed messages and cancelled orders. Refunds use `SendCoinsFromModuleToAccount` (escrow → sender).

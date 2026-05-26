@@ -1,18 +1,19 @@
-<!-- order: 5 -->
+# Begin-Block
 
- # Begin-Block
+## Delete completed batch messages
 
-Begin block operations for the liquidity module reinitialize batch messages that were not executed in the previous batch and delete batch messages that were executed or ready to be deleted.
+`{Deposit,Withdraw,Swap}MsgState` records with `ToBeDeleted = true` removed from the store. Records are kept for one block after execution so they remain queryable in the block where they were processed.
 
-## Delete pool batch messages and reset states for pool batch messages
+## Reset unexecuted batch messages
 
-- Delete `{*action}MsgState` messages that have `ToBeDeleted` state
-- Reset states for the remaining `{*action}MsgState` messages to execute on `end-block` of the next batch index
+Remaining `{Deposit,Withdraw,Swap}MsgState` records have `Executed` and `Succeeded` flags reset to `false` for the next batch cycle.
 
-## Reinitialize executed pool batch to next liquidity pool batch
+Expired swap orders (`OrderExpiryHeight` <= current height) marked `ToBeDeleted = true`, escrowed coins refunded.
 
-Reinitialize the executed `PoolBatch` for the next batch. The reinitialization process includes the following actions:
+## Reinitialize pool batch
 
-- Increase state `BatchIndex` of the batch
-- Reset state `BeginHeight` as current block height
-- Reset state `Executed` as `false`
+Executed `PoolBatch` records reinitialized for the next batch:
+
+- `Index` incremented
+- `BeginHeight` set to current block height
+- `Executed` set to `false`
