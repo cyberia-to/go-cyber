@@ -1,0 +1,47 @@
+chain:
+    bech32_prefix: bostrom
+    modules:
+        - modules
+        - messages
+        - auth
+        - consensus
+        - daily refetch
+        - message_type
+        - bank
+        - graph
+        - grid
+        - resources
+        - wasm
+node:
+    type: remote
+    config:
+        rpc:
+            client_name: "cyberindex"
+            max_connections: 10
+            address: "http://localhost:26657"
+        grpc:
+            address: "http://localhost:9090"
+            insecure: true
+parsing:
+    workers: 1
+    start_height: 0
+    average_block_time: 5s
+    listen_new_blocks: true
+    parse_old_blocks: true
+    parse_genesis: true
+database:
+    url: postgresql://user:password@localhost:5432/database-name?sslmode=disable&search_path=public
+    max_open_connections: 1
+    max_idle_connections: 1
+    partition_size: 100000
+    partition_batch: 1000
+    ssl_mode_enable: "false"
+    ssl_root_cert: ""
+    ssl_cert: ""
+    ssl_key: ""
+logging:
+    level: debug
+    format: text
+actions:
+    host: 127.0.0.1
+    port: 3000

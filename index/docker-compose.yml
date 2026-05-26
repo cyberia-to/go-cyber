@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+    postgres:
+        image: postgres:latest
+        shm_size: 1g
+        restart: always
+        container_name: cyberindex_postgres
+        volumes:
+            - $HOME/.cyberindex/postgres:/var/lib/postgresql/data
+            - ./database/schema/:/docker-entrypoint-initdb.d/
+        environment:
+            - POSTGRES_DB=${POSTGRES_DB}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        networks:
+            - cyberindex-net
+        ports:
+            - 127.0.0.1:${POSTGRES_PORT}:5432
+    hasura:
+        image: hasura/graphql-engine:latest
+        restart: always
+        container_name: cyberindex_hasura
+        depends_on:
+            - "postgres"
+        environment:
+            HASURA_GRAPHQL_DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@172.28.1.2:${POSTGRES_PORT}/${POSTGRES_DB}
+            HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+            HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+            HASURA_GRAPHQL_ADMIN_SECRET: $HASURA_ADMIN_SECRET
+            HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
+        networks:
+            - cyberindex-net
+        ports:
+            - 127.0.0.1:${HASURA_PORT}:8080
+    cyberindex:
+        image: cyberd/cyberindex:v2.0.0
+        restart: always
+        shm_size: 1g
+        container_name: cyberindex
+        volumes:
+            - $HOME/.cyberindex/:/root/.cyberindex
+            - .env:/.env
+        networks:
+            - cyberindex-net
+        depends_on:
+            - "postgres"
+networks:
+  cyberindex-net:
+    driver: bridge
+    ipam:
+        driver: default
+        config:
+            - subnet: 172.28.1.0/24
