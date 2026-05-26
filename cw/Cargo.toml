@@ -1,0 +1,52 @@
+# ---
+# tags: cw-cyber, config
+# crystal-type: source
+# crystal-domain: cyber
+# ---
+[workspace]
+members = ["packages/*", "contracts/*", "tests/litium-tests"]
+exclude = [
+  "contracts/cw1-subkeys",
+  "contracts/cw3-fixed-multisig",
+  "contracts/cw3-flex-multisig",
+  "contracts/farm-20-20",
+  "contracts/farm-20-nv",
+  "contracts/farm-nv-20",
+  "contracts/farm-nv-nv",
+]
+resolver = "2"
+
+[workspace.dependencies]
+cosmwasm-std = { version = "1.5.8" }
+cosmwasm-schema = "1.5.8"
+cw-storage-plus = "1.2.0"
+cw2 = "1.1.2"
+cw-utils = "1.0.3"
+cw-multi-test = "1.2.0"
+cw20 = "1.1.2"
+cw20-base = { version = "1.1.2", features = ["library"] }
+schemars = "0.8.21"
+serde = { version = "1.0.214", default-features = false, features = ["derive"] }
+thiserror = "1.0.68"
+cid = "0.8.6"
+semver = "1"
+anyhow = "1"
+hex = "0.4"
+log = "0.4.20"
+sha2 = { version = "0.9.5", default-features = false }
+cw721 = "0.18.0"
+cw721-base = { version = "0.18.0", features = ["library"] }
+cyber-std = { version = "0.3.1", path = "packages/cyber-std" }
+cyber-std-test = { path = "packages/cyber-std-test" }
+hub-base = { path = "packages/hub-base" }
+uhash-core = { git = "https://github.com/cyberia-to/uhash.git", tag = "v0.5.1", default-features = false }
+
+[profile.release]
+rpath = false
+lto = true
+overflow-checks = true
+opt-level = 3
+debug = false
+debug-assertions = false
+codegen-units = 1
+incremental = false

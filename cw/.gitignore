@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+
+# Text file backups
+**/*.rs.bk
+
+# Build results
+target/
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# Auto-gen
+.cargo-ok
+
+artifacts/
+*.wasm
+packages/*/schema
+
+# Temp build helpers
+.uhash-vendor/
+.cargo/config.toml
+Cargo.toml.bak

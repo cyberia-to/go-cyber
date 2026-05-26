@@ -1,0 +1,48 @@
+# ---
+# tags: cw-cyber, config
+# crystal-type: source
+# crystal-domain: cyber
+# ---
+name: Lithium Schema Check
+
+on:
+  pull_request:
+    paths:
+      - "contracts/litium-core/**"
+      - "contracts/litium-stake/**"
+      - "contracts/litium-wrap/**"
+      - "contracts/litium-refer/**"
+      - "contracts/litium-mine/**"
+      - "scripts/generate-lithium-schema.sh"
+      - "scripts/check-lithium-schema.sh"
+      - "Cargo.toml"
+      - "Cargo.lock"
+  push:
+    branches:
+      - main
+    paths:
+      - "contracts/litium-core/**"
+      - "contracts/litium-stake/**"
+      - "contracts/litium-wrap/**"
+      - "contracts/litium-refer/**"
+      - "contracts/litium-mine/**"
+      - "scripts/generate-lithium-schema.sh"
+      - "scripts/check-lithium-schema.sh"
+      - "Cargo.toml"
+      - "Cargo.lock"
+
+jobs:
+  schema-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Verify Lithium schema is up to date
+        run: bash ./scripts/check-lithium-schema.sh

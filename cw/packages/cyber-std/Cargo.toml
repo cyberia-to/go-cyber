@@ -1,0 +1,26 @@
+# ---
+# tags: cw-cyber, config
+# crystal-type: source
+# crystal-domain: cyber
+# ---
+[package]
+name = "cyber-std"
+version = "0.3.1"
+authors = ["CyberHead"]
+edition = "2021"
+description = "Bindings for CustomMsg and CustomQuery for the Cyber"
+repository = "https://github.com/cyberia-to/cw-cyber"
+homepage = "https://github.com/cybercongress/go-cyber"
+license = "Unlicense"
+readme = "README.md"
+
+
+[dependencies]
+cosmwasm-std = { workspace = true, features = ["iterator", "staking"] }
+cid = { workspace = true }
+cw-storage-plus = { workspace = true }
+cosmwasm-schema = { workspace = true }
+cw-utils = { workspace = true }
+thiserror = { workspace = true }
+serde-json-wasm = "1.0.1"
+prost = "0.12.6"

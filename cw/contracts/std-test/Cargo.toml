@@ -1,0 +1,32 @@
+# ---
+# tags: cw-cyber, config
+# crystal-type: source
+# crystal-domain: cyber
+# ---
+[package]
+name = "std-test"
+version = "0.3.0"
+authors = ["CyberHead"]
+edition = "2021"
+description = "simple reflect and test contract for cyber-std bindings"
+repository = "https://github.com/cyberia-to/cw-cyber"
+homepage = "https://cyb.ai"
+license = "Unlicense"
+readme = "README.md"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+backtraces = ["cosmwasm-std/backtraces"]
+# use library feature to disable all instantiate/execute/query exports
+library = []
+
+[dependencies]
+cyber-std = { workspace = true }
+cosmwasm-std = { workspace = true, features = ["iterator", "staking"] }
+cw-storage-plus = { workspace = true }
+schemars = { workspace = true }
+thiserror = { workspace = true }
+serde = { workspace = true }
+cosmwasm-schema = { workspace = true }

@@ -1,0 +1,25 @@
+# ---
+# tags: cw-cyber, config
+# crystal-type: source
+# crystal-domain: cyber
+# ---
+[package]
+name = "litium-tests"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dev-dependencies]
+litium-core = { path = "../../contracts/litium-core" }
+litium-mine = { path = "../../contracts/litium-mine" }
+litium-stake = { path = "../../contracts/litium-stake" }
+litium-refer = { path = "../../contracts/litium-refer" }
+litium-wrap = { path = "../../contracts/litium-wrap" }
+cosmwasm-std = { workspace = true }
+cw20 = { workspace = true }
+cw20-base = { workspace = true, features = ["library"] }
+cw-multi-test = { workspace = true }
+cyber-std = { workspace = true }
+cyber-std-test = { workspace = true }
+hex = { workspace = true }
+anyhow = { workspace = true }

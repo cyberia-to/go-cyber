@@ -1,0 +1,25 @@
+# ---
+# tags: cw-cyber, config
+# crystal-type: source
+# crystal-domain: cyber
+# ---
+[package]
+name = "cyber-std-test"
+version = "0.3.0"
+authors = ["CyberHead"]
+edition = "2021"
+description = "Multitest (and other test helpers) support for Cyber Progs"
+repository = "https://github.com/cyberia-to/cw-cyber"
+homepage = "https://github.com/cybercongress/go-cyber"
+license = "Unlicense"
+readme = "README.md"
+
+[dependencies]
+cyber-std = { workspace = true }
+cosmwasm-std = { workspace = true }
+schemars = { workspace = true }
+serde = { workspace = true }
+cw-multi-test = { workspace = true }
+cw-storage-plus = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }

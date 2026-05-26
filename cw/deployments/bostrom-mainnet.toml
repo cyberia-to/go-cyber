@@ -1,0 +1,189 @@
+# ---
+# tags: cw-cyber, config
+# crystal-type: source
+# crystal-domain: cyber
+# ---
+# Bostrom Mainnet Deployments
+# Update this file after every deployment and commit to the repo.
+# Use `diff artifacts/*.wasm` to detect which contracts need redeployment.
+
+[cybernet]
+# code_id = 0
+# address = ""
+# admin = ""
+# commit = ""
+# deployed_at = ""
+# checksum = ""
+
+[cw-cyber-gift]
+# code_id = 0
+# address = ""
+# admin = ""
+# commit = ""
+# deployed_at = ""
+# checksum = ""
+
+[cw-cyber-passport]
+code_id = 4
+address = "bostrom1xut80d09q0tgtch8p0z4k5f88d3uvt8cvtzm5h3tu3tsy4jk9xlsfzhxel"
+admin = "bostrom1xszmhkfjs3s00z2nvtn7evqxw3dtus6yr8e4pw"
+creator = "bostrom1gxhs5wzam5rlgf6cs0lkme400ut64d4ncpfs2h"
+label = "moon-passport"
+version = "1.0.0"
+# commit = ""  # deployed before this repo tracked commits
+# checksum = ""
+passports_created = 47837  # as of 2026-03-20
+
+[cw-cyber-subgraph.name]
+code_id = 3
+address = "bostrom1jkte0pytr85qg0whmgux3vmz9ehmh82w40h8gaqeg435fnkyfxqq9qaku3"
+admin = "bostrom1xszmhkfjs3s00z2nvtn7evqxw3dtus6yr8e4pw"
+creator = "bostrom1gxhs5wzam5rlgf6cs0lkme400ut64d4ncpfs2h"
+label = "name-subgraph"
+
+[cw-cyber-subgraph.avatar]
+code_id = 3
+address = "bostrom10fqy0npt7djm8lg847v9rqlng88kqfdvl8tyt4ge204wf52sy68qlq7nz2"
+admin = "bostrom1xszmhkfjs3s00z2nvtn7evqxw3dtus6yr8e4pw"
+creator = "bostrom1gxhs5wzam5rlgf6cs0lkme400ut64d4ncpfs2h"
+label = "avatar-subgraph"
+
+[cw-cyber-subgraph.proof]
+code_id = 3
+address = "bostrom16y344e8ryydmeu2g8yyfznq79j7jfnar4p59ngpvaazcj83jzsmsts7qxt"
+admin = "bostrom1xszmhkfjs3s00z2nvtn7evqxw3dtus6yr8e4pw"
+creator = "bostrom1gxhs5wzam5rlgf6cs0lkme400ut64d4ncpfs2h"
+label = "proof-subgraph"
+
+[hub-channels]
+# code_id = 0
+# address = ""
+# admin = ""
+# commit = ""
+# deployed_at = ""
+# checksum = ""
+
+[hub-networks]
+# code_id = 0
+# address = ""
+# admin = ""
+# commit = ""
+# deployed_at = ""
+# checksum = ""
+
+[hub-protocols]
+# code_id = 0
+# address = ""
+# admin = ""
+# commit = ""
+# deployed_at = ""
+# checksum = ""
+
+[hub-tokens]
+# code_id = 0
+# address = ""
+# admin = ""
+# commit = ""
+# deployed_at = ""
+# checksum = ""
+
+[hub-libs]
+# code_id = 0
+# address = ""
+# admin = ""
+# commit = ""
+# deployed_at = ""
+# checksum = ""
+
+[hub-skills]
+# code_id = 0
+# address = ""
+# admin = ""
+# commit = ""
+# deployed_at = ""
+# checksum = ""
+
+[graph-filter]
+# code_id = 0
+# address = ""
+# admin = ""
+# commit = ""
+# deployed_at = ""
+# checksum = ""
+
+[farm-20-20]
+# code_id = 0
+# address = ""
+# admin = ""
+# commit = ""
+# deployed_at = ""
+# checksum = ""
+
+[farm-20-nv]
+# code_id = 0
+# address = ""
+# admin = ""
+# commit = ""
+# deployed_at = ""
+# checksum = ""
+
+[farm-nv-20]
+# code_id = 0
+# address = ""
+# admin = ""
+# commit = ""
+# deployed_at = ""
+# checksum = ""
+
+[farm-nv-nv]
+# code_id = 0
+# address = ""
+# admin = ""
+# commit = ""
+# deployed_at = ""
+# checksum = ""
+
+[litium-core]
+code_id = 105
+address = "bostrom1y9dqawhtk0m3sgglh2jgeu9y5zq5vmh5udmnw2unsm6j0j2nrskqe00ulm"
+admin = "bostrom1yx7gfnahjz55hm80ux3395ysyxngu0mcavkjs2"
+commit = "13b54cf"
+deployed_at = "2026-03-12"
+checksum = "d65f979a5a8a2ded0b7dbee406df2add2c859b372fda11b7e5b08eda1cf70cf4"
+version = "0.2.1"
+
+[litium-mine]
+code_id = 110
+address = "bostrom123wr6faa62xxrft6t5wmpqmh9g0chvu7ddedggx0lkecmgef7thsls9my2"
+admin = "bostrom1yx7gfnahjz55hm80ux3395ysyxngu0mcavkjs2"
+commit = "ecb5561"
+deployed_at = "2026-03-13"
+checksum = "b59cb0a9ff66f205acc55540d8408327cc1b8d2e24e4e2b927778fc68d6dea91"
+version = "0.6.0"
+
+[litium-stake]
+code_id = 111
+address = "bostrom1yagpj5dmr9fxj7qs08kdz2cpptf9va7jqwgx5257qjul2z6yq46sslqruy"
+admin = "bostrom1yx7gfnahjz55hm80ux3395ysyxngu0mcavkjs2"
+commit = "1fedd1e"
+deployed_at = "2026-03-17"
+checksum = "4a3e423dfe69a3474ee033cb710da6c9fad3a4d189689a60853948ba30b2c8a4"
+version = "0.1.2"
+
+[litium-refer]
+code_id = 112
+address = "bostrom1yvf9a2w6ydr79c4ufaj6wmk6sdw6xmct6ztn600chadjzek8639s34qxft"
+admin = "bostrom1yx7gfnahjz55hm80ux3395ysyxngu0mcavkjs2"
+commit = "1fedd1e"
+deployed_at = "2026-03-17"
+checksum = "769c65f95757f075e03568c1958319f59dccac4db9002f82776896ea12f5dc42"
+version = "0.1.2"
+
+[litium-wrap]
+code_id = 93
+address = "bostrom1r5e285vff6mdyzhnh2aprcf3k9dujtjk5qqg30mqpd09cqde7tds3ue902"
+admin = "bostrom1yx7gfnahjz55hm80ux3395ysyxngu0mcavkjs2"
+commit = "7e019d6"
+deployed_at = "2026-03-04"
+checksum = "4983df07532128ae7a0ffacc2ce726d9831831d82b44a480ec633e50b04bcd04"
+native_denom = "factory/bostrom1r5e285vff6mdyzhnh2aprcf3k9dujtjk5qqg30mqpd09cqde7tds3ue902/li"
