@@ -1,0 +1,25 @@
+syntax = "proto3";
+package cyber.rank.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/cybercongress/go-cyber/x/rank/types";
+
+message Params {
+  int64 calculation_period = 1;
+
+  string damping_factor = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+
+  string tolerance = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message RankedParticle {
+  string particle = 1;
+  uint64 rank = 2;
+}

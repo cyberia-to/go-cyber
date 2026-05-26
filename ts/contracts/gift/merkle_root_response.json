@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MerkleRootResponse",
+  "type": "object",
+  "required": [
+    "merkle_root"
+  ],
+  "properties": {
+    "merkle_root": {
+      "description": "MerkleRoot is hex-encoded merkle root.",
+      "type": "string"
+    }
+  }
+}

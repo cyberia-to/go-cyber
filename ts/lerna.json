@@ -1,0 +1,24 @@
+{
+  "lerna": "6",
+  "conventionalCommits": true,
+  "npmClient": "yarn",
+  "npmClientArgs": [
+    "--no-lockfile"
+  ],
+  "packages": [
+    "packages/*"
+  ],
+  "version": "independent",
+  "registry": "https://registry.npmjs.org",
+  "command": {
+    "create": {
+      "homepage": "https://github.com/cybercongress/cyber-ts",
+      "license": "MIT",
+      "access": "restricted"
+    },
+    "publish": {
+      "allowBranch": "main",
+      "message": "chore(release): publish"
+    }
+  }
+}

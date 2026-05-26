@@ -1,0 +1,1651 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ExecuteMsg",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": [
+        "execute"
+      ],
+      "properties": {
+        "execute": {
+          "type": "object",
+          "required": [
+            "msgs"
+          ],
+          "properties": {
+            "msgs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CosmosMsg_for_CyberMsgWrapper"
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "create_passport"
+      ],
+      "properties": {
+        "create_passport": {
+          "type": "object",
+          "required": [
+            "avatar",
+            "nickname",
+            "signature"
+          ],
+          "properties": {
+            "avatar": {
+              "type": "string"
+            },
+            "nickname": {
+              "type": "string"
+            },
+            "signature": {
+              "$ref": "#/definitions/Binary"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "update_name"
+      ],
+      "properties": {
+        "update_name": {
+          "type": "object",
+          "required": [
+            "new_nickname",
+            "old_nickname"
+          ],
+          "properties": {
+            "new_nickname": {
+              "type": "string"
+            },
+            "old_nickname": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "update_avatar"
+      ],
+      "properties": {
+        "update_avatar": {
+          "type": "object",
+          "required": [
+            "new_avatar",
+            "nickname"
+          ],
+          "properties": {
+            "new_avatar": {
+              "type": "string"
+            },
+            "nickname": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "update_data"
+      ],
+      "properties": {
+        "update_data": {
+          "type": "object",
+          "required": [
+            "nickname"
+          ],
+          "properties": {
+            "data": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "nickname": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "update_particle"
+      ],
+      "properties": {
+        "update_particle": {
+          "type": "object",
+          "required": [
+            "nickname"
+          ],
+          "properties": {
+            "nickname": {
+              "type": "string"
+            },
+            "particle": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "proof_address"
+      ],
+      "properties": {
+        "proof_address": {
+          "type": "object",
+          "required": [
+            "address",
+            "nickname",
+            "signature"
+          ],
+          "properties": {
+            "address": {
+              "type": "string"
+            },
+            "nickname": {
+              "type": "string"
+            },
+            "signature": {
+              "$ref": "#/definitions/Binary"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "remove_address"
+      ],
+      "properties": {
+        "remove_address": {
+          "type": "object",
+          "required": [
+            "address",
+            "nickname"
+          ],
+          "properties": {
+            "address": {
+              "type": "string"
+            },
+            "nickname": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "set_owner"
+      ],
+      "properties": {
+        "set_owner": {
+          "type": "object",
+          "required": [
+            "owner"
+          ],
+          "properties": {
+            "owner": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "set_active"
+      ],
+      "properties": {
+        "set_active": {
+          "type": "object",
+          "required": [
+            "token_id"
+          ],
+          "properties": {
+            "token_id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "set_subgraphs"
+      ],
+      "properties": {
+        "set_subgraphs": {
+          "type": "object",
+          "required": [
+            "avatar_subgraph",
+            "name_subgraph",
+            "proof_subgraph"
+          ],
+          "properties": {
+            "avatar_subgraph": {
+              "type": "string"
+            },
+            "name_subgraph": {
+              "type": "string"
+            },
+            "proof_subgraph": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": [
+        "set_address_label"
+      ],
+      "properties": {
+        "set_address_label": {
+          "type": "object",
+          "required": [
+            "address",
+            "nickname"
+          ],
+          "properties": {
+            "address": {
+              "type": "string"
+            },
+            "label": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "nickname": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Transfer is a base message to move a token to another account without triggering actions",
+      "type": "object",
+      "required": [
+        "transfer_nft"
+      ],
+      "properties": {
+        "transfer_nft": {
+          "type": "object",
+          "required": [
+            "recipient",
+            "token_id"
+          ],
+          "properties": {
+            "recipient": {
+              "type": "string"
+            },
+            "token_id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Send is a base message to transfer a token to a contract and trigger an action on the receiving contract.",
+      "type": "object",
+      "required": [
+        "send_nft"
+      ],
+      "properties": {
+        "send_nft": {
+          "type": "object",
+          "required": [
+            "contract",
+            "msg",
+            "token_id"
+          ],
+          "properties": {
+            "contract": {
+              "type": "string"
+            },
+            "msg": {
+              "$ref": "#/definitions/Binary"
+            },
+            "token_id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Mint a new NFT, can only be called by the contract minter",
+      "type": "object",
+      "required": [
+        "mint"
+      ],
+      "properties": {
+        "mint": {
+          "$ref": "#/definitions/MintMsg_for_PassportMetadata"
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Burn an NFT the sender has access to",
+      "type": "object",
+      "required": [
+        "burn"
+      ],
+      "properties": {
+        "burn": {
+          "type": "object",
+          "required": [
+            "token_id"
+          ],
+          "properties": {
+            "token_id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Allows operator to transfer / send the token from the owner's account. If expiration is set, then this allowance has a time/height limit",
+      "type": "object",
+      "required": [
+        "approve"
+      ],
+      "properties": {
+        "approve": {
+          "type": "object",
+          "required": [
+            "spender",
+            "token_id"
+          ],
+          "properties": {
+            "expires": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Expiration"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "spender": {
+              "type": "string"
+            },
+            "token_id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Remove previously granted Approval",
+      "type": "object",
+      "required": [
+        "revoke"
+      ],
+      "properties": {
+        "revoke": {
+          "type": "object",
+          "required": [
+            "spender",
+            "token_id"
+          ],
+          "properties": {
+            "spender": {
+              "type": "string"
+            },
+            "token_id": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Allows operator to transfer / send any token from the owner's account. If expiration is set, then this allowance has a time/height limit",
+      "type": "object",
+      "required": [
+        "approve_all"
+      ],
+      "properties": {
+        "approve_all": {
+          "type": "object",
+          "required": [
+            "operator"
+          ],
+          "properties": {
+            "expires": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Expiration"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "operator": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "description": "Remove previously granted ApproveAll permission",
+      "type": "object",
+      "required": [
+        "revoke_all"
+      ],
+      "properties": {
+        "revoke_all": {
+          "type": "object",
+          "required": [
+            "operator"
+          ],
+          "properties": {
+            "operator": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  ],
+  "definitions": {
+    "BankMsg": {
+      "description": "The message types of the bank module.\n\nSee https://github.com/cosmos/cosmos-sdk/blob/v0.40.0/proto/cosmos/bank/v1beta1/tx.proto",
+      "oneOf": [
+        {
+          "description": "Sends native tokens from the contract to the given address.\n\nThis is translated to a [MsgSend](https://github.com/cosmos/cosmos-sdk/blob/v0.40.0/proto/cosmos/bank/v1beta1/tx.proto#L19-L28). `from_address` is automatically filled with the current contract's address.",
+          "type": "object",
+          "required": [
+            "send"
+          ],
+          "properties": {
+            "send": {
+              "type": "object",
+              "required": [
+                "amount",
+                "to_address"
+              ],
+              "properties": {
+                "amount": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Coin"
+                  }
+                },
+                "to_address": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "This will burn the given coins from the contract's account. There is no Cosmos SDK message that performs this, but it can be done by calling the bank keeper. Important if a contract controls significant token supply that must be retired.",
+          "type": "object",
+          "required": [
+            "burn"
+          ],
+          "properties": {
+            "burn": {
+              "type": "object",
+              "required": [
+                "amount"
+              ],
+              "properties": {
+                "amount": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Coin"
+                  }
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Binary": {
+      "description": "Binary is a wrapper around Vec<u8> to add base64 de/serialization with serde. It also adds some helper methods to help encode inline.\n\nThis is only needed as serde-json-{core,wasm} has a horrible encoding for Vec<u8>. See also <https://github.com/CosmWasm/cosmwasm/blob/main/docs/MESSAGE_TYPES.md>.",
+      "type": "string"
+    },
+    "Coin": {
+      "type": "object",
+      "required": [
+        "amount",
+        "denom"
+      ],
+      "properties": {
+        "amount": {
+          "$ref": "#/definitions/Uint128"
+        },
+        "denom": {
+          "type": "string"
+        }
+      }
+    },
+    "CosmosMsg_for_CyberMsgWrapper": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "bank"
+          ],
+          "properties": {
+            "bank": {
+              "$ref": "#/definitions/BankMsg"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "custom"
+          ],
+          "properties": {
+            "custom": {
+              "$ref": "#/definitions/CyberMsgWrapper"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "staking"
+          ],
+          "properties": {
+            "staking": {
+              "$ref": "#/definitions/StakingMsg"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "distribution"
+          ],
+          "properties": {
+            "distribution": {
+              "$ref": "#/definitions/DistributionMsg"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "wasm"
+          ],
+          "properties": {
+            "wasm": {
+              "$ref": "#/definitions/WasmMsg"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "CyberMsg": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "cyberlink"
+          ],
+          "properties": {
+            "cyberlink": {
+              "type": "object",
+              "required": [
+                "links",
+                "neuron"
+              ],
+              "properties": {
+                "links": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Link"
+                  }
+                },
+                "neuron": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "investmint"
+          ],
+          "properties": {
+            "investmint": {
+              "type": "object",
+              "required": [
+                "amount",
+                "length",
+                "neuron",
+                "resource"
+              ],
+              "properties": {
+                "amount": {
+                  "$ref": "#/definitions/Coin"
+                },
+                "length": {
+                  "type": "integer",
+                  "format": "uint64",
+                  "minimum": 0.0
+                },
+                "neuron": {
+                  "type": "string"
+                },
+                "resource": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "create_energy_route"
+          ],
+          "properties": {
+            "create_energy_route": {
+              "type": "object",
+              "required": [
+                "destination",
+                "name",
+                "source"
+              ],
+              "properties": {
+                "destination": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "edit_energy_route"
+          ],
+          "properties": {
+            "edit_energy_route": {
+              "type": "object",
+              "required": [
+                "destination",
+                "source",
+                "value"
+              ],
+              "properties": {
+                "destination": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "value": {
+                  "$ref": "#/definitions/Coin"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "edit_energy_route_name"
+          ],
+          "properties": {
+            "edit_energy_route_name": {
+              "type": "object",
+              "required": [
+                "destination",
+                "name",
+                "source"
+              ],
+              "properties": {
+                "destination": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "delete_energy_route"
+          ],
+          "properties": {
+            "delete_energy_route": {
+              "type": "object",
+              "required": [
+                "destination",
+                "source"
+              ],
+              "properties": {
+                "destination": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "create_thought"
+          ],
+          "properties": {
+            "create_thought": {
+              "type": "object",
+              "required": [
+                "load",
+                "name",
+                "particle",
+                "program",
+                "trigger"
+              ],
+              "properties": {
+                "load": {
+                  "$ref": "#/definitions/Load"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "particle": {
+                  "type": "string"
+                },
+                "program": {
+                  "type": "string"
+                },
+                "trigger": {
+                  "$ref": "#/definitions/Trigger"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "forget_thought"
+          ],
+          "properties": {
+            "forget_thought": {
+              "type": "object",
+              "required": [
+                "name",
+                "program"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "program": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "change_thought_input"
+          ],
+          "properties": {
+            "change_thought_input": {
+              "type": "object",
+              "required": [
+                "input",
+                "name",
+                "program"
+              ],
+              "properties": {
+                "input": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "program": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "change_thought_period"
+          ],
+          "properties": {
+            "change_thought_period": {
+              "type": "object",
+              "required": [
+                "name",
+                "period",
+                "program"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "period": {
+                  "type": "integer",
+                  "format": "uint64",
+                  "minimum": 0.0
+                },
+                "program": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "change_thought_block"
+          ],
+          "properties": {
+            "change_thought_block": {
+              "type": "object",
+              "required": [
+                "block",
+                "name",
+                "program"
+              ],
+              "properties": {
+                "block": {
+                  "type": "integer",
+                  "format": "uint64",
+                  "minimum": 0.0
+                },
+                "name": {
+                  "type": "string"
+                },
+                "program": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "create_pool"
+          ],
+          "properties": {
+            "create_pool": {
+              "type": "object",
+              "required": [
+                "deposit_coins",
+                "pool_creator_address",
+                "pool_type_id"
+              ],
+              "properties": {
+                "deposit_coins": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Coin"
+                  }
+                },
+                "pool_creator_address": {
+                  "type": "string"
+                },
+                "pool_type_id": {
+                  "type": "integer",
+                  "format": "uint32",
+                  "minimum": 0.0
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "deposit_within_batch"
+          ],
+          "properties": {
+            "deposit_within_batch": {
+              "type": "object",
+              "required": [
+                "deposit_coins",
+                "depositor_address",
+                "pool_id"
+              ],
+              "properties": {
+                "deposit_coins": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Coin"
+                  }
+                },
+                "depositor_address": {
+                  "type": "string"
+                },
+                "pool_id": {
+                  "type": "integer",
+                  "format": "uint64",
+                  "minimum": 0.0
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "withdraw_within_batch"
+          ],
+          "properties": {
+            "withdraw_within_batch": {
+              "type": "object",
+              "required": [
+                "pool_coin",
+                "pool_id",
+                "withdrawer_address"
+              ],
+              "properties": {
+                "pool_coin": {
+                  "$ref": "#/definitions/Coin"
+                },
+                "pool_id": {
+                  "type": "integer",
+                  "format": "uint64",
+                  "minimum": 0.0
+                },
+                "withdrawer_address": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "swap_within_batch"
+          ],
+          "properties": {
+            "swap_within_batch": {
+              "type": "object",
+              "required": [
+                "demand_coin_denom",
+                "offer_coin",
+                "offer_coin_fee",
+                "order_price",
+                "pool_id",
+                "swap_requester_address",
+                "swap_type_id"
+              ],
+              "properties": {
+                "demand_coin_denom": {
+                  "type": "string"
+                },
+                "offer_coin": {
+                  "$ref": "#/definitions/Coin"
+                },
+                "offer_coin_fee": {
+                  "$ref": "#/definitions/Coin"
+                },
+                "order_price": {
+                  "$ref": "#/definitions/Decimal"
+                },
+                "pool_id": {
+                  "type": "integer",
+                  "format": "uint64",
+                  "minimum": 0.0
+                },
+                "swap_requester_address": {
+                  "type": "string"
+                },
+                "swap_type_id": {
+                  "type": "integer",
+                  "format": "uint32",
+                  "minimum": 0.0
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "CyberMsgWrapper": {
+      "type": "object",
+      "required": [
+        "msg_data",
+        "route"
+      ],
+      "properties": {
+        "msg_data": {
+          "$ref": "#/definitions/CyberMsg"
+        },
+        "route": {
+          "$ref": "#/definitions/CyberRoute"
+        }
+      }
+    },
+    "CyberRoute": {
+      "description": "CyberRoute is enum type to represent cyber query route path",
+      "type": "string",
+      "enum": [
+        "rank",
+        "graph",
+        "resources",
+        "grid",
+        "dmn",
+        "bandwidth",
+        "liquidity"
+      ]
+    },
+    "Decimal": {
+      "description": "A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0\n\nThe greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)",
+      "type": "string"
+    },
+    "DistributionMsg": {
+      "description": "The message types of the distribution module.\n\nSee https://github.com/cosmos/cosmos-sdk/blob/v0.42.4/proto/cosmos/distribution/v1beta1/tx.proto",
+      "oneOf": [
+        {
+          "description": "This is translated to a [MsgSetWithdrawAddress](https://github.com/cosmos/cosmos-sdk/blob/v0.42.4/proto/cosmos/distribution/v1beta1/tx.proto#L29-L37). `delegator_address` is automatically filled with the current contract's address.",
+          "type": "object",
+          "required": [
+            "set_withdraw_address"
+          ],
+          "properties": {
+            "set_withdraw_address": {
+              "type": "object",
+              "required": [
+                "address"
+              ],
+              "properties": {
+                "address": {
+                  "description": "The `withdraw_address`",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "This is translated to a [[MsgWithdrawDelegatorReward](https://github.com/cosmos/cosmos-sdk/blob/v0.42.4/proto/cosmos/distribution/v1beta1/tx.proto#L42-L50). `delegator_address` is automatically filled with the current contract's address.",
+          "type": "object",
+          "required": [
+            "withdraw_delegator_reward"
+          ],
+          "properties": {
+            "withdraw_delegator_reward": {
+              "type": "object",
+              "required": [
+                "validator"
+              ],
+              "properties": {
+                "validator": {
+                  "description": "The `validator_address`",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Expiration": {
+      "description": "Expiration represents a point in time when some event happens. It can compare with a BlockInfo and will return is_expired() == true once the condition is hit (and for every block in the future)",
+      "oneOf": [
+        {
+          "description": "AtHeight will expire when `env.block.height` >= height",
+          "type": "object",
+          "required": [
+            "at_height"
+          ],
+          "properties": {
+            "at_height": {
+              "type": "integer",
+              "format": "uint64",
+              "minimum": 0.0
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "AtTime will expire when `env.block.time` >= time",
+          "type": "object",
+          "required": [
+            "at_time"
+          ],
+          "properties": {
+            "at_time": {
+              "$ref": "#/definitions/Timestamp"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "Never will never expire. Used to express the empty variant",
+          "type": "object",
+          "required": [
+            "never"
+          ],
+          "properties": {
+            "never": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "LabeledAddress": {
+      "type": "object",
+      "required": [
+        "address"
+      ],
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "Link": {
+      "type": "object",
+      "required": [
+        "from",
+        "to"
+      ],
+      "properties": {
+        "from": {
+          "type": "string"
+        },
+        "to": {
+          "type": "string"
+        }
+      }
+    },
+    "Load": {
+      "type": "object",
+      "required": [
+        "gas_price",
+        "input"
+      ],
+      "properties": {
+        "gas_price": {
+          "$ref": "#/definitions/Coin"
+        },
+        "input": {
+          "type": "string"
+        }
+      }
+    },
+    "MintMsg_for_PassportMetadata": {
+      "type": "object",
+      "required": [
+        "extension",
+        "owner",
+        "token_id"
+      ],
+      "properties": {
+        "extension": {
+          "description": "Any custom extension used by this contract",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PassportMetadata"
+            }
+          ]
+        },
+        "owner": {
+          "description": "The owner of the newly minter NFT",
+          "type": "string"
+        },
+        "token_id": {
+          "description": "Unique ID of the NFT",
+          "type": "string"
+        },
+        "token_uri": {
+          "description": "Universal resource identifier for this NFT Should point to a JSON file that conforms to the ERC721 Metadata JSON Schema",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "PassportMetadata": {
+      "type": "object",
+      "required": [
+        "avatar",
+        "nickname"
+      ],
+      "properties": {
+        "addresses": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/definitions/LabeledAddress"
+          }
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "data": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "particle": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "StakingMsg": {
+      "description": "The message types of the staking module.\n\nSee https://github.com/cosmos/cosmos-sdk/blob/v0.40.0/proto/cosmos/staking/v1beta1/tx.proto",
+      "oneOf": [
+        {
+          "description": "This is translated to a [MsgDelegate](https://github.com/cosmos/cosmos-sdk/blob/v0.40.0/proto/cosmos/staking/v1beta1/tx.proto#L81-L90). `delegator_address` is automatically filled with the current contract's address.",
+          "type": "object",
+          "required": [
+            "delegate"
+          ],
+          "properties": {
+            "delegate": {
+              "type": "object",
+              "required": [
+                "amount",
+                "validator"
+              ],
+              "properties": {
+                "amount": {
+                  "$ref": "#/definitions/Coin"
+                },
+                "validator": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "This is translated to a [MsgUndelegate](https://github.com/cosmos/cosmos-sdk/blob/v0.40.0/proto/cosmos/staking/v1beta1/tx.proto#L112-L121). `delegator_address` is automatically filled with the current contract's address.",
+          "type": "object",
+          "required": [
+            "undelegate"
+          ],
+          "properties": {
+            "undelegate": {
+              "type": "object",
+              "required": [
+                "amount",
+                "validator"
+              ],
+              "properties": {
+                "amount": {
+                  "$ref": "#/definitions/Coin"
+                },
+                "validator": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "This is translated to a [MsgBeginRedelegate](https://github.com/cosmos/cosmos-sdk/blob/v0.40.0/proto/cosmos/staking/v1beta1/tx.proto#L95-L105). `delegator_address` is automatically filled with the current contract's address.",
+          "type": "object",
+          "required": [
+            "redelegate"
+          ],
+          "properties": {
+            "redelegate": {
+              "type": "object",
+              "required": [
+                "amount",
+                "dst_validator",
+                "src_validator"
+              ],
+              "properties": {
+                "amount": {
+                  "$ref": "#/definitions/Coin"
+                },
+                "dst_validator": {
+                  "type": "string"
+                },
+                "src_validator": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Timestamp": {
+      "description": "A point in time in nanosecond precision.\n\nThis type can represent times from 1970-01-01T00:00:00Z to 2554-07-21T23:34:33Z.\n\n## Examples\n\n``` # use cosmwasm_std::Timestamp; let ts = Timestamp::from_nanos(1_000_000_202); assert_eq!(ts.nanos(), 1_000_000_202); assert_eq!(ts.seconds(), 1); assert_eq!(ts.subsec_nanos(), 202);\n\nlet ts = ts.plus_seconds(2); assert_eq!(ts.nanos(), 3_000_000_202); assert_eq!(ts.seconds(), 3); assert_eq!(ts.subsec_nanos(), 202); ```",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Uint64"
+        }
+      ]
+    },
+    "Trigger": {
+      "type": "object",
+      "required": [
+        "block",
+        "period"
+      ],
+      "properties": {
+        "block": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        },
+        "period": {
+          "type": "integer",
+          "format": "uint64",
+          "minimum": 0.0
+        }
+      }
+    },
+    "Uint128": {
+      "description": "A thin wrapper around u128 that is using strings for JSON encoding/decoding, such that the full u128 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.\n\n# Examples\n\nUse `from` to create instances of this and `u128` to get the value out:\n\n``` # use cosmwasm_std::Uint128; let a = Uint128::from(123u128); assert_eq!(a.u128(), 123);\n\nlet b = Uint128::from(42u64); assert_eq!(b.u128(), 42);\n\nlet c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```",
+      "type": "string"
+    },
+    "Uint64": {
+      "description": "A thin wrapper around u64 that is using strings for JSON encoding/decoding, such that the full u64 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.\n\n# Examples\n\nUse `from` to create instances of this and `u64` to get the value out:\n\n``` # use cosmwasm_std::Uint64; let a = Uint64::from(42u64); assert_eq!(a.u64(), 42);\n\nlet b = Uint64::from(70u32); assert_eq!(b.u64(), 70); ```",
+      "type": "string"
+    },
+    "WasmMsg": {
+      "description": "The message types of the wasm module.\n\nSee https://github.com/CosmWasm/wasmd/blob/v0.14.0/x/wasm/internal/types/tx.proto",
+      "oneOf": [
+        {
+          "description": "Dispatches a call to another contract at a known address (with known ABI).\n\nThis is translated to a [MsgExecuteContract](https://github.com/CosmWasm/wasmd/blob/v0.14.0/x/wasm/internal/types/tx.proto#L68-L78). `sender` is automatically filled with the current contract's address.",
+          "type": "object",
+          "required": [
+            "execute"
+          ],
+          "properties": {
+            "execute": {
+              "type": "object",
+              "required": [
+                "contract_addr",
+                "funds",
+                "msg"
+              ],
+              "properties": {
+                "contract_addr": {
+                  "type": "string"
+                },
+                "funds": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Coin"
+                  }
+                },
+                "msg": {
+                  "description": "msg is the json-encoded ExecuteMsg struct (as raw Binary)",
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/Binary"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "Instantiates a new contracts from previously uploaded Wasm code.\n\nThe contract address is non-predictable. But it is guaranteed that when emitting the same Instantiate message multiple times, multiple instances on different addresses will be generated. See also Instantiate2.\n\nThis is translated to a [MsgInstantiateContract](https://github.com/CosmWasm/wasmd/blob/v0.29.2/proto/cosmwasm/wasm/v1/tx.proto#L53-L71). `sender` is automatically filled with the current contract's address.",
+          "type": "object",
+          "required": [
+            "instantiate"
+          ],
+          "properties": {
+            "instantiate": {
+              "type": "object",
+              "required": [
+                "code_id",
+                "funds",
+                "label",
+                "msg"
+              ],
+              "properties": {
+                "admin": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "code_id": {
+                  "type": "integer",
+                  "format": "uint64",
+                  "minimum": 0.0
+                },
+                "funds": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Coin"
+                  }
+                },
+                "label": {
+                  "description": "A human-readable label for the contract.\n\nValid values should: - not be empty - not be bigger than 128 bytes (or some chain-specific limit) - not start / end with whitespace",
+                  "type": "string"
+                },
+                "msg": {
+                  "description": "msg is the JSON-encoded InstantiateMsg struct (as raw Binary)",
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/Binary"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "Migrates a given contracts to use new wasm code. Passes a MigrateMsg to allow us to customize behavior.\n\nOnly the contract admin (as defined in wasmd), if any, is able to make this call.\n\nThis is translated to a [MsgMigrateContract](https://github.com/CosmWasm/wasmd/blob/v0.14.0/x/wasm/internal/types/tx.proto#L86-L96). `sender` is automatically filled with the current contract's address.",
+          "type": "object",
+          "required": [
+            "migrate"
+          ],
+          "properties": {
+            "migrate": {
+              "type": "object",
+              "required": [
+                "contract_addr",
+                "msg",
+                "new_code_id"
+              ],
+              "properties": {
+                "contract_addr": {
+                  "type": "string"
+                },
+                "msg": {
+                  "description": "msg is the json-encoded MigrateMsg struct that will be passed to the new code",
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/Binary"
+                    }
+                  ]
+                },
+                "new_code_id": {
+                  "description": "the code_id of the new logic to place in the given contract",
+                  "type": "integer",
+                  "format": "uint64",
+                  "minimum": 0.0
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "Sets a new admin (for migrate) on the given contract. Fails if this contract is not currently admin of the target contract.",
+          "type": "object",
+          "required": [
+            "update_admin"
+          ],
+          "properties": {
+            "update_admin": {
+              "type": "object",
+              "required": [
+                "admin",
+                "contract_addr"
+              ],
+              "properties": {
+                "admin": {
+                  "type": "string"
+                },
+                "contract_addr": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "Clears the admin on the given contract, so no more migration possible. Fails if this contract is not currently admin of the target contract.",
+          "type": "object",
+          "required": [
+            "clear_admin"
+          ],
+          "properties": {
+            "clear_admin": {
+              "type": "object",
+              "required": [
+                "contract_addr"
+              ],
+              "properties": {
+                "contract_addr": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

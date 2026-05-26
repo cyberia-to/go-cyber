@@ -1,0 +1,53 @@
+{
+  "name": "@cybercongress/cyber-ts",
+  "version": "0.1.3",
+  "author": "cyborgshead <cyborgshead@proton.me>",
+  "description": "cyber-ts sdk",
+  "main": "index.js",
+  "module": "esm/index.js",
+  "types": "index.d.ts",
+  "homepage": "https://github.com/cybercongress/cyber-ts",
+  "license": "SEE LICENSE IN LICENSE",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cybercongress/cyber-ts"
+  },
+  "bugs": {
+    "url": "https://github.com/cybercongress/cyber-ts/issues"
+  },
+  "scripts": {
+    "copy": "copyfiles -f ../../LICENSE README.md package.json dist",
+    "clean": "rimraf dist/**",
+    "prepare": "npm run build",
+    "codegen": "ts-node scripts/codegen.ts",
+    "build": "npm run clean; tsc; tsc -p tsconfig.esm.json; npm run copy",
+    "lint": "eslint . --fix",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "@cosmology/telescope": "^1.8.3",
+    "@protobufs/cosmwasm": "^0.1.1",
+    "@tanstack/react-query": "^4.36.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.3.3",
+    "react": "^18.3.1",
+    "react-dom": "18.3.1",
+    "type-fest": "^4.25.0"
+  },
+  "dependencies": {
+    "@cosmjs/amino": "0.32.3",
+    "@cosmjs/cosmwasm-stargate": "0.32.3",
+    "@cosmjs/encoding": "0.32.3",
+    "@cosmjs/math": "0.32.3",
+    "@cosmjs/proto-signing": "0.32.3",
+    "@cosmjs/stargate": "0.32.3",
+    "@cosmology/lcd": "^0.13.3"
+  },
+  "keywords": []
+}

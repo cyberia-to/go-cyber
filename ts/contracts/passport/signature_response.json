@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SignatureResponse",
+  "type": "object",
+  "required": [
+    "signed"
+  ],
+  "properties": {
+    "signed": {
+      "type": "boolean"
+    }
+  }
+}

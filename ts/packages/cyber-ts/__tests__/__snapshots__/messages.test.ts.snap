@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`cosmos 1`] = `
+{
+  "typeUrl": "/cosmos.bank.v1beta1.MsgSend",
+  "value": {
+    "amount": [
+      {
+        "amount": "1",
+        "denom": "uatom",
+      },
+    ],
+    "fromAddress": "myaddress",
+    "toAddress": "youraddress",
+  },
+}
+`;

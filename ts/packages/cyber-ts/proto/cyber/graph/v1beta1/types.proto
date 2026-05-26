@@ -1,0 +1,14 @@
+syntax = "proto3";
+package cyber.graph.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/cybercongress/go-cyber/x/graph/types";
+
+message Link {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string from = 1;
+  string to = 2;
+}

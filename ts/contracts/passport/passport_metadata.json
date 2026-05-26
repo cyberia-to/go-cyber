@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PassportMetadata",
+  "type": "object",
+  "required": [
+    "avatar",
+    "nickname"
+  ],
+  "properties": {
+    "addresses": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/LabeledAddress"
+      }
+    },
+    "avatar": {
+      "type": "string"
+    },
+    "data": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "nickname": {
+      "type": "string"
+    },
+    "particle": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "definitions": {
+    "LabeledAddress": {
+      "type": "object",
+      "required": [
+        "address"
+      ],
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}
