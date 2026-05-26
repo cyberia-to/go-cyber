@@ -1,0 +1,64 @@
+{
+  "name": "@cybercongress/cyber-js",
+  "version": "0.4.1",
+  "description": "Cyber SDK",
+  "license": "",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "files": [
+    "build/",
+    "*.md",
+    "!*.spec.*",
+    "!**/testdata/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cybercongress/cyber-js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "get-proto": "./get-proto.sh",
+    "define-proto": "./define-proto.sh",
+    "postdefine-proto": "prettier --write \"src/codec/**/*.ts\"",
+    "lint": "eslint --max-warnings 0 \"./**/*.ts\"",
+    "lint-fix": "eslint --fix --max-warnings 0 \"./**/*.ts\"",
+    "format": "prettier --write --loglevel warn \"./src/**/*.ts\"",
+    "format-text": "prettier --write \"./*.md\""
+  },
+  "dependencies": {
+    "@cosmjs/amino": "0.31.3",
+    "@cosmjs/cosmwasm-stargate": "0.31.3",
+    "@cosmjs/crypto": "0.31.3",
+    "@cosmjs/math": "0.31.3",
+    "@cosmjs/proto-signing": "0.31.3",
+    "@cosmjs/stargate": "0.31.3",
+    "@cosmjs/utils": "0.31.3",
+    "cosmjs-types": "^0.7",
+    "fast-deep-equal": "^3.1.3",
+    "fs-extra": "^10.1.0",
+    "long": "^4.0.0",
+    "pako": "^2.0.3",
+    "process": "^0.11.10",
+    "protobufjs": "~6.10.2"
+  },
+  "devDependencies": {
+    "@cosmjs/encoding": "0.30.0",
+    "@types/eslint-plugin-prettier": "^3.1.0",
+    "@types/long": "^4.0.1",
+    "@types/pako": "^1.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.16.0",
+    "@typescript-eslint/parser": "^5.16.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-import-resolver-node": "^0.3.5",
+    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "prettier": "^2.3.2",
+    "ts-proto": "^1.121.6",
+    "typescript": "^4.7.4"
+  }
+}
