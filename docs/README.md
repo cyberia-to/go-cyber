@@ -25,7 +25,7 @@
 
 ## parallel computation
 - convergence VM
-- semcon
+- dialect
 - linkchain
 - motif
 - blas
