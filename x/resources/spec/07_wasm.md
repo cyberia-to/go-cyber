@@ -1,10 +1,9 @@
-# WASM LINE
+# WASM Bindings
 
-In addition to the core CosmWasm functionality, the resources module bindings include
+## Messages
 
-## Messages Encoding
-- MsgInvestmint
+Contracts call mint via custom messages. The `neuron` field must match the calling contract address.
 
---------
-
-Hack with [cw-cyber](https://github.com/cybercongress/cw-cyber) library
+| Operation    | Fields                          |
+|--------------|---------------------------------|
+| Investmint   | neuron, amount, resource, length |

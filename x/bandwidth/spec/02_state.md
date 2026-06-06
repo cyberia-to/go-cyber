@@ -1,50 +1,54 @@
 # State
 
-## Account Bandwidth
+## Neuron bandwidth
 
-AccountBandwidth is used for tracking bandwidth of accounts in the network.
+`NeuronBandwidth` represents a neuron's bandwidth capacity. In the current implementation this value is computed on the fly from the neuron's volt balance via `GetAccountStakeVolt`, so `RemainedValue` and `MaxValue` both equal the current balance.
 
-AccountBandwidth type has the following structure:
-```
-type AccountBandwidth struct {
-    address          string     // address of neuron
-	remainedValue    uint64     // current bandwidth value 
-	lastUpdatedBlock uint64     // last block when last time updated
-	maxValue         uint64     // max current bandwidth value of neuron
+```protobuf
+message NeuronBandwidth {
+    string neuron            = 1;
+    uint64 remained_value    = 2;
+    uint64 last_updated_block = 3;
+    uint64 max_value         = 4;
 }
 ```
 
+## Bandwidth price
 
-## Last price
-Value is used to store up-to-date price of bandwidth.
+Stores the current bandwidth price multiplier. Falls back to `BasePrice` if unset.
 
-```
-type Price struct {
-    price          sdk.Dec   // current multiplier for bandwidth billing
+```protobuf
+message Price {
+    string price = 1; // sdk.Dec
 }
 ```
 
 ## Block bandwidth
-Storing used bandwidth for each block. Used for calculation of load using sum of used bandwidth in blocks at recovery period window.
-Used for reverting transactions with cyberlinks if rise more than ```MaxBlockBandwidth```
+
+Stores the total bandwidth consumed by all neurons in a given block. Used for the sliding-window load calculation and for enforcing `MaxBlockBandwidth`.
 
 ```
-sdk.Uint64ToBigEndian(value) // where value is amount of bandwidth used by all neurons in given block
+BlockStoreKey(blockNumber) -> uint64 (big-endian encoded)
 ```
 
 ## Desirable bandwidth
+
 Desirable bandwidth represents amount of cyberlinks that network would like to process.
 
 ```
-sdk.Uint64ToBigEndian(value) // where value is total current supply of mvolt (uint64)
+TotalBandwidth key -> uint64 (big-endian encoded)
 ```
-
--------
 
 ## Keys
 
-- Account bandwidth: `0x01 | []byte(address) -> ProtocolBuffer(AccountBandwidth)`
-- Block bandwidth: `0x02 | sdk.Uint64ToBigEndian(blockNumber) -> sdk.Uint64ToBigEndian(value)`
-- Last bandwidth price: `0x00 | []byte("lastBandwidthPrice") -> ProtocolBuffer(Price)`
-- Desirable bandwidth: `0x00 | []byte("desirableBandwidth") -> sdk.Uint64ToBigEndian(value)`
-- ModuleName, StoreKey: `bandwidth`
+| Key | Prefix | Value |
+| --- | --- | --- |
+| Neuron bandwidth | `0x01 \| []byte(address)` | `ProtocolBuffer(NeuronBandwidth)` |
+| Block bandwidth | `0x02 \| uint64(blockNumber)` | `uint64(value)` |
+| Bandwidth price | `0x00 \| "lastBandwidthPrice"` | `ProtocolBuffer(Price)` |
+| Desirable bandwidth | `0x00 \| "totalBandwidth"` | `uint64(value)` |
+| Parameters | `0x02` | `ProtocolBuffer(Params)` |
+
+Module name and store key: `bandwidth`
+
+Transient store key: `transient_bandwidth` — holds the current block's accumulated bandwidth before it is committed to persistent storage in EndBlocker.

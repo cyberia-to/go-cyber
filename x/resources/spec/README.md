@@ -1,31 +1,30 @@
-# `Resources`
+# `x/resources`
 
 ## Abstract
 
-The resources module allows neurons to invest into computer's resources.
+The resources module allows neurons to mint the computer's resources — volts (bandwidth) and amperes (attention) — by burning hydrogen. A neuron burns hydrogen and receives newly minted resource tokens. The mint rate depends on the amount burned, a time-based halving schedule, and exponential supply decay. Minted resources are available immediately.
 
-### Examples:
-I would like to `investmint` 1000000000 BOOT (1 GBOOT) to VOLT resource with lock for 30 DAYS (no spendable) and I will get
-newly minted 1 VOLT to my account locked for 30 DAYS (no spendable).
+### Examples
+
+Mint VOLT by burning 1 GBOOT:
 ```
-(1 GBOOT | 30 DAYS | VOLT) ---investmint---> locked (1 GBOOT | 30 DAYS) + minted and locked (1 VOLT | 30 DAYS)
+burn 1 GBOOT → mint VOLT (amount depends on current halving and supply)
 ```
 
-I would like to `investmint` 4000000000 BOOT (4 GBOOT) to AMPERE resource with lock for 7 DAYS (no spendable) and I will get
-newly minted 1 AMPERE to my account locked for 7 DAYS (no spendable).
+Mint AMPERE by burning 4.2 GBOOT:
 ```
-(4.2 GBOOT | 7 DAYS | AMPERE) ---investmint---> locked (4.2 GBOOT | 7 DAYS) + minted and locked (1 AMPERE | 7 DAYS)
+burn 4.2 GBOOT → mint AMPERE (amount depends on current halving and supply)
 ```
 
 ## Contents
 
-1. **[Concepts](00_concepts.md)**
-2. **[API](01_api.md)**
-3. **[State](02_state.md)**
-4. **[State Transitions](03_state_transitions.md)**
-5. **[Messages](04_messages.md)**
-6. **[Events](05_events.md)**
-7. **[Parameters](06_params.md)**
-8. **[WASM](07_wasm.md)**
-9. **[Errors](08_errors.md)**
-10. **[CLI](09_cli.md)**
+1. [Concepts](00_concepts.md)
+2. [Queries](01_queries.md)
+3. [State](02_state.md)
+4. [State Transitions](03_state_transitions.md)
+5. [Messages](04_messages.md)
+6. [Events](05_events.md)
+7. [Parameters](06_params.md)
+8. [WASM Bindings](07_wasm.md)
+9. [Errors](08_errors.md)
+10. [CLI](09_cli.md)

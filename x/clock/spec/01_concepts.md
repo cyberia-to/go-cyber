@@ -1,45 +1,33 @@
-<!--
-order: 1
--->
-
 # Concepts
 
 ## Clock
 
-The Clock module allows registered contracts to be executed at the start and the end of every block. This allows the smart contract to perform regular and routine actions without the need for external bots. Developers can setup their contract with x/Clock by registering their contract with the module. Once registered, the contract will be executed at the end of every block. If the contract throws an error during execution or exceeds the gas limit defined in the module's parameters, the contract will be jailed and no longer executed. The contract can be unjailed by the contract admin.
+The clock module executes registered contracts at the start and end of every block via Sudo messages. Contracts perform regular actions without external bots.
 
-## Registering a Contract
+Registration requires the sender to be the contract admin (if set) or the contract creator. Once registered, the contract receives `BeginBlock` and `EndBlock` Sudo calls every block.
 
-Register a contract with x/Clock by executing the following transaction:
+If a contract errors or exceeds the `contract_gas_limit` parameter, it is jailed and skipped until unjailed.
+
+## Registering a contract
 
 ```bash
 cyber tx clock register [contract_address]
 ```
 
-> Note: the sender of this transaction must be the contract admin, if exists, or else the contract creator.
+The sender must be the contract admin or creator. The contract must implement the Sudo entry point described in [Integration](03_integration.md).
 
-The `contract_address` is the bech32 address of the contract to be executed at the end of every block. Once registered, the contract will be executed at the end of every block. Please ensure that your contract follows the guidelines outlined in [Integration](03_integration.md). 
-
-## Unjailing a Contract
-
-A contract can be unjailed by executing the following transaction:
+## Unjailing a contract
 
 ```bash
 cyber tx clock unjail [contract_address]
 ```
 
-> Note: the sender of this transaction must be the contract admin, if exists, or else the contract creator.
+The sender must be the contract admin or creator. Unjailing restores block execution for the contract.
 
-The `contract_address` is the bech32 address of the contract to be unjailed. Unjailing a contract will allow it to be executed at the end of every block. If your contract becomes jailed, please see [Integration](03_integration.md) to ensure the contract is setup with a Sudo message. 
-
-## Unregistering a Contract
-
-A contract can be unregistered by executing the following transaction:
+## Unregistering a contract
 
 ```bash
 cyber tx clock unregister [contract_address]
 ```
 
-> Note: the sender of this transaction must be the contract admin, if exists, or else the contract creator.
-
-The `contract_address` is the bech32 address of the contract to be unregistered. Unregistering a contract will remove it from the Clock module. This means that the contract will no longer be executed at the end of every block.
+The sender must be the contract admin or creator. Removes the contract from the clock module.

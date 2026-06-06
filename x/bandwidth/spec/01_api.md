@@ -1,22 +1,17 @@
 # API
 
-# REST
+## gRPC
 
-| Path                                  | Parameters           | Description                                |
-| --------------------------------------| -------------------- | ------------------------------------------ |
-| /bandwidth/parameters                 |                      | get module params                          |
-| /bandwidth/load                       |                      | get bandwidth load                         |
-| /bandwidth/price                      |                      | get bandwidth price                        |
-| /bandwidth/desirable                  |                      | get desirable bandwidth                    |
-| /bandwidth/account/{address}          | {address}            | get bandwidth of give account address      |
+| Path | Description |
+| --- | --- |
+| `/cyber/bandwidth/v1beta1/bandwidth/params` | Module parameters |
+| `/cyber/bandwidth/v1beta1/bandwidth/load` | Current network load |
+| `/cyber/bandwidth/v1beta1/bandwidth/price` | Current bandwidth price |
+| `/cyber/bandwidth/v1beta1/bandwidth/total` | Total (desirable) bandwidth |
+| `/cyber/bandwidth/v1beta1/bandwidth/neuron/{neuron}` | Neuron bandwidth by address |
 
-# GRPC
+## Messages
 
-| Path                                                  | Parameters           | Description                                |
-| ----------------------------------------------------- | -------------------- | ------------------------------------------ |
-| /cyber/bandwidth/v1beta1/bandwidth/parameters         |                      | get module params                          |
-| /cyber/bandwidth/v1beta1/bandwidth/load               |                      | get bandwidth load                         |
-| /cyber/bandwidth/v1beta1/bandwidth/price              |                      | get bandwidth price                        |
-| /cyber/bandwidth/v1beta1/bandwidth/desirable          |                      | get desirable bandwidth                    |
-| /cyber/bandwidth/v1beta1/bandwidth/account/{address}  | {address}            | get bandwidth of give account address      |
-      
+| Path | Description |
+| --- | --- |
+| `cyber.bandwidth.v1beta1.Msg/UpdateParams` | Update module parameters (governance) |

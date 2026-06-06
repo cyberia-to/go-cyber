@@ -1,55 +1,22 @@
 # CLI
 
-## Queries
+## Query
 
-Query all energy routes that made from source account:
 ```bash
-cyber query grid routes-from [source-addr]
+cyber query grid params
+cyber query grid routes-from [source]         # list all routes from source
+cyber query grid routes-to [destination]       # list all routes to destination
+cyber query grid routed-from [source]          # total energy routed from source (sum)
+cyber query grid routed-to [destination]       # total energy routed to destination (sum)
+cyber query grid route [source] [destination]  # single route
+cyber query grid routes                        # all routes (paginated)
 ```
 
-Query all energy routes that routed to destination account:
-```bash
-cyber query grid routes-to [destination-addr]
-```
+## Transaction
 
-Query energy value that routed from source account:
 ```bash
-cyber query grid routed-from [source-addr]
-```
-
-Query energy value that routed to destination account:
-```bash
-cyber query grid routed-to [destination-addr]
-```
-
-Query energy route that routes for given source and destination accounts:
-```bash
-cyber query grid route [source-addr] [destination-addr]
-```
-
-Query all energy routes (pagination flags supported):
-```bash
-cyber query grid routes
-```
-
-## Transactions
-
-Create energy route from your address to destination address with provided alias:
-```bash
-cyber tx grid create-route [destination-addr] [alias]
-```
-
-Set value of energy route to destination address:
-```bash
-cyber tx grid edit-route [destination-addr] [value]
-```
-
-Delete your energy route to given destination address:
-```bash
-cyber tx grid delete-route [destination-addr]
-```
-
-Edit alias of energy route to given destination address:
-```bash
-cyber tx grid edit-route-alias [destination-addr] [new-alias]
+cyber tx grid create-route [destination] [name]
+cyber tx grid edit-route [destination] [value]
+cyber tx grid delete-route [destination]
+cyber tx grid edit-route-name [destination] [name]
 ```
